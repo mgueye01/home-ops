@@ -48,7 +48,7 @@ spec:
           main:
             image:
               repository: ghcr.io/paperless-ngx/paperless-ngx
-              tag: 2.11.0
+              tag: 2.11.1
             env:
               PAPERLESS_CONSUMER_POLLING: 5
               PAPERLESS_CONSUMER_RECURSIVE: "true"
@@ -76,7 +76,7 @@ spec:
           gotenberg:
             image:
               repository: gotenberg/gotenberg
-              tag: 8.8.0
+              tag: 8.8.1
               pullPolicy: IfNotPresent
             ports:
               - containerPort: 3000
