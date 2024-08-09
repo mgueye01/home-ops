@@ -28,7 +28,7 @@ spec:
   values:
     image:
       repository: ghcr.io/home-assistant/home-assistant
-      tag: 2024.7.0@sha256:4c2400f34d42c5fed9e2443a5a41db01316323b0564701f3336411bcd2ff9c88
+      tag: 2024.7.3@sha256:f8f13f6da9b38f6e33b9c40fded2a84ccd13ad69eb2a7e53bb045778fbccc229
     hostNetwork: true
     dnsPolicy: ClusterFirstWithHostNet
 
@@ -114,7 +114,7 @@ spec:
         enabled: false
         image:
           repository: codercom/code-server
-          tag: 4.91.0
+          tag: 4.91.1
         git:
           deployKeySecret: code-server
         workingDir: "/config"
