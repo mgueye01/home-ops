@@ -114,7 +114,7 @@ spec:
         enabled: false
         image:
           repository: codercom/code-server
-          tag: 4.91.0
+          tag: 4.91.1
         git:
           deployKeySecret: code-server
         workingDir: "/config"
