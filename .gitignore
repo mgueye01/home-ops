@@ -6,7 +6,7 @@
 /scripts/
 *.secret.env
 *.secret.yaml
-*.secret.sops.yaml.j2
+*.sops.yaml.j2
 *.crt
 *.key
 .decrypted~*
