@@ -67,18 +67,27 @@ spec:
         connections:
           requireMsgr2: true
       storage:
-        useAllNodes: true
+        useAllNodes: false
         useAllDevices: false
-        devicePathFilter: /dev/disk/by-id/nvme-ad1920GBD60M2P_.*
         config:
           osdsPerDevice: "1"
+        nodes:
+          - name: "worker1"
+            devices:
+              - name: "/dev/disk/by-id/nvme-Samsung_SSD_980_PRO_1TB_S5GXNX0W263111V"
+          - name: "worker2"
+            devices:
+              - name: "/dev/disk/by-id/nvme-Samsung_SSD_980_PRO_1TB_S5GXNX0W263166J"
+          - name: "worker3"
+            devices:
+              - name: "/dev/disk/by-id/nvme-Samsung_SSD_980_PRO_1TB_S5GXNX1W320277D"
       placement:
         mgr: &placement
           nodeAffinity:
             requiredDuringSchedulingIgnoredDuringExecution:
               nodeSelectorTerms:
                 - matchExpressions:
-                    - key: node-role.kubernetes.io/control-plane
+                    - key: node-role.kubernetes.io/worker
                       operator: Exists
         mon: *placement
       resources:
