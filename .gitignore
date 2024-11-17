@@ -1,0 +1,17 @@
+/.bin/
+/.go/
+/.private/
+/.task/
+/.venv/
+/scripts/
+*.secret.env
+*.secret.yaml
+*.secret.sops.yaml.j2
+*.crt
+*.key
+.decrypted~*
+.DS_Store
+Brewfile.lock.json
+Thumbs.db
+kubeconfig
+talosconfig
