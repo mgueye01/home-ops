@@ -39,7 +39,7 @@ spec:
               tag: 1.41.2.9200-c6bbc1b53@sha256:47c6f3d85f4e739210860934a0bb24126170fa2f6a602fb909467f17a035c311
             env:
               TZ: America/New_York
-              PLEX_ADVERTISE_URL: https://plex.g-eye.io:443,http://192.168.42.128:32400
+              PLEX_ADVERTISE_URL: https://plex.g-eye.io:443,http://192.168.10.68:32400
               PLEX_NO_AUTH_NETWORKS: 192.168.10.0/24
             probes:
               liveness: &probes
@@ -85,7 +85,7 @@ spec:
         controller: plex
         type: LoadBalancer
         annotations:
-          lbipam.cilium.io/ips: 192.168.42.128
+          lbipam.cilium.io/ips: 192.168.10.68
         ports:
           http:
             port: 32400
