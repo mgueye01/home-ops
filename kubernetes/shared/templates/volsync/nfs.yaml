@@ -13,11 +13,15 @@ spec:
     template:
       engineVersion: v2
       data:
-        RESTIC_REPOSITORY: "/repository/${APP}"
+        RESTIC_REPOSITORY: "{{ .REPOSITORY_TEMPLATE }}/${APP}"
         RESTIC_PASSWORD: "{{ .RESTIC_PASSWORD }}"
+        AWS_ACCESS_KEY_ID: "{{ .MINIO_ROOT_USER }}"
+        AWS_SECRET_ACCESS_KEY: "{{ .MINIO_ROOT_PASSWORD }}"
   dataFrom:
     - extract:
-        key: volsync-template
+        key: minio
+    - extract:
+        key: volsync-minio-template
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/volsync.backube/replicationsource_v1alpha1.json
 apiVersion: volsync.backube/v1alpha1
