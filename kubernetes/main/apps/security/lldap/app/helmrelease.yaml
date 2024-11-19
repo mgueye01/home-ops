@@ -25,7 +25,7 @@ spec:
     keepHistory: false
   values:
     controllers:
-      main:
+      lldad:
         replicas: 2
         strategy: RollingUpdate
         annotations:
@@ -79,22 +79,22 @@ spec:
                 matchLabels:
                   app.kubernetes.io/name: *app
     service:
-      main:
+      app:
+        controller: lldad
         ports:
           http:
             port: *port
           ldap:
             port: *ldapPort
     ingress:
-      main:
-        enabled: true
+      app:
         className: internal
         hosts:
           - host: &host "{{ .Release.Name }}.g-eye.io"
             paths:
               - path: /
                 service:
-                  name: main
+                  identifier: app
                   port: http
         tls:
           - hosts:
