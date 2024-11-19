@@ -1,0 +1,145 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2beta2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: gitea
+  namespace: dev
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: gitea
+      version: 10.4.1
+      sourceRef:
+        kind: HelmRepository
+        name: gitea-charts
+        namespace: flux-system
+  maxHistory: 2
+  install:
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    image:
+      rootless: true
+    statefulset:
+      annotations:
+        reloader.stakater.com/auto: "true"
+    containerSecurityContext:
+      capabilities:
+        add: ["SYS_CHROOT"]
+    ingress:
+      enabled: true
+      ingressClassName: internal
+      annotations:
+        ingress.home.arpa/type: "internal"
+      hosts:
+        - host: &host gitea.g-eye.io
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - hosts:
+            - *host
+    memcached:
+      enabled: false
+    postgresql:
+      enabled: false
+    persistence:
+      enabled: true
+      accessModes: ["ReadWriteOnce"]
+      size: 10Gi
+      storageClass: ceph-block
+    gitea:
+      admin:
+        email: gitea@g-eye.io
+        username: gitea
+      config:
+        APP_NAME: Tea, Git, Hot
+        server:
+          DISABLE_SSH: true
+          DOMAIN: gitea.g-eye.io
+          ROOT_URL: https://gitea.g-eye.io
+          ENABLE_GZIP: true
+          LANDING_PAGE: login
+          LFS_START_SERVER: true
+        admin:
+          DISABLE_REGULAR_ORG_CREATION: true
+        ui:
+          DEFAULT_THEME: arc-green
+        repository:
+          DEFAULT_BRANCH: main
+          DEFAULT_PRIVATE: true
+        database:
+          DB_TYPE: sqlite3
+          # DB_TYPE: postgres
+          # HOST: postgres-rw.database.svc.cluster.local:5432
+          # NAME: gitea
+          # USER: gitea
+          # PASSWD:
+        webhook:
+          ALLOWED_HOST_LIST: "*"
+        service:
+          DISABLE_REGISTRATION: false
+          ALLOW_ONLY_EXTERNAL_REGISTRATION: true
+          SHOW_REGISTRATION_BUTTON: false
+          REQUIRE_SIGNIN_VIEW: true
+          DEFAULT_KEEP_EMAIL_PRIVATE: true
+          DEFAULT_ALLOW_CREATE_ORGANIZATION: false
+          DEFAULT_USER_IS_RESTRICTED: true
+        cron:
+          ENABLED: true
+        attachment:
+          STORAGE_TYPE: minio
+          MINIO_ENDPOINT: 192.168.0.18:9000
+          MINIO_BUCKET: gitea
+        storage:
+          STORAGE_TYPE: minio
+          MINIO_ENDPOINT: 192.168.0.18:9000
+          MINIO_BUCKET: gitea
+        mailer:
+          ENABLED: true
+          MAILER_TYPE: smtp
+          SMTP_ADDR: smtp.eu.mailgun.org:587
+          SMTP_PORT: 25
+          FROM: "Admin <postmaster@g-eye.io>"
+        openid:
+          ENABLE_OPENID_SIGNIN: false
+          ENABLE_OPENID_SIGNUP: true
+          WHITELISTED_URIS: auth.g-eye.io
+      oauth:
+        - name: authelia
+          existingSecret: gitea-config-secret
+          provider: openidConnect
+          autoDiscoverUrl: https://auth.g-eye.io/.well-known/openid-configuration
+          groupClaimName: groups
+          adminGroup: admins
+          restrictedGroup: people
+      metrics:
+        enabled: true
+        serviceMonitor:
+          enabled: true
+  valuesFrom:
+    - targetPath: gitea.admin.password
+      kind: Secret
+      name: gitea-config-secret
+      valuesKey: adminPassword
+    - targetPath: gitea.config.attachment.MINIO_ACCESS_KEY_ID
+      kind: Secret
+      name: gitea-config-secret
+      valuesKey: minioAccessKeyId
+    - targetPath: gitea.config.attachment.MINIO_SECRET_ACCESS_KEY
+      kind: Secret
+      name: gitea-config-secret
+      valuesKey: minioSecretAccessKey
+    - targetPath: gitea.config.storage.MINIO_ACCESS_KEY_ID
+      kind: Secret
+      name: gitea-config-secret
+      valuesKey: minioAccessKeyId
+    - targetPath: gitea.config.storage.MINIO_SECRET_ACCESS_KEY
+      kind: Secret
+      name: gitea-config-secret
+      valuesKey: minioSecretAccessKey

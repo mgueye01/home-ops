@@ -52,7 +52,7 @@ spec:
               RADARR__LOG__LEVEL: info
               RADARR__SERVER__PORT: &port 80
               RADARR__UPDATE__BRANCH: develop
-              TZ: America/New_York
+              TZ: Europe/Paris
             envFrom: *envFrom
             probes:
               liveness: &probes
@@ -118,7 +118,20 @@ spec:
         type: emptyDir
       media:
         type: nfs
-        server: expanse.internal
-        path: /eros/Media
+        server: nas.g-eye.tech
+        path: /volume1/video/Movie
         globalMounts:
           - path: /media
+      downloads:
+        type: nfs
+        server: nas.g-eye.tech
+        path: /volume1/downloads/complete
+        globalMounts:
+          - path: /downloads
+      backup:
+        enabled: true
+        type: nfs
+        server: nas.g-eye.tech
+        path: /volume1/CLOUDNATIVE1/Backups/radarr
+        globalMounts:
+          - path: /config/Backups
