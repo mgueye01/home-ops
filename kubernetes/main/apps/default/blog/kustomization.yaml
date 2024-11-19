@@ -1,0 +1,12 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - deployment.yaml
+  - ingress.yaml
+  - service.yaml
+  - ./flux-cd/regcred.sops.yaml
+  - ./flux-cd/imagerepository.yaml
+  - ./flux-cd/imagepolicy.yaml
+  - ./flux-cd/ImageUpdateAutomation.yaml

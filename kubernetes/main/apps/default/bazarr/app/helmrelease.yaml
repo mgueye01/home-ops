@@ -119,8 +119,8 @@ spec:
           - path: /config/log
       media:
         type: nfs
-        server: expanse.internal
-        path: /eros/Media
+        server: nas.g-eye.tech
+        path: /volume1/video
         globalMounts:
           - path: /media
       scripts:

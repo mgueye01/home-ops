@@ -36,7 +36,7 @@ spec:
               repository: ghcr.io/kieraneglin/pinchflat
               tag: v2024.10.30@sha256:b7b407edef530ccd49d4b0a1503d964227c11f330e05dfcfc8c1456d77ffafd5
             env:
-              TZ: America/New_York
+              TZ: Europe/Paris
               TZ_DATA_DIR: /tmp/elixir_tz_data
               PORT: &port 80
             probes:
@@ -100,8 +100,8 @@ spec:
         type: emptyDir
       media:
         type: nfs
-        server: expanse.internal
-        path: /eros/Media
+        server: nas.g-eye.tech
+        path: /volume1/video
         globalMounts:
           - path: /media/Library/YouTube
             subPath: Library/YouTube
