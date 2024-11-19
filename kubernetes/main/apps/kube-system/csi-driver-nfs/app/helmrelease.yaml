@@ -29,12 +29,12 @@ spec:
       parameters:
         server: nas.g-eye.tech
         share: /volume1/CLOUDNATIVE1
-      mountOptions:
-        - nfsvers=4.1
-        - nconnect=8
-        - hard
-        - noatime
-        - rsize=131072
-        - wsize=131072
+      # mountOptions:
+      #   - nfsvers=4.1
+      #   - nconnect=8
+      #   - hard
+      #   - noatime
+      #   - rsize=131072
+      #   - wsize=131072
       reclaimPolicy: Delete
       volumeBindingMode: Immediate
