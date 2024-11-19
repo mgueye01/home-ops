@@ -11,15 +11,6 @@ spec:
   targets:
     staticConfig:
       static:
-        - expanse.internal
-        - garage-door.internal
-        - hdhomerun.internal
-        - idrac.internal
-        - kiosk.internal
-        - kvm.internal
-        - pikvm.internal
-        - receiver.internal
-        - ups.internal
-        - vacuum.internal
-        - zigbee-controller.internal
-        - zwave-controller.internal
+        - pikvm.g-eye.tech
+        - nas.g-eye.tech
+        - homeassistant.local

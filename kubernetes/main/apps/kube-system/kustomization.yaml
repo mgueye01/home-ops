@@ -18,3 +18,4 @@ resources:
   - ./node-feature-discovery/ks.yaml
   - ./reloader/ks.yaml
   - ./spegel/ks.yaml
+  - ./kube-cleanup-operator/ks.yaml
