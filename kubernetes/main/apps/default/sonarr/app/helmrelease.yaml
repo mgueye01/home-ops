@@ -52,7 +52,7 @@ spec:
               SONARR__LOG__LEVEL: info
               SONARR__SERVER__PORT: &port 80
               SONARR__UPDATE__BRANCH: develop
-              TZ: America/New_York
+              TZ: Europe/Paris
             envFrom: *envFrom
             probes:
               liveness: &probes
@@ -121,7 +121,19 @@ spec:
         type: emptyDir
       media:
         type: nfs
-        server: expanse.internal
-        path: /eros/Media
+        server: nas.g-eye.tech
+        path: /volume1/video/TVshows
         globalMounts:
           - path: /media
+      downloads:
+        type: nfs
+        server: nas.g-eye.tech
+        path: /volume1/downloads/complete
+        globalMounts:
+          - path: /downloads
+      backup:
+        type: nfs
+        server: nas.g-eye.tech
+        path: /volume1/CLOUDNATIVE1/Backups/sonarr
+        globalMounts:
+          - path: /config/Backups

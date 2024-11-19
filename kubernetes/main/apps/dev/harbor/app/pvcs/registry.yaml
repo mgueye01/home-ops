@@ -1,0 +1,15 @@
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: harbor-registry
+  labels:
+    app.kubernetes.io/name: harbor-registry
+    app.kubernetes.io/instance: harbor
+spec:
+  storageClassName: nfs-client
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
