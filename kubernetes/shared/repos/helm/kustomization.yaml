@@ -33,3 +33,7 @@ resources:
   - ./spegel.yaml
   - ./stakater.yaml
   - ./stevehipwell.yaml
+  - ./lwolf-charts.yaml
+  - ./drone-charts.yaml
+  - ./gitea-charts.yaml
+  - ./harbor-charts.yaml
