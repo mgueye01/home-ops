@@ -9,10 +9,10 @@ spec:
   chart:
     spec:
       chart: app-template
-      version: 2.6.0
+      version: 3.5.1
       sourceRef:
         kind: HelmRepository
-        name: bjw-s-charts
+        name: bjw-s
         namespace: flux-system
   install:
     remediation:
@@ -42,7 +42,7 @@ spec:
               - secretRef:
                   name: shlink-secret
         containers:
-          main:
+          shlink:
             image:
               repository: ghcr.io/shlinkio/shlink
               tag: 3.7.4-non-root@sha256:b6553353135346c094e116207fca14fb4d5ce91468e657af92e3e9e730d579e7
@@ -99,22 +99,22 @@ spec:
                 matchLabels:
                   app.kubernetes.io/name: *app
     service:
-      main:
+      app:
+        controller: *app
         ports:
           http:
-            port: *port
+            port: 8080
     ingress:
-      main:
-        enabled: true
+      app:
         className: external
         annotations:
           external-dns.alpha.kubernetes.io/target: external.g-eye.io
         hosts:
-          - host: *host
+          - host: &host "{{ .Release.Name }}.g-eye.io"
             paths:
               - path: /
                 service:
-                  name: main
+                  identifier: app
                   port: http
         tls:
           - hosts:
