@@ -6,11 +6,11 @@ metadata:
   name: nfs-subdir-external-provisioner
   namespace: flux-system
 spec:
-  path: ./kubernetes/apps/kube-system/nfs-subdir-external-provisioner/app
+  path: ./kubernetes/main/apps/kube-system/nfs-subdir-external-provisioner/app
   prune: true
   sourceRef:
     kind: GitRepository
-    name: home-ops-kubernetes
+    name: home-kubernetes
   wait: true
   interval: 30m
   retryInterval: 1m
