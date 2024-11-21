@@ -28,7 +28,7 @@ spec:
     keepHistory: false
   values:
     controllers:
-      main:
+      teslamate:
         annotations:
           reloader.stakater.com/auto: "true"
         initContainers:
@@ -137,7 +137,8 @@ spec:
           - hosts:
               - *host
     service:
-      main:
+      app:
+        controller: teslamate
         ports:
           http:
             port: *port
