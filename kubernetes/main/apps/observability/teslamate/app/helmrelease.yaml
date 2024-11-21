@@ -40,7 +40,7 @@ spec:
               - secretRef:
                   name: teslamate-secret
         containers:
-          main:
+          app:
             env:
               CHECK_ORIGIN: true
               DATABASE_HOST: postgres16-rw.database.svc.cluster.local
@@ -119,8 +119,7 @@ spec:
             runAsUser: 10000
             seccompProfile: { type: RuntimeDefault }
     ingress:
-      main:
-        enabled: true
+      app:
         className: internal
         hosts:
           - host: *host
