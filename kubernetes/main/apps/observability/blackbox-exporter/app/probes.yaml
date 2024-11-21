@@ -13,4 +13,4 @@ spec:
       static:
         - pikvm.g-eye.tech
         - nas.g-eye.tech
-        - homeassistant.local
+        - homeassistant.local:8123
