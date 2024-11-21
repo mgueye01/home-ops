@@ -30,7 +30,7 @@ spec:
       namespace: rook-ceph
   values:
     controllers:
-      main:
+      mosquitto:
         type: statefulset
         annotations:
           reloader.stakater.com/auto: "true"
@@ -46,7 +46,7 @@ spec:
                 "cp /tmp/secret/* /mosquitto/external_config/ && mosquitto_passwd -U /mosquitto/external_config/mosquitto_pwd",
               ]
         containers:
-          main:
+          app:
             image:
               repository: public.ecr.aws/docker/library/eclipse-mosquitto
               tag: 2.0.18
