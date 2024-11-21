@@ -34,4 +34,4 @@ resources:
   # - ./zwave/ks.yaml
   - ./shlink/ks.yaml
   - ./littlelinks/ks.yaml
-  - ./mosquitto/ks.yaml
+  # - ./mosquitto/ks.yaml
