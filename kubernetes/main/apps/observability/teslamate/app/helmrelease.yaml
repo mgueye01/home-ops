@@ -126,11 +126,11 @@ spec:
             paths:
               - path: /
                 service:
-                  name: main
+                  identifier: app
                   port: http
               - path: /api
                 service:
-                  name: api
+                  identifier: api
                   port: http
         tls:
           - hosts:
