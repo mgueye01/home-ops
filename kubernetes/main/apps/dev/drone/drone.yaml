@@ -19,7 +19,7 @@ spec:
   values:
     image:
       repository: drone/drone
-      tag: 2.24.0
+      tag: 2.25.0
     updateStrategy:
       type: Recreate
     # service:
