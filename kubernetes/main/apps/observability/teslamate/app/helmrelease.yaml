@@ -118,6 +118,13 @@ spec:
             runAsNonRoot: true
             runAsUser: 10000
             seccompProfile: { type: RuntimeDefault }
+    service:
+      app:
+        controller: teslamate
+        type: ClusterIP
+        ports:
+          http:
+            port: 4000
     ingress:
       app:
         className: internal
@@ -135,13 +142,6 @@ spec:
         tls:
           - hosts:
               - *host
-    service:
-      app:
-        controller: teslamate
-        type: ClusterIP
-        ports:
-          http:
-            port: &port
       api:
         controller: main
         ports:
