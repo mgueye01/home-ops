@@ -110,7 +110,7 @@ spec:
         annotations:
           external-dns.alpha.kubernetes.io/target: external.g-eye.io
         hosts:
-          - host: &host "{{ .Release.Name }}.g-eye.io"
+          - host: *host
             paths:
               - path: /
                 service:
