@@ -138,9 +138,10 @@ spec:
     service:
       app:
         controller: teslamate
+        type: ClusterIP
         ports:
           http:
-            port: *port
+            port: &port
       api:
         controller: main
         ports:
