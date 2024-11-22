@@ -7,8 +7,8 @@ metadata:
 spec:
   staticConfigs:
     - targets:
-        - expanse.internal:9100
-        - pikvm.internal:9100
+        # - expanse.internal:9100
+        - pikvm.g-eye.tech:9100
         # - voyager.internal:9100
   metricsPath: /metrics
   relabelings:
@@ -22,9 +22,19 @@ kind: ScrapeConfig
 metadata:
   name: &name pikvm
 spec:
+  scheme: HTTPS
+  tlsConfig:
+    insecureSkipVerify: true
+  basicAuth:
+    username:
+      key: "username"
+      name: alertmanager-secret
+    password:
+      key: "password"
+      name: alertmanager-secret
   staticConfigs:
     - targets:
-        - pikvm.internal
+        - pikvm.g-eye.tech
   metricsPath: /api/export/prometheus/metrics
   relabelings:
     - action: replace
@@ -35,13 +45,27 @@ spec:
 apiVersion: monitoring.coreos.com/v1alpha1
 kind: ScrapeConfig
 metadata:
-  name: &name zigbee-controller
+  name: environment
 spec:
   staticConfigs:
-    - targets:
-        - zigbee-controller.internal
-  metricsPath: /metrics
-  relabelings:
-    - action: replace
-      targetLabel: job
-      replacement: *name
+    - targets: ["192.168.0.94:8000"]
+      labels:
+        group: "environment"
+        location: "Office"
+
+
+# ---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/scrapeconfig_v1alpha1.json
+# apiVersion: monitoring.coreos.com/v1alpha1
+# kind: ScrapeConfig
+# metadata:
+#   name: &name zigbee-controller
+# spec:
+#   staticConfigs:
+#     - targets:
+#         - zigbee-controller.internal
+#   metricsPath: /metrics
+#   relabelings:
+#     - action: replace
+#       targetLabel: job
+#       replacement: *name
