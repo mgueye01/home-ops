@@ -31,22 +31,22 @@ spec:
       annotations:
         kubernetes.io/ingress.class: internal
       hosts:
-        - host: drone.${SECRET_DOMAIN}
+        - host: drone.g-eye.io
           paths:
             - path: /
               pathType: Prefix
       tls:
         - hosts:
-            - drone.${SECRET_DOMAIN}
+            - drone.g-eye.io
     env:
       DRONE_DATABASE_DRIVER: postgres
       DRONE_DATABASE_DATASOURCE: postgres://postgres:${SECRET_DRONE_POSTGRESQL_PASSWORD}@postgres16-rw.database/postgres?sslmode=disable
-      DRONE_SERVER_HOST: drone.${SECRET_DOMAIN}
+      DRONE_SERVER_HOST: drone.g-eye.io
       DRONE_SERVER_PROXY_HOST: drone.drone.svc:8080
       DRONE_SERVER_PROXY_PROTO: http
       DRONE_SERVER_PROTO: https
       DRONE_GIT_ALWAYS_AUTH: true
-      DRONE_GITEA_SERVER: https://gitea.${SECRET_DOMAIN}
+      DRONE_GITEA_SERVER: https://gitea.g-eye.io
       DRONE_USER_CREATE: username:context,admin:true
       DRONE_LOGS_TEXT: true
       DRONE_LOGS_PRETTY: true

@@ -74,14 +74,19 @@ spec:
           DEFAULT_BRANCH: main
           DEFAULT_PRIVATE: true
         database:
-          DB_TYPE: sqlite3
-          # DB_TYPE: postgres
-          # HOST: postgres-rw.database.svc.cluster.local:5432
-          # NAME: gitea
-          # USER: gitea
-          # PASSWD:
+          DB_TYPE: postgres
+          HOST: postgres16-rw.database.svc.cluster.local:5432
+          NAME: gitea
+          SCHEMA: public
+          SSL_MODE: disable
         webhook:
           ALLOWED_HOST_LIST: "*"
+        cache:
+          ADAPTER: redis
+          HOST: redis://redis-headless.database.svc.cluster.local:6379
+        session:
+          PROVIDER: redis
+          PROVIDER_CONFIG: redis://redis-headless.database.svc.cluster.local:6379
         service:
           DISABLE_REGISTRATION: false
           ALLOW_ONLY_EXTERNAL_REGISTRATION: true
@@ -106,7 +111,13 @@ spec:
           SMTP_ADDR: smtp.eu.mailgun.org:587
           SMTP_PORT: 25
           FROM: "Admin <postmaster@g-eye.io>"
-        openid:
+        # mailer:
+        #   ENABLED: true
+        #   MAILER_TYPE: smtp
+        #   SMTP_ADDR: smtp-relay.default
+        #   SMTP_PORT: 25
+        #   FROM: "Gitea <gitea@g-eye.io>"
+        # openid:
           ENABLE_OPENID_SIGNIN: false
           ENABLE_OPENID_SIGNUP: true
           WHITELISTED_URIS: auth.g-eye.io
@@ -143,3 +154,28 @@ spec:
       kind: Secret
       name: gitea-config-secret
       valuesKey: minioSecretAccessKey
+    - targetPath: gitea.config.database.PASSWD
+      kind: Secret
+      name: gitea-secret
+      valuesKey: GITEA_POSTGRES_PASSWORD
+    - targetPath: gitea.config.database.USER
+      kind: Secret
+      name: gitea-config-secret
+      valuesKey: GITEA_POSTGRES_USERNAME
+  postRenderers:
+    - kustomize:
+        patches:
+          - kind: Deployment
+            apiVersion: apps/v1
+            metadata:
+              name: gitea
+            spec:
+              template:
+                spec:
+                  initContainers:
+                    - name: 01-init-db
+                      image: ghcr.io/onedr0p/postgres-init:16.6
+                      imagePullPolicy: IfNotPresent
+                      envFrom:
+                        - secretRef:
+                            name: gitea-config-secret
