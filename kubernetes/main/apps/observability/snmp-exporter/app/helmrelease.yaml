@@ -32,7 +32,7 @@ spec:
       params:
         - name: synology
           module: ["synology"]
-          target: 192.168.0.18
+          target: nas.g-eye.tech
           auth: ["public_v2"]
       path: /snmp
       scrapeTimeout: 10s
