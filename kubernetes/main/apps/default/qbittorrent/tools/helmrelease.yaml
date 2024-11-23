@@ -142,8 +142,8 @@ spec:
             readOnly: true
       media:
         type: nfs
-        server: expanse.internal
-        path: /eros/Media
+        server: nas.g-eye.tech
+        path: /volume1/video
         advancedMounts:
           orphaned:
             app:
