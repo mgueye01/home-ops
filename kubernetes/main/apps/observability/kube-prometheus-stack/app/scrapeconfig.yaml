@@ -22,16 +22,9 @@ kind: ScrapeConfig
 metadata:
   name: &name pikvm
 spec:
-  scheme: HTTPS
-  tlsConfig:
-    insecureSkipVerify: true
-  basicAuth:
-    username:
-      key: "username"
-      name: alertmanager-secret
-    password:
-      key: "password"
-      name: alertmanager-secret
+  # scheme: HTTPS
+  # tlsConfig:
+  #   insecureSkipVerify: true
   staticConfigs:
     - targets:
         - pikvm.g-eye.tech
