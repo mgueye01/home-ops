@@ -36,7 +36,7 @@ spec:
               repository: ghcr.io/onedr0p/qbittorrent-beta
               tag: 5.0.2@sha256:adfd625f9cc7226eabad8aa117a551d42d5818c914850ef7fa3be60111383107
             env:
-              TZ: America/New_York
+              TZ: Europe/Paris
               QBT_WEBUI_PORT: &port 80
               QBT_TORRENTING_PORT: &torrentPort 50413
               CROSS_SEED_ENABLED: false
@@ -92,7 +92,7 @@ spec:
         controller: qbittorrent
         type: LoadBalancer
         annotations:
-          lbipam.cilium.io/ips: 192.168.42.122
+          lbipam.cilium.io/ips: 192.168.10.88
         ports:
           http:
             port: *port
@@ -125,8 +125,8 @@ spec:
           - readOnly: true
       media:
         type: nfs
-        server: expanse.internal
-        path: /eros/Media
+        server: nas.g-eye.tech
+        path: /volume1/video
         globalMounts:
           - path: /media/Downloads/qbittorrent
             subPath: Downloads/qbittorrent
