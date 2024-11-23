@@ -129,5 +129,5 @@ spec:
         server: nas.g-eye.tech
         path: /volume1/music
         globalMounts:
-          - path: /media/Downloads/soulseek
-            subPath: Downloads/soulseek
+          - path: /media/Downloads
+            subPath: Downloads
