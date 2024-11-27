@@ -5,12 +5,12 @@ alertmanager:
     - name: home
       uri: http://alertmanager-operated.observability.svc.cluster.local:9093
       timeout: 10s
-      healthcheck:
-        visible: false
-        filters:
-          alertmanager:
-            - alertname=Watchdog
-            - prometheus=monitoring/kube-prometheus-stack
+      # healthcheck:
+      #   visible: false
+      #   filters:
+      #     alertmanager:
+      #       - alertname=Watchdog
+      #       - prometheus=monitoring/kube-prometheus-stack
 filters:
   default:
     - "@state!=suppressed"
