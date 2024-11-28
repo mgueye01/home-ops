@@ -124,11 +124,11 @@ spec:
         server: nas.g-eye.tech
         path: /volume1/video/TVshows
         globalMounts:
-          - path: /media
+          - path: /media/TVshows
       downloads:
         type: nfs
         server: nas.g-eye.tech
-        path: /volume1/downloads/complete
+        path: /volume1/video/Downloads/sabnzbd
         globalMounts:
           - path: /downloads
       backup:
