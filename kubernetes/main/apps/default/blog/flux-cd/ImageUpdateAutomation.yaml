@@ -7,7 +7,7 @@ spec:
   interval: 30m
   sourceRef:
     kind: GitRepository
-    name: home-ops-kubernetes
+    name: home-kubernetes
   git:
     checkout:
       ref:
@@ -20,5 +20,5 @@ spec:
     push:
       branch: main
   update:
-    path: ./kubernetes/apps/default/blog
+    path: ./kubernetes/main/apps/default/blog
     strategy: Setters
