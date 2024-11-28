@@ -36,6 +36,7 @@ spec:
       ingressClassName: internal
       annotations:
         ingress.home.arpa/type: "internal"
+        external-dns.alpha.kubernetes.io/target: internal.g-eye.io
       hosts:
         - host: &host gitea.g-eye.io
           paths:
@@ -47,6 +48,12 @@ spec:
     memcached:
       enabled: false
     postgresql:
+      enabled: false
+    redis-cluster:
+      enabled: false
+    redis:
+      enabled: false
+    postgresql-ha:
       enabled: false
     persistence:
       enabled: true
