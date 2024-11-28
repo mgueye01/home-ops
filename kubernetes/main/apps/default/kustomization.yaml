@@ -9,7 +9,7 @@ resources:
   - ./atuin/ks.yaml
   - ./autobrr/ks.yaml
   - ./bazarr/ks.yaml
-  - ./cross-seed/ks.yaml
+  # - ./cross-seed/ks.yaml
   - ./echo-server/ks.yaml
   # - ./filebrowser/ks.yaml
   # - ./home-assistant/ks.yaml
@@ -33,3 +33,5 @@ resources:
   - ./shlink/ks.yaml
   - ./littlelinks/ks.yaml
   - ./mosquitto/ks.yaml
+  - ./changedetection/ks.yaml
+  - blog

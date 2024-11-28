@@ -25,6 +25,8 @@ spec:
         - name: buildkitd
           image: moby/buildkit:v0.18.0
           args:
+            - --root
+            - /cache
             - --addr
             - unix:///run/buildkit/buildkitd.sock
             - --addr
