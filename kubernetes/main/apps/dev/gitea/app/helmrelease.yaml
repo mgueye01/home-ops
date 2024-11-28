@@ -35,7 +35,7 @@ spec:
       enabled: true
       ingressClassName: internal
       annotations:
-        ingress.home.arpa/type: "internal"
+        external-dns.alpha.kubernetes.io/target: internal.g-eye.io
       hosts:
         - host: &host gitea.g-eye.io
           paths:
@@ -47,6 +47,12 @@ spec:
     memcached:
       enabled: false
     postgresql:
+      enabled: false
+    redis-cluster:
+      enabled: false
+    redis:
+      enabled: false
+    postgresql-ha:
       enabled: false
     persistence:
       enabled: true
@@ -68,8 +74,6 @@ spec:
           LFS_START_SERVER: true
         admin:
           DISABLE_REGULAR_ORG_CREATION: true
-        ui:
-          DEFAULT_THEME: arc-green
         repository:
           DEFAULT_BRANCH: main
           DEFAULT_PRIVATE: true
@@ -117,7 +121,11 @@ spec:
         #   SMTP_ADDR: smtp-relay.default
         #   SMTP_PORT: 25
         #   FROM: "Gitea <gitea@g-eye.io>"
-        # openid:
+        actions:
+          enabled: true
+        ui:
+          DEFAULT_THEME: gitea-dark
+        openid:
           ENABLE_OPENID_SIGNIN: false
           ENABLE_OPENID_SIGNUP: true
           WHITELISTED_URIS: auth.g-eye.io
