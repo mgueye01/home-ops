@@ -33,3 +33,4 @@ resources:
   - ./shlink/ks.yaml
   - ./littlelinks/ks.yaml
   - ./mosquitto/ks.yaml
+  - ./changedetection/ks.yaml
