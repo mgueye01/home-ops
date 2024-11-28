@@ -4,10 +4,7 @@ kind: Kustomization
 namespace: drone
 resources:
   - ./namespace.yaml
-  - drone-runner.yaml
-  - drone-secrets.yaml
-  - drone.yaml
-  - limit-range.yaml
-  # - secret.sops.yaml
-# patchesStrategicMerge:
-#   - patches/postgres.yaml
+  - ./drone-runner.yaml
+  - ./drone-secrets.yaml
+  - ./drone.yaml
+  - ./drone-secrets.sops.yaml

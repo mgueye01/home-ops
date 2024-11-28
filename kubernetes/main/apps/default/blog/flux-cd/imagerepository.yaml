@@ -5,7 +5,7 @@ metadata:
   name: blog
   namespace: flux-system
 spec:
-  image: harbor.g-eye.io/mgueye01/blog
+  image: harbor.g-eye.io/tapha/blog
   interval: 1m
   secretRef:
     name: regcred
