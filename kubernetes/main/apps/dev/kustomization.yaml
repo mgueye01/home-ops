@@ -6,4 +6,4 @@ resources:
   - ./gitea/ks.yaml
   - ./harbor/ks.yaml
   - drone
-  - buildkit
+  - ./buildkit/ks.yaml
