@@ -4,4 +4,4 @@ kind: Kustomization
 namespace: dev
 resources:
   - ./secret.sops.yaml
-  - deployment+service.privileged.yaml
+  - ./helmrelease.yaml
