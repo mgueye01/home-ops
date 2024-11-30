@@ -33,8 +33,8 @@ spec:
               - --tlskey
               - /certs/key.pem
             image:
-              repository: moby/buildkit
-              tag: master
+              repository: ghcr.io/vaskozl/buildkit
+              tag: 0.17.2@sha256:d3ab92931e8a08cc3ae480303b594ad40708221f0dc58c87d5694feb26dbfb78
             probes:
               liveness:
                 enabled: true
