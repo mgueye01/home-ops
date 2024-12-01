@@ -7,4 +7,4 @@ resources:
   - ./namespace.yaml
   # Flux-Kustomizations
   - ./addons/ks.yaml
-  - ./regcred.sops.yaml
+  # - ./regcred.sops.yaml
