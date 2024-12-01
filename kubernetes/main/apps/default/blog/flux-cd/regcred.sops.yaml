@@ -5,7 +5,7 @@ metadata:
     namespace: default
 type: kubernetes.io/dockerconfigjson
 data:
-    .dockerconfigjson: ENC[AES256_GCM,data:A3ntNUUkVyRZLpT38Hy3D5wiWL1v4fEEtqg0786IF6dL6vZ0yNLS3uGn4joxqrxSVkZkQuTZ8IIMDL2ULVspiY2PAGNUnZiSk/hVP3IV67/SSXIcsrmQm8DyYZDHk1OFbHXOWnRlvhXb/GWYnWpQoV7O6/G4YreHVMuihd4kAxAqOz3+1F2CfwUIstlRXB2yLxgVFFp2eoiAJNoWylltyog5WldiLjsJLCHXy59BoZsEVm+PbFuoP5Mn7kvi9yMJjddiY/9chyfVU24EeDQwVlLRAiTKWzdycCEyozhf0DRE1uiaLnzCLHlXnn4Fe9oES69sQ0zo2rNRDei+4AqWMcXM1Tu7dhQe1kbi,iv:oXRXJADeoHLqF0+5IzWx8AFuD8makrWZfSBruZ5ybQI=,tag:cyKc9Jg/yagYyfdHRWrvVQ==,type:str]
+    .dockerconfigjson: ENC[AES256_GCM,data:piMk+7QPeSkwm/j+osb0fV1bFSbI0oECpnUo/niW1kdwpkYQelmqtIvVQcsfpLbeORzvaEyCwNZAhfqwG3/0htJHKOC8XisqaLhd4jTB2Gl0TF4ERmgL4WuV4i53MDHUSPwkP4pV7XA10TPKrgfJPjidjMKzqgqBC0jhhXrL/6bSkyMEr8//W/4NsucJ0GUoV7Z5UPP+vR0CfRE6ioIR7Az0OHq9cpsWSfCtJ0i+lo2342DXL12DcKotzIjDH9dCR61fMsTq4OM6ZflsqOd5/moIDGrWTAa2eawhRRyTCZ55i5rTwAiFu7dl1LakZSeX8jxZQ6PHzbBfBvnJhjYei+eGQQINfLrkKPym+9S29t678Lbc,iv:JQlWTzJYf4lVyCkiZB03Na7iXR6BXdZaKCH/itIpxLU=,tag:utb/qhDpLFQGyGX/hZtdMw==,type:str]
 sops:
     kms: []
     gcp_kms: []
@@ -21,8 +21,8 @@ sops:
             RzFkclcrRkpQM2ZZdFVIZ05CQ0UyR3MKWw12SjpEgFHqL1qpgdlTcK4dTNmAa4hG
             pgvhAjROgFGw5rx4VX/jr336BynIqEIQhISpXuxk+ZX/GiHAmdVYUg==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2024-12-01T00:23:21Z"
-    mac: ENC[AES256_GCM,data:lxy5KF6Pk1QsVLJIghDafCdg1ZRhqiIvGOx7CuJsIAuZZfABh9FActZROxpccksVx6/sV3mGFmvXrgfL+L137iX9pbazrEz7/ty/uHVT1AR7K+u4FtwoVZ+VpPwOyJnLbTG5Dvk1OFVZ+CXaVKRfE/aLuuXIyhys+ti+A8qrG54=,iv:ixfJYVGWoexuJEq6c6v57QLmn4F06iLFUz3b4jMDMUM=,tag:luuTGj6Sdu0q34DBZ2ik4Q==,type:str]
+    lastmodified: "2024-12-01T00:52:24Z"
+    mac: ENC[AES256_GCM,data:xFzOkXZgDFPNcXRvD3pmo7eSaw70K3r8P67M3U345eVl70BR0/fqNJkmdt+XJH4bq66+xRQFIibI/AFtYtgOVi9rPpCWND3Wxhkp6E6x/mjRCS0ABnjQeF2F0mOO0jRvdayrw23J+10O9QUHYphWTuDjUog1LwpIgKi1LKCZ8UY=,iv:7LsJ4UPqVNB9k2xctxqQjAdygMpEqH6H4K940M8xrDE=,tag:6+4C4nQstjCvHeSApTHgIw==,type:str]
     pgp: []
     encrypted_regex: ^(data|stringData)$
     version: 3.9.1
