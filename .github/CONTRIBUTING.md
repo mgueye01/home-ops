@@ -13,7 +13,7 @@ First, fork the [repository](https://github.com/onedr0p/home-ops) to your own Gi
 2. Clone the Repository
 
     ```sh
-    git clone https://github.com/onedr0p/home-ops
+    git clone https://github.com/mgueye01/home-ops
     ```
 
 3. Navigate to the project directory 📁

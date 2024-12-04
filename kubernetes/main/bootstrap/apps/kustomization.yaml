@@ -7,16 +7,16 @@ kind: Kustomization
 resources:
   - github.com/fluxcd/flux2/manifests/install?ref=v2.4.0
 patches:
-  # Remove image automation and image reflector controllers
-  - patch: |
-      $patch: delete
-      apiVersion: apps/v1
-      kind: Deployment
-      metadata:
-        name: all
-    target:
-      kind: Deployment
-      name: (image-automation-controller|image-reflector-controller)
+  # # Remove image automation and image reflector controllers
+  # - patch: |
+  #     $patch: delete
+  #     apiVersion: apps/v1
+  #     kind: Deployment
+  #     metadata:
+  #       name: all
+  #   target:
+  #     kind: Deployment
+  #     name: (image-automation-controller|image-reflector-controller)
   # Remove the built-in network policies
   - patch: |
       $patch: delete
