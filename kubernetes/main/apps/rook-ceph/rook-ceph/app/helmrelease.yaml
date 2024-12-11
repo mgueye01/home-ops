@@ -32,6 +32,11 @@ spec:
       enableLiveness: true
       serviceMonitor:
         enabled: true
+      pluginTolerations:
+        - effect: "NoExecute"
+          operator: "Exists"
+        - effect: "NoSchedule"
+          operator: "Exists"
     monitoring:
       enabled: true
     resources:
