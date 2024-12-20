@@ -33,10 +33,7 @@ spec:
         - host: "headlamp.g-eye.io"
           paths:
             - path: /
-              pathType: Prefix
-              service:
-                name: headlamp
-                port: 80
+              type: ImplementationSpecific
     config:
       pluginsDir: /build/plugins
     initContainers:
