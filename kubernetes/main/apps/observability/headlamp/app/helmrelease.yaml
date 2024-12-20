@@ -25,12 +25,18 @@ spec:
   values:
     ingress:
       enabled: true
-      ingressClassName: internal
+      annotations:
+        external-dns.alpha.kubernetes.io/target: internal.g-eye.io
+        hajimari.io/icon: mdi:kubernetes
+      className: internal
       hosts:
-        - host: headlamp.g-eye.io
+        - host: "headlamp.g-eye.io"
           paths:
             - path: /
-              type: ImplementationSpecific
+              pathType: Prefix
+              service:
+                name: headlamp
+                port: 80
     config:
       pluginsDir: /build/plugins
     initContainers:
