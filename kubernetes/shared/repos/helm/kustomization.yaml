@@ -38,3 +38,4 @@ resources:
   - ./drone-charts.yaml
   - ./gitea-charts.yaml
   - ./harbor-charts.yaml
+  - ./headlamp.yaml
