@@ -35,3 +35,4 @@ resources:
   - ./mosquitto/ks.yaml
   - ./changedetection/ks.yaml
   - blog
+  - ./kometa/ks.yaml
