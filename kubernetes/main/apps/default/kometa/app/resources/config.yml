@@ -1,5 +1,5 @@
 libraries:
-  Filme:
+  Movies:
     split_duplicates: true
     schedule: hourly(1)
     collection_files:
@@ -10,14 +10,6 @@ libraries:
     - file: config/6-studios.yml
     - file: config/9-imdb.yml
     - file: config/98-movie.yml
-  Serien:
-    schedule: hourly(0)
-    collection_files:
-    - file: config/2-tvcharts.yml
-    - file: config/7-networks.yml
-    - file: config/8-tv.yml
-  Filme-4K:
-    schedule: hourly(6),hourly(18)
     overlay_files:
     - remove_overlays: false
     - file: config/99-overlays.yml
@@ -26,7 +18,12 @@ libraries:
         4K-HDR: true
         4K-Dolby: true
         4K-Episode: false
-  Serien-4K:
+  TV Shows:
+    schedule: hourly(0)
+    collection_files:
+    - file: config/2-tvcharts.yml
+    - file: config/7-networks.yml
+    - file: config/8-tv.yml
     schedule: hourly(6),hourly(18)
     overlay_files:
     - remove_overlays: false
