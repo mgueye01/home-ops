@@ -1,0 +1,96 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app open-webui
+  namespace: default
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 3.6.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  maxHistory: 2
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    controllers:
+      open-webui:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/open-webui/open-webui
+              tag: v0.5.3
+            env:
+              WEBUI_NAME: Open WebUI Chat
+              WEBUI_URL: https://chatgpt.g-eye.io
+              DATA_DIR: /data
+              ENABLE_OLLAMA_API: "false"
+              ENABLE_OPENAI_API: "true"
+              ENABLE_EVALUATION_ARENA_MODELS: "false"
+              RAG_EMBEDDING_ENGINE: openai
+              RAG_EMBEDDING_MODEL: text-embedding-3-small
+              ENABLE_RAG_WEB_SEARCH: "true"
+            envFrom:
+              - secretRef:
+                  name: openwebui-secret
+            resources:
+              requests:
+                cpu: 200m
+                memory: 2Gi
+              limits:
+                memory: 2Gi
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: &port 8080
+
+    ingress:
+      app:
+        enabled: true
+        className: internal
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/group: Home
+          gethomepage.dev/name: "ChatGPT"
+          gethomepage.dev/icon: sh-open-webui
+          gethomepage.dev/description: "Open WebUI"
+          gethomepage.dev/href: "https://chatgpt.g-eye.io"
+        hosts:
+          - host: &host chatgpt.g-eye.io
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: *port
+        tls:
+          - hosts:
+              - *host
+            secretName: chatgpt-tls-internal
+    persistence:
+      config:
+        enabled: true
+        existingClaim: *app
+        globalMounts:
+          - path: /data
+      tmp:
+        enabled: true
+        type: emptyDir
+        medium: Memory
+        globalMounts:
+          - path: /tmp
