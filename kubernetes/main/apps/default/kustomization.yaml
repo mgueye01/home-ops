@@ -36,3 +36,5 @@ resources:
   - ./changedetection/ks.yaml
   - blog
   - ./kometa/ks.yaml
+  - ./n8n/ks.yaml
+  - ./open-webui/ks.yaml
