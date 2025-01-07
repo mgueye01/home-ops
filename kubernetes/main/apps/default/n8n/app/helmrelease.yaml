@@ -95,6 +95,10 @@ spec:
     ingress:
       app:
         annotations:
+          nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
+          nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+          nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+          nginx.ingress.kubernetes.io/proxy-body-size: "512m"
           external-dns.alpha.kubernetes.io/target: internal.g-eye.io
         className: internal
         hosts:
