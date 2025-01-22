@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: lelabodamad-web
-          image: harbor.g-eye.io/tapha/lelabodamad-web:0.2
+          image: harbor.g-eye.io/tapha/lelabodamad-web:0.6
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
@@ -45,6 +45,12 @@ spec:
                 secretKeyRef:
                   name: lelabodamad-secret
                   key: MAILGUN_DOMAIN
+            - name: NEXT_PUBLIC_GTM_ID
+              valueFrom:
+                secretKeyRef:
+                  name: lelabodamad-secret
+                  key: NEXT_PUBLIC_GTM_ID
+
           readinessProbe:
             httpGet:
               path: /
