@@ -33,7 +33,7 @@ spec:
           app:
             image:
               repository: ghcr.io/open-webui/open-webui
-              tag: 0.5.6
+              tag: 0.5.7
             env:
               WEBUI_NAME: Open WebUI Chat
               WEBUI_URL: https://chatgpt.g-eye.io
