@@ -1,0 +1,82 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app ollama
+  namespace: default
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 3.6.1
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  maxHistory: 2
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    controllers:
+      main:
+        type: deployment
+        annotations:
+          reloader.stakater.com/auto: "true"
+        pod:
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: intel.feature.node.kubernetes.io/gpu
+                        operator: In
+                        values:
+                          - "true"
+          nodeSelector:
+            intel.feature.node.kubernetes.io/gpu: "true"
+        containers:
+          main:
+            image:
+              repository: docker.io/ollama/ollama
+              tag: 0.5.7-rocm
+            env:
+              TZ: Europe/Paris
+              # LIBVA_DRIVER_NAME: i965
+              OLLAMA_HOST: 0.0.0.0
+              OLLAMA_ORIGINS: "*"
+              OLLAMA_MODELS: /models
+              HSA_OVERRIDE_GFX_VERSION: "11.0.0"
+            resources:
+              requests:
+                cpu: 200m
+                memory: 4Gi
+                gpu.intel.com/i915: "1"
+              limits:
+                memory: 8Gi
+                gpu.intel.com/i915: "1"
+    service:
+      main:
+        controller: main
+        ports:
+          http:
+            port: &port 11434
+    persistence:
+      config:
+        enabled: true
+        type: persistentVolumeClaim
+        size: 50Gi
+        storageClass: ceph-block
+        accessMode: ReadWriteOnce
+        retain: true
+        advancedMounts:
+          main:
+            main:
+              - path: /models
