@@ -38,4 +38,4 @@ resources:
   - ./kometa/ks.yaml
   - ./n8n/ks.yaml
   - ./open-webui/ks.yaml
-  # - ./ollama/ks.yaml
+  - ./ollama/ks.yaml
