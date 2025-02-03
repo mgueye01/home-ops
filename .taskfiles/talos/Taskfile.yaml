@@ -193,15 +193,21 @@ tasks:
   down:
     internal: true
     cmds:
-      - until kubectl wait cephcluster --for=jsonpath=.status.ceph.health=HEALTH_OK --timeout=10m --all --all-namespaces &>/dev/null; do sleep 5; done
-      - until kubectl wait jobs --all --all-namespaces --for=condition=complete --timeout=5m &>/dev/null; do sleep 5; done
+      - |
+        if [[ -n "${IP:-}" ]]; then
+          kubectl drain {{.IP}} --ignore-daemonsets --delete-emptydir-data --force --grace-period=60 || true
+        fi
+      - until kubectl wait cephcluster --for=jsonpath=.status.ceph.health=HEALTH_OK --timeout=10m --all --all-namespaces &>/dev/null; do sleep 10; done
+      - until kubectl wait jobs --all --all-namespaces --for=condition=complete --timeout=5m &>/dev/null; do sleep 10; done
     preconditions:
       - which kubectl
 
   up:
     internal: true
     cmds:
-      - until kubectl wait cephcluster --for=jsonpath=.status.ceph.health=HEALTH_OK --timeout=10m --all --all-namespaces &>/dev/null; do sleep 5; done
-      - until kubectl wait jobs --all --all-namespaces --for=condition=complete --timeout=5m &>/dev/null; do sleep 5; done
+      - until kubectl wait nodes --all --for=condition=ready --timeout=10m &>/dev/null; do sleep 10; done
+      - until kubectl wait pods --all --all-namespaces --for=condition=ready --timeout=10m &>/dev/null; do sleep 10; done
+      - until kubectl wait cephcluster --for=jsonpath=.status.ceph.health=HEALTH_OK --timeout=10m --all --all-namespaces &>/dev/null; do sleep 10; done
+      - until kubectl wait jobs --all --all-namespaces --for=condition=complete --timeout=5m &>/dev/null; do sleep 10; done
     preconditions:
       - which kubectl
