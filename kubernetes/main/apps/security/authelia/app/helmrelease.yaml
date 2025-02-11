@@ -4,6 +4,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: &app authelia
+  namespace: security
 spec:
   interval: 30m
   chart:
@@ -98,9 +99,6 @@ spec:
     service:
       app:
         controller: authelia
-        labels:
-          app.kubernetes.io/name: *app
-          app.kubernetes.io/instance: *app
         ports:
           http:
             port: *port
@@ -132,9 +130,6 @@ spec:
                 service:
                   identifier: app
                   port: http
-        tls:
-          - hosts:
-              - *host
 
     persistence:
       config:
