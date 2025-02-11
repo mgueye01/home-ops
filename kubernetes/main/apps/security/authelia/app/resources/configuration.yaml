@@ -32,7 +32,7 @@ session:
   cookies:
     - name: g-eye_session
       domain: g-eye.io
-      authelia_url: https://auth.g-eye.io
+      authelia_url: https://login.g-eye.io
       default_redirection_url: https://g-eye.io
   redis:
     # database_index: 2
