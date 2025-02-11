@@ -114,7 +114,7 @@ spec:
             scrapeTimeout: 10s
     ingress:
       app:
-        className: nginx-external
+        className: external
         annotations:
           external-dns.alpha.kubernetes.io/target: external.g-eye.io
           nginx.ingress.kubernetes.io/configuration-snippet: |
