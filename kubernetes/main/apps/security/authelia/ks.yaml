@@ -6,7 +6,7 @@ metadata:
   name: &app authelia
   namespace: flux-system
 spec:
-  targetNamespace: security
+  targetNamespace: default
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
