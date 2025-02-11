@@ -98,6 +98,9 @@ spec:
     service:
       app:
         controller: authelia
+        labels:
+          app.kubernetes.io/name: *app
+          app.kubernetes.io/instance: *app
         ports:
           http:
             port: *port
@@ -129,6 +132,9 @@ spec:
                 service:
                   identifier: app
                   port: http
+        tls:
+          - hosts:
+              - *host
 
     persistence:
       config:
