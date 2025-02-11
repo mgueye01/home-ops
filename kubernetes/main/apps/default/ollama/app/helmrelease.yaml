@@ -46,7 +46,7 @@ spec:
           main:
             image:
               repository: docker.io/ollama/ollama
-              tag: 0.5.7-rocm
+              tag: 0.5.8-rocm
             env:
               TZ: Europe/Paris
               # LIBVA_DRIVER_NAME: i965
