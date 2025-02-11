@@ -122,7 +122,6 @@ spec:
             add_header Pragma "no-cache";
             add_header X-Frame-Options "SAMEORIGIN";
             add_header X-XSS-Protection "1; mode=block";
-          kubernetes.io/ingress.class: external
         hosts:
           - host: &host auth.g-eye.io
             paths:
