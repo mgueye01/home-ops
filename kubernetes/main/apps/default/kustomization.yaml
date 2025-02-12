@@ -9,7 +9,7 @@ resources:
   - ./atuin/ks.yaml
   - ./autobrr/ks.yaml
   - ./bazarr/ks.yaml
-  - ./blog/ks.yaml
+  - ./blog
   - ./byamad/ks.yaml
   - ./changedetection/ks.yaml
   - ./crawl4ai/ks.yaml
@@ -22,7 +22,7 @@ resources:
   - ./miniflux/ks.yaml
   - ./mosquitto/ks.yaml
   - ./n8n/ks.yaml
-  - ./ollama/ks.yaml
+  # - ./ollama/ks.yaml
   - ./omegabrr/ks.yaml
   - ./open-webui/ks.yaml
   - ./overseerr/ks.yaml

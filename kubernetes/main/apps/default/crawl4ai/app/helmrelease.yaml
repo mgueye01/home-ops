@@ -31,8 +31,8 @@ spec:
         containers:
           app:
             image:
-              repository: unclecode/crawl4ai:basic
-              tag: latest
+              repository: unclecode/crawl4ai
+              tag: basic
             env:
               TZ: Europe/Paris
             resources:
