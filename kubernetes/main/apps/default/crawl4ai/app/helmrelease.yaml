@@ -32,7 +32,7 @@ spec:
           app:
             image:
               repository: unclecode/crawl4ai
-              tag: basic
+              tag: basic-amd64
             env:
               TZ: Europe/Paris
             resources:
