@@ -35,6 +35,11 @@ spec:
               tag: basic-amd64
             env:
               TZ: Europe/Paris
+              CRAWL4AI_API_TOKEN:
+                valueFrom:
+                  secretKeyRef:
+                    name: crawl4ai-secret
+                    key: CRAWL4AI_API_TOKEN
             resources:
               requests:
                 cpu: 10m
