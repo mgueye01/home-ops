@@ -57,6 +57,7 @@ spec:
           - host: &host crawl4ai.g-eye.io
             paths:
               - path: /
+                pathType: Prefix
                 service:
                   name: main
                   port: *port
