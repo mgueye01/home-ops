@@ -98,8 +98,6 @@ spec:
     service:
       app:
         controller: authelia
-        annotations:
-          external-dns.alpha.kubernetes.io/target: external.g-eye.io
         ports:
           http:
             port: *port
@@ -116,7 +114,6 @@ spec:
             scrapeTimeout: 10s
     ingress:
       app:
-        enabled: true
         className: external
         annotations:
           external-dns.alpha.kubernetes.io/target: external.g-eye.io
@@ -129,14 +126,12 @@ spec:
           - host: &host auth.g-eye.io
             paths:
               - path: /
-                pathType: Prefix
                 service:
                   identifier: app
                   port: http
         tls:
           - hosts:
               - *host
-            secretName: auth-g-eye-io-tls
 
     persistence:
       config:
