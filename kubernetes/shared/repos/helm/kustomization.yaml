@@ -6,6 +6,7 @@ namespace: flux-system
 resources:
   - ./actions-runner-controller.yaml
   - ./backube.yaml
+  - ./backstage.yaml
   - ./bitnami.yaml
   - ./bjw-s.yaml
   - ./cilium.yaml
