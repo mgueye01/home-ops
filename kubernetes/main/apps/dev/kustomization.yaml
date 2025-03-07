@@ -7,3 +7,4 @@ resources:
   - ./harbor/ks.yaml
   - drone
   - ./buildkit/ks.yaml
+  - ./backstage/ks.yaml
