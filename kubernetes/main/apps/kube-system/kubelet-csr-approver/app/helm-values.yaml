@@ -1,4 +1,0 @@
----
-# providerRegex: ^worker\d$
-providerRegex: ^(master\d+|worker\d+)$
-bypassDnsResolution: true
