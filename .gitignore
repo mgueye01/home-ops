@@ -1,12 +1,6 @@
-/.bin/
-/.go/
 /.private/
 /.task/
 /.venv/
-/scripts/
-*.secret.env
-*.secret.yaml
-*.sops.yaml.j2
 *.crt
 *.key
 .decrypted~*
@@ -14,4 +8,5 @@
 Brewfile.lock.json
 Thumbs.db
 kubeconfig
+onepassword.env
 talosconfig

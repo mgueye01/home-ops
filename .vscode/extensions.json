@@ -8,8 +8,6 @@
         "redhat.ansible",
         "redhat.vscode-yaml",
         "will-stone.in-any-case",
-        "BriteSnow.vscode-toggle-quotes",
-        "HashiCorp.terraform",
         "PKief.material-icon-theme",
     ]
 }
