@@ -16,32 +16,32 @@
     },
     "files.trimTrailingWhitespace": true,
     "material-icon-theme.files.associations": {
-      // TODO: https://github.com/PKief/vscode-material-icon-theme/issues/330
-      "*.sops.env": "lock",
-      "*.sops.yaml": "lock"
+      "*.sops.yaml": "lock",
+      "helmfile.yaml": "helm",
+      "kubeconfig": "kubernetes",
+      "talosconfig": "kubernetes"
     },
     "material-icon-theme.folders.associations": {
         // top level
-        ".archive": "archive",
-        // .github
-        ".github/workflows": "robot",
+        ".github/workflows": "ci",
+        ".private": "archive",
+        ".renovate": "robot",
+        "bootstrap": "seeders",
+        "flux": "pipe",
+        "talos": "linux",
         // namespaces
         "actions-runner-system": "github",
         "cert-manager": "guard",
         "default": "home",
-        "digester-system": "hook",
         "external-secrets": "secure",
         "flux-system": "pipe",
         "kube-system": "kubernetes",
-        "monitoring": "event",
         "network": "connection",
-        "networking": "connection",
         "observability": "event",
-        "rook-ceph": "base",
-        "storage": "dump",
+        "openebs-system": "base",
+        "rook-ceph": "dump",
         "system-upgrade": "update",
-        "tools": "tools",
-        "volsync": "aws"
+        "volsync-system": "aws"
     },
     "sops.defaults.ageKeyFile": "age.key",
     "vs-kubernetes": {
