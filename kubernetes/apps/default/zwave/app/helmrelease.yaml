@@ -69,7 +69,7 @@ spec:
             port: 3000
     route:
       app:
-        hostnames: ["{{ .Release.Name }}.devbu.io"]
+        hostnames: ["{{ .Release.Name }}.g-eye.io"]
         parentRefs:
           - name: internal
             namespace: kube-system
