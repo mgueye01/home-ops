@@ -72,8 +72,8 @@ spec:
     route:
       app:
         hostnames:
-          - "{{ .Release.Name }}.devbu.io"
-          - requests.devbu.io
+          - "{{ .Release.Name }}.g-eye.io"
+          - requests.g-eye.io
         parentRefs:
           - name: external
             namespace: kube-system

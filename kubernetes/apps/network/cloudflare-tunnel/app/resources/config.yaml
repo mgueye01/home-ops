@@ -1,10 +1,10 @@
 ---
 originRequest:
-  originServerName: external.devbu.io
+  originServerName: external.g-eye.io
 
 ingress:
-  - hostname: devbu.io
+  - hostname: g-eye.io
     service: &svc https://cilium-gateway-external.kube-system.svc.cluster.local
-  - hostname: "*.devbu.io"
+  - hostname: "*.g-eye.io"
     service: *svc
   - service: http_status:404
