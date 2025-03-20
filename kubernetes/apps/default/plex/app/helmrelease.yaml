@@ -28,9 +28,10 @@ spec:
               repository: ghcr.io/onedr0p/plex
               tag: 1.41.5.9522-a96edc606@sha256:98a2883445f4901ec816b8dc4d684f94b4a6a21663cf6bde218f274a8c4ef289
             env:
-              TZ: America/New_York
-              PLEX_ADVERTISE_URL: https://plex.g-eye.io:443,http://192.168.42.128:32400
+              TZ: Europe/Paris
+              PLEX_ADVERTISE_URL: https://plex.g-eye.io:443,http://192.168.10.68:32400
               PLEX_NO_AUTH_NETWORKS: 192.168.10.0/24
+              HOSTNAME: "k8s-plex"
             probes:
               liveness: &probes
                 enabled: true
@@ -72,7 +73,7 @@ spec:
         controller: plex
         type: LoadBalancer
         annotations:
-          lbipam.cilium.io/ips: 192.168.42.128, ::ffff:192.168.42.128
+          lbipam.cilium.io/ips: 192.168.10.68, ::ffff:192.168.10.68
         ports:
           http:
             port: 32400
@@ -114,8 +115,8 @@ spec:
         type: emptyDir
       media:
         type: nfs
-        server: expanse.internal
-        path: /mnt/eros/Media
+        server: nas.g-eye.tech
+        path: /volume1/video
         globalMounts:
           - path: /media
             readOnly: true
