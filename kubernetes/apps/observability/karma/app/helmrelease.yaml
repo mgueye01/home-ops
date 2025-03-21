@@ -40,13 +40,6 @@ spec:
               limits:
                 memory: 500Mi
         pod:
-          affinity:
-            nodeAffinity:
-              requiredDuringSchedulingIgnoredDuringExecution:
-                nodeSelectorTerms:
-                  - matchExpressions:
-                      - key: node-role.kubernetes.io/worker
-                        operator: Exists
           topologySpreadConstraints:
             - maxSkew: 1
               topologyKey: kubernetes.io/hostname
