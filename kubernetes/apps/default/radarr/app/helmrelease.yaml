@@ -22,10 +22,17 @@ spec:
       radarr:
         annotations:
           reloader.stakater.com/auto: "true"
+        initContainers:
+          init-db:
+            image:
+              repository: ghcr.io/onedr0p/postgres-init
+              tag: 16
+            envFrom: &envFrom
+              - secretRef:
+                  name: radarr-secret
         containers:
           app:
             image:
-              repository: ghcr.io/onedr0p/radarr-develop
               tag: 5.20.1.9773@sha256:8187c129a78fdfe15b1603db9175abd2be0e1ca2e99ea3733987c3ae941da165
             env:
               RADARR__APP__INSTANCENAME: Radarr
@@ -36,7 +43,7 @@ spec:
               RADARR__LOG__LEVEL: info
               RADARR__SERVER__PORT: &port 80
               RADARR__UPDATE__BRANCH: develop
-              TZ: America/New_York
+              TZ: Europe/Paris
             envFrom:
               - secretRef:
                   name: radarr-secret
@@ -101,11 +108,25 @@ spec:
           - path: /scripts/pushover-notifier.sh
             subPath: pushover-notifier.sh
             readOnly: true
+      downloads:
+        type: nfs
+        server: nas.g-eye.tech
+        path: /volume1/video/Downloads/sabnzbd
+        globalMounts:
+          - path: /downloads
       media:
         type: nfs
-        server: expanse.internal
-        path: /mnt/eros/Media
+        server: nas.g-eye.tech
+        path: /volume1/video/Movie
         globalMounts:
-          - path: /media
+          - path: /media/Movie
+
       tmp:
         type: emptyDir
+      backup:
+        enabled: true
+        type: nfs
+        server: nas.g-eye.tech
+        path: /volume1/CLOUDNATIVE1/Backups/radarr
+        globalMounts:
+          - path: /config/Backups
