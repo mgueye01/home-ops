@@ -1,0 +1,82 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: monitoring
+configMapGenerator:
+  - name: battery-health
+    files:
+      - battery-health.json=https://raw.githubusercontent.com/CarlosCuezva/dashboards-Grafana-Teslamate/main/dashboards/battery-health.json
+  - name: charge-level
+    files:
+      - charge-level.json=https://raw.githubusercontent.com/adriankumpf/teslamate/master/grafana/dashboards/charge-level.json
+  - name: charges
+    files:
+      - charges.json=https://raw.githubusercontent.com/CarlosCuezva/dashboards-Grafana-Teslamate/main/dashboards/charges.json
+  - name: charging-stats
+    files:
+      - charging-stats.json=https://raw.githubusercontent.com/adriankumpf/teslamate/master/grafana/dashboards/charging-stats.json
+  - name: charging-tops
+    files:
+      - charging-tops.json=https://raw.githubusercontent.com/CarlosCuezva/dashboards-Grafana-Teslamate/main/dashboards/charging-tops.json
+  - name: drive-stats
+    files:
+      - drive-stats.json=https://raw.githubusercontent.com/adriankumpf/teslamate/master/grafana/dashboards/drive-stats.json
+  - name: drives
+    files:
+      - drives.json=https://raw.githubusercontent.com/CarlosCuezva/dashboards-Grafana-Teslamate/main/dashboards/drives.json
+  - name: drives-tops
+    files:
+      - drives-tops.json=https://raw.githubusercontent.com/CarlosCuezva/dashboards-Grafana-Teslamate/main/dashboards/drive-tops.json
+  - name: efficiency
+    files:
+      - efficiency.json=https://raw.githubusercontent.com/adriankumpf/teslamate/master/grafana/dashboards/efficiency.json
+  - name: locations
+    files:
+      - locations.json=https://raw.githubusercontent.com/CarlosCuezva/dashboards-Grafana-Teslamate/main/dashboards/locations.json
+  - name: milage
+    files:
+      - milage.json=https://raw.githubusercontent.com/adriankumpf/teslamate/master/grafana/dashboards/mileage.json
+  - name: overview
+    files:
+      - overview.json=https://raw.githubusercontent.com/CarlosCuezva/dashboards-Grafana-Teslamate/main/dashboards/overview.json
+  - name: projected-range
+    files:
+      - projected-range.json=https://raw.githubusercontent.com/adriankumpf/teslamate/master/grafana/dashboards/projected-range.json
+  - name: states
+    files:
+      - states.json=https://raw.githubusercontent.com/CarlosCuezva/dashboards-Grafana-Teslamate/main/dashboards/states.json
+  - name: statistics
+    files:
+      - statistics.json=https://raw.githubusercontent.com/adriankumpf/teslamate/master/grafana/dashboards/statistics.json
+  - name: timeline
+    files:
+      - timeline.json=https://raw.githubusercontent.com/adriankumpf/teslamate/master/grafana/dashboards/timeline.json
+  - name: trip
+    files:
+      - trip.json=https://raw.githubusercontent.com/adriankumpf/teslamate/master/grafana/dashboards/trip.json
+  - name: updates
+    files:
+      - updates.json=https://raw.githubusercontent.com/adriankumpf/teslamate/master/grafana/dashboards/updates.json
+  - name: vampire-drain
+    files:
+      - vampire-drain.json=https://raw.githubusercontent.com/adriankumpf/teslamate/master/grafana/dashboards/vampire-drain.json
+  - name: visited
+    files:
+      - visited.json=https://raw.githubusercontent.com/adriankumpf/teslamate/master/grafana/dashboards/visited.json
+  - name: charging-costs-stats
+    files:
+      - charging-costs-stats.json=https://raw.githubusercontent.com/jheredianet/Teslamate-CustomGrafanaDashboards/main/dashboards/ChargingCostsStats.json
+  - name: current-charge-view
+    files:
+      - current-charge-view.json=https://raw.githubusercontent.com/jheredianet/Teslamate-CustomGrafanaDashboards/main/dashboards/CurrentChargeView.json
+  - name: tire-pressure
+    files:
+      - tire-pressure.json=https://raw.githubusercontent.com/CarlosCuezva/dashboards-Grafana-Teslamate/main/dashboards/tire-pressure.json
+
+generatorOptions:
+  disableNameSuffixHash: true
+  annotations:
+    kustomize.toolkit.fluxcd.io/substitute: disabled
+    grafana_folder: Teslamate
+  labels:
+    grafana_dashboard: "true"
