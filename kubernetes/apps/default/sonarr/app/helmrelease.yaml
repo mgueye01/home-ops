@@ -36,7 +36,7 @@ spec:
               SONARR__LOG__LEVEL: info
               SONARR__SERVER__PORT: &port 80
               SONARR__UPDATE__BRANCH: develop
-              TZ: America/New_York
+              TZ: Europe/Paris
             envFrom:
               - secretRef:
                   name: sonarr-secret
@@ -109,9 +109,21 @@ spec:
             readOnly: true
       media:
         type: nfs
-        server: expanse.internal
-        path: /mnt/eros/Media
+        server: nas.g-eye.tech
+        path: /volume1/video/TVshows
         globalMounts:
-          - path: /media
+          - path: /media/TVshows
+      downloads:
+        type: nfs
+        server: nas.g-eye.tech
+        path: /volume1/video/Downloads/sabnzbd
+        globalMounts:
+          - path: /downloads
+      backup:
+        type: nfs
+        server: nas.g-eye.tech
+        path: /volume1/CLOUDNATIVE1/Backups/sonarr
+        globalMounts:
+          - path: /config/Backups
       tmp:
         type: emptyDir
