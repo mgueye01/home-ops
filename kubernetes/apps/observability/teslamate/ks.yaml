@@ -14,9 +14,13 @@ spec:
     - ../../../../components/volsync
   dependsOn:
     - name: external-secrets
+      namespace: external-secrets
     - name: rook-ceph-cluster
+      namespace: rook-ceph
     - name: cloudnative-pg-cluster
+      namespace: databases
     - name: mosquitto
+      namespace: default
   interval: 1h
   path: ./kubernetes/apps/observability/teslamate/app
   postBuild:
