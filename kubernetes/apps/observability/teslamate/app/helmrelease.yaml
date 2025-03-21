@@ -5,23 +5,17 @@ kind: HelmRelease
 metadata:
   name: &app teslamate
 spec:
-  interval: 30m
-  timeout: 15m
-  chart:
-    spec:
-      chart: app-template
-      version: 3.7.2
-      sourceRef:
-        kind: HelmRepository
-        name: bjw-s
-        namespace: flux-system
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
   install:
-    createNamespace: true
     remediation:
       retries: 3
   upgrade:
     cleanupOnFail: true
     remediation:
+      strategy: rollback
       retries: 3
   dependsOn:
     - name: mosquitto
@@ -59,19 +53,20 @@ spec:
         ports:
           http:
             port: &port 4000
-    ingress:
+    route:
       app:
         enabled: true
-        className: internal
-        annotations:
-          external-dns.alpha.kubernetes.io/target: internal.g-eye.io
-        hosts:
-          - host: "teslamate.g-eye.io"
-            paths:
-              - path: /
-                service:
-                  name: teslamate
-                  port: *port
+        hostnames:
+          - "{{ .Release.Name }}.g-eye.io"
+        parentRefs:
+          - name: internal
+            namespace: kube-system
+            sectionName: https
+        rules:
+          - backendRefs:
+              - name: *app
+                port: *port
+
     resources:
       requests:
         cpu: 25m
