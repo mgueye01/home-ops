@@ -3,7 +3,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: redis-exporter
-  namespace: database
+  namespace: databases
 spec:
   groups:
     - name: redis-exporter
