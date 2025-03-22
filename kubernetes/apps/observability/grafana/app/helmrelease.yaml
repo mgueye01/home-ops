@@ -32,26 +32,60 @@ spec:
       strategy: rollback
       retries: 3
   values:
+    extraInitContainers:
+      - name: 01-init-db
+        image: ghcr.io/onedr0p/postgres-init:16.8
+        imagePullPolicy: IfNotPresent
+        envFrom:
+          - secretRef:
+              name: &secret grafana-admin-secret
     deploymentStrategy:
       type: Recreate
     admin:
       existingSecret: grafana-admin-secret
     env:
+      GF_AUTH_GENERIC_OAUTH_API_URL: https://auth.g-eye.io/api/oidc/userinfo
+      GF_AUTH_GENERIC_OAUTH_AUTH_URL: https://auth.g-eye.io/api/oidc/authorization
+      GF_AUTH_GENERIC_OAUTH_CLIENT_ID: grafana
+      GF_AUTH_GENERIC_OAUTH_TOKEN_URL: https://auth.g-eye.io/api/oidc/token
       GF_DATE_FORMATS_USE_BROWSER_LOCALE: true
       GF_EXPLORE_ENABLED: true
       GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS: natel-discrete-panel,pr0ps-trackmap-panel,panodata-map-panel
       GF_SECURITY_ANGULAR_SUPPORT_ENABLED: true
       GF_SERVER_ROOT_URL: https://grafana.g-eye.io
+    envFromSecrets:
+      - name: *secret
     grafana.ini:
       analytics:
         check_for_updates: false
         check_for_plugin_updates: false
         reporting_enabled: false
-      auth.anonymous:
+      auth:
+        oauth_auto_login: true
+        oauth_allow_insecure_email_lookup: true
+      auth.generic_oauth:
         enabled: true
+        name: Authelia
+        icon: signin
+        scopes: openid profile email groups
+        empty_scopes: false
+        login_attribute_path: preferred_username
+        groups_attribute_path: groups
+        name_attribute_path: name
+        use_pkce: true
+      auth.generic_oauth.group_mapping:
         org_id: 1
-        org_name: Main Org.
-        org_role: Viewer
+        role_attribute_path: |
+          contains(groups[*], 'admins') && 'Admin' || contains(groups[*], 'people') && 'Viewer'
+      auth.basic:
+        enabled: false
+      auth.anonymous:
+        enabled: false
+      # auth.anonymous:
+      #   enabled: true
+      #   org_id: 1
+      #   org_name: Main Org.
+      #   org_role: Viewer
       news:
         news_feed_enabled: false
     datasources:
@@ -96,11 +130,11 @@ spec:
               path: /var/lib/grafana/dashboards/default
     dashboards:
       default:
-        apc-ups:
-          # renovate: depName="APC UPS (SNMP)"
-          gnetId: 12340
-          revision: 1
-          datasource: Prometheus
+        # apc-ups:
+        #   # renovate: depName="APC UPS (SNMP)"
+        #   gnetId: 12340
+        #   revision: 1
+        #   datasource: Prometheus
         ceph-cluster:
           # renovate: depName="Ceph Cluster"
           gnetId: 2842
@@ -206,12 +240,12 @@ spec:
           gnetId: 11312
           revision: 9
           datasource: Prometheus
-        unpackerr:
-          # renovate: depName="Unpackerr"
-          gnetId: 18817
-          revision: 1
-          datasource:
-            - { name: DS_PROMETHEUS, value: Prometheus }
+        # unpackerr:
+        #   # renovate: depName="Unpackerr"
+        #   gnetId: 18817
+        #   revision: 1
+        #   datasource:
+        #     - { name: DS_PROMETHEUS, value: Prometheus }
         volsync:
           # renovate: depName="VolSync Dashboard"
           gnetId: 21356
@@ -219,11 +253,11 @@ spec:
           datasource:
             - { name: DS_PROMETHEUS, value: Prometheus }
             - { name: VAR_REPLICATIONDESTNAME, value: .*-dst }
-        zfs:
-          # renovate: depName="ZFS"
-          gnetId: 7845
-          revision: 4
-          datasource: Prometheus
+        # zfs:
+        #   # renovate: depName="ZFS"
+        #   gnetId: 7845
+        #   revision: 4
+        #   datasource: Prometheus
     sidecar:
       dashboards:
         enabled: true
