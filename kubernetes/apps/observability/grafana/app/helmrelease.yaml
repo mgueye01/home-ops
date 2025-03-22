@@ -33,8 +33,8 @@ spec:
       retries: 3
   values:
     extraInitContainers:
-      - name: 01-init-db
-        image: ghcr.io/onedr0p/postgres-init:17.4
+      - name: init-db
+        image: ghcr.io/home-operations/postgres-init:17.4@sha256:a9f405688344a8a6f718e2c344438342ad21540986aeb5ab5fa781831eb2c597
         imagePullPolicy: IfNotPresent
         envFrom:
           - secretRef:
@@ -64,7 +64,7 @@ spec:
         reporting_enabled: false
       auth:
         oauth_auto_login: true
-        oauth_allow_insecure_email_lookup: true
+        signout_redirect_url: "https://auth.g-eye.io/logout"
       auth.generic_oauth:
         enabled: true
         name: Authelia
