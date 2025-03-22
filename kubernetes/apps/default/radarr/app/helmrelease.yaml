@@ -107,7 +107,7 @@ spec:
         server: nas.g-eye.tech
         path: /volume1/video/Movie
         globalMounts:
-          - path: /media/Movie
+          - path: /media
       downloads:
         type: nfs
         server: nas.g-eye.tech
