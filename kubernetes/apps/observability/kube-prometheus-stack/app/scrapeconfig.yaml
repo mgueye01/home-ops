@@ -8,7 +8,7 @@ spec:
   staticConfigs:
     - targets:
         - nas.g-eye.tech:9100
-        - pikvm.internal:9100
+        - pikvm.g-eye.tech:9100
   metricsPath: /metrics
   relabelings:
     - action: replace
