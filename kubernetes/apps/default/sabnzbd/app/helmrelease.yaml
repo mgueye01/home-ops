@@ -113,19 +113,22 @@ spec:
       tmp:
         type: emptyDir
       incomplete:
-        type: custom
-        volumeSpec:
-          ephemeral:
-            volumeClaimTemplate:
-              spec:
-                accessModes:
-                  - ReadWriteOnce
-                storageClassName: openebs-hostpath
-                resources:
-                  requests:
-                    storage: 100Gi
-        advancedMounts:
-          sabnzbd:
-            app:
-              - path: /incomplete
-                subPath: incomplete
+        enabled: true
+        type: emptyDir
+      # incomplete:
+      #   type: custom
+      #   volumeSpec:
+      #     ephemeral:
+      #       volumeClaimTemplate:
+      #         spec:
+      #           accessModes:
+      #             - ReadWriteOnce
+      #           storageClassName: openebs-hostpath
+      #           resources:
+      #             requests:
+      #               storage: 100Gi
+      #   advancedMounts:
+      #     sabnzbd:
+      #       app:
+      #         - path: /incomplete
+      #           subPath: incomplete
