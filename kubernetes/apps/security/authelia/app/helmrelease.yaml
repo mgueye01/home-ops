@@ -108,8 +108,7 @@ spec:
             scrapeTimeout: 10s
     route:
       app:
-        hostnames:
-          - &host "auth.g-eye.io"
+        hostnames: ["auth.g-eye.io"]
         parentRefs:
           - name: external
             namespace: kube-system
@@ -118,19 +117,6 @@ spec:
           - backendRefs:
               - name: *app
                 port: *port
-            filters:
-              - type: ResponseHeaderModifier
-                responseHeaderModifier:
-                  add:
-                    - name: Cache-Control
-                      value: no-store
-                    - name: Pragma
-                      value: no-cache
-                    - name: X-Frame-Options
-                      value: SAMEORIGIN
-                    - name: X-XSS-Protection
-                      value: "1; mode=block"
-
     persistence:
       config:
         enabled: true
