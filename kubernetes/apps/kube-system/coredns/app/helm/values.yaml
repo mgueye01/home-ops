@@ -32,9 +32,9 @@ servers:
           pods insecure
           fallthrough in-addr.arpa ip6.arpa
       - name: forward
-        parameters: internal /etc/resolv.conf
+        parameters: internal 192.168.0.1
       - name: forward
-        parameters: g-eye.io /etc/resolv.conf
+        parameters: g-eye.io 192.168.0.1
       - name: forward
         parameters: . tls://1.1.1.1 tls://1.0.0.1
         configBlock: |-
