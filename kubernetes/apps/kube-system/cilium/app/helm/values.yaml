@@ -7,9 +7,15 @@ bpf:
   datapathMode: netkit
   masquerade: true
   preallocateMaps: true
+  hostLegacyRouting: false
+  mapDynamicSizeRatio: 0.0025
+  clockProbe: true
   # tproxy: true
 bgpControlPlane:
   enabled: true
+  announce:
+    loadbalancerIP: true
+    podCIDR: true
 cgroup:
   automount:
     enabled: false
@@ -27,10 +33,27 @@ endpointRoutes:
   enabled: true
 envoy:
   rollOutPods: true
+  healthPort: 9876
+  readinessProbe:
+    httpGet:
+      path: /ready
+      port: 9876
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 5
+  livenessProbe:
+    httpGet:
+      path: /healthz
+      port: 9876
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
 gatewayAPI:
   enabled: true
   enableAlpn: true
   xffNumTrustedHops: 1
+  connectTimeout: 5s
+  requestTimeout: 30s
 hubble:
   enabled: false
 ipam:
@@ -41,7 +64,7 @@ k8sServicePort: 7445
 kubeProxyReplacement: true
 kubeProxyReplacementHealthzBindAddr: 0.0.0.0:10256
 l2announcements:
-  enabled: true
+  enabled: false
 loadBalancer:
   algorithm: maglev
   mode: dsr
@@ -55,11 +78,35 @@ operator:
       enabled: true
   replicas: 2
   rollOutPods: true
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: io.cilium/app
+            operator: In
+            values:
+            - operator
+        topologyKey: kubernetes.io/hostname
 prometheus:
   enabled: true
   serviceMonitor:
     enabled: true
     trustCRDsExist: true
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 100m
+    memory: 256Mi
 rollOutCiliumPods: true
 routingMode: native
 securityContext:
