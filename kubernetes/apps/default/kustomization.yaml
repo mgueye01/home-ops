@@ -20,4 +20,4 @@ resources:
   - ./sabnzbd/ks.yaml
   # - ./slskd/ks.yaml
   - ./sonarr/ks.yaml
-  # - ./tautulli/ks.yaml
+  - ./tautulli/ks.yaml
