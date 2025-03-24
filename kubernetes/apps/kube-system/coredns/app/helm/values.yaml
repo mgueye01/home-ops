@@ -36,6 +36,8 @@ servers:
       - name: forward
         parameters: g-eye.io 192.168.0.1
       - name: forward
+        parameters: g-eye.tech 192.168.0.1
+      - name: forward
         parameters: . tls://1.1.1.1 tls://1.0.0.1
         configBlock: |-
           tls_servername cloudflare-dns.com
