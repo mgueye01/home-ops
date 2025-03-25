@@ -80,7 +80,7 @@ spec:
             port: &port 3000
     route:
       app:
-        hostnames: me.g-eye.io"
+        hostnames: "me.g-eye.io"
         parentRefs:
           - name: external
             namespace: kube-system
