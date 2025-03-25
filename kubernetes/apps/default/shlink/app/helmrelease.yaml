@@ -96,7 +96,8 @@ spec:
             port: *port
     route:
       app:
-        hostnames: "ln.g-eye.io"
+        hostnames:
+          - "ln.g-eye.io"
         parentRefs:
           - name: external
             namespace: kube-system
