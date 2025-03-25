@@ -20,6 +20,7 @@ spec:
     substitute:
       APP: *app
       GATUS_SUBDOMAIN: ln
+      GATUS_PATH: /rest/health
   prune: true
   retryInterval: 2m
   sourceRef:
