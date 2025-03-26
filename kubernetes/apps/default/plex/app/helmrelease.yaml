@@ -74,7 +74,6 @@ spec:
         type: LoadBalancer
         annotations:
           lbipam.cilium.io/ips: 192.168.10.68, ::ffff:192.168.10.68
-        externalTrafficPolicy: Local
         ports:
           http:
             port: 32400
