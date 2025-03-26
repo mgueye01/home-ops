@@ -74,9 +74,6 @@ spec:
         type: LoadBalancer
         annotations:
           lbipam.cilium.io/ips: 192.168.10.68, ::ffff:192.168.10.68
-          service.cilium.io/global: "true"
-          service.cilium.io/shared: "true"
-          service.cilium.io/announcement-prefix: "192.168.10.0/24"
         externalTrafficPolicy: Local
         ports:
           http:
