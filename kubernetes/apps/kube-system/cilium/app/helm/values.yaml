@@ -7,9 +7,20 @@ bpf:
   datapathMode: netkit
   masquerade: true
   preallocateMaps: true
+  hostLegacyRouting: false
+  mapDynamicSizeRatio: 0.0025
+  clockProbe: true
   # tproxy: true
 bgpControlPlane:
   enabled: true
+  announce:
+    loadbalancerIP: true
+    podCIDR: true
+    serviceIP: true
+  secretsNamespace:
+    name: kube-system
+    create: true
+    sync: true
 cgroup:
   automount:
     enabled: false
@@ -40,11 +51,19 @@ k8sServiceHost: 127.0.0.1
 k8sServicePort: 7445
 kubeProxyReplacement: true
 kubeProxyReplacementHealthzBindAddr: 0.0.0.0:10256
-l2announcements:
+
+# Improve ARP handling
+arpPingRefreshPeriod: 30s
+arping:
   enabled: true
+
+l2announcements:
+  enabled: false
 loadBalancer:
   algorithm: maglev
-  mode: dsr
+  mode: bgp
+  acceleration: disabled
+  serviceTopology: true
 localRedirectPolicy: true
 operator:
   dashboards:
