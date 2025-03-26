@@ -61,7 +61,6 @@ l2announcements:
   enabled: false
 loadBalancer:
   algorithm: maglev
-  mode: bgp
   acceleration: disabled
   serviceTopology: true
 localRedirectPolicy: true
