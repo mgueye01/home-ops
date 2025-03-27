@@ -7,3 +7,4 @@ resources:
   - ./externalsecret.yaml
   - ./helmrelease.yaml
   - ./harbor-charts.yaml
+  - ./httproute.yaml
