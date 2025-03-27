@@ -3,7 +3,7 @@ apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: harbor-charts
-  namespace: flux-system
+  namespace: dev
 spec:
   interval: 1h
   url: https://helm.goharbor.io
