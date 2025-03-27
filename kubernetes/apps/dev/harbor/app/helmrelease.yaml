@@ -30,23 +30,12 @@ spec:
     externalURL: "https://harbor.g-eye.io"
     existingSecretAdminPassword: &secret harbor-secret
     expose:
-      type: ingress
-      ingress:
-        controller: default
-        className: internal
-        hosts:
-          core: harbor.g-eye.io
-        annotations: {}
+      type: clusterIP
       tls:
-        certSource: none
-      route:
-        main:
-          enabled: true
-          hostnames: ["harbor.g-eye.io"]
-          parentRefs:
-            - name: internal
-              namespace: kube-system
-              sectionName: https
+        enabled: false
+      ingress:
+        core:
+          enabled: false
     persistence:
       enabled: true
       persistentVolumeClaim:
