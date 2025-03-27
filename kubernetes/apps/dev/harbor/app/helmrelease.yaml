@@ -14,7 +14,7 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: harbor-charts
-        namespace: flux-system
+        namespace: dev
   install:
     createNamespace: true
     remediation:
