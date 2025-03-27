@@ -36,15 +36,17 @@ spec:
         className: internal
         hosts:
           core: harbor.g-eye.io
-        annotations:
-          nginx.ingress.kubernetes.io/ssl-redirect: "true"
-          nginx.ingress.kubernetes.io/proxy-body-size: "0"
-          external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
-          nginx.ingress.kubernetes.io/custom-http-errors: "418"
-          nginx.ingress.kubernetes.io/proxy-connect-timeout: "480"
+        annotations: {}
       tls:
-        # The ingress controller has a default certificate so we don't need to configure it
         certSource: none
+      route:
+        main:
+          enabled: true
+          hostnames: ["harbor.g-eye.io"]
+          parentRefs:
+            - name: internal
+              namespace: kube-system
+              sectionName: https
     persistence:
       enabled: true
       persistentVolumeClaim:
@@ -62,7 +64,7 @@ spec:
     database:
       type: external
       external:
-        host: postgres16-rw.database.svc.cluster.local
+        host: postgres16-rw.databases.svc.cluster.local
         port: "5432"
         username: harbor
         existingSecret: *secret
@@ -70,7 +72,7 @@ spec:
       type: external
       external:
         sentinelMasterSet: redis-master
-        addr: "redis-node-0.redis-headless.database.svc.cluster.local:26379,redis-node-1.redis-headless.database.svc.cluster.local:26379,redis-node-2.redis-headless.database.svc.cluster.local:26379"
+        addr: "redis-node-0.redis-headless.databases.svc.cluster.local:26379,redis-node-1.redis-headless.databases.svc.cluster.local:26379,redis-node-2.redis-headless.databases.svc.cluster.local:26379"
         coreDatabaseIndex: "0"
         jobserviceDatabaseIndex: "1"
         registryDatabaseIndex: "2"
