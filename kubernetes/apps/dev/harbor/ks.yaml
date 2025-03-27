@@ -6,7 +6,6 @@ metadata:
   name: &app harbor
   namespace: dev
 spec:
-  targetNamespace: dev
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
