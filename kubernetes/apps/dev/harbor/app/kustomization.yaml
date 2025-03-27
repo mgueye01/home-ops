@@ -5,3 +5,4 @@ resources:
   - pvcs
   - ./externalsecret.yaml
   - ./helmrelease.yaml
+  - ./harbor-charts.yaml
