@@ -49,6 +49,33 @@ tasks:
     preconditions:
       - which kubectl
 
+  check-httproutes:
+    desc: Check reachability of all HTTPRoutes in the cluster
+    silent: true
+    cmds:
+      - for: { var: HTTPROUTES, split: "\n" }
+        cmd: |
+          ITEM="{{.ITEM}}"
+          NS=$(echo "$ITEM" | cut -d',' -f1)
+          NAME=$(echo "$ITEM" | cut -d',' -f2)
+          HOSTNAME=$(kubectl get httproute -n $NS $NAME -o jsonpath='{.spec.hostnames[0]}')
+          if [ -z "$HOSTNAME" ]; then
+            printf "%-40s %s\n" "$NS/$NAME" "NOK"
+            continue
+          fi
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://$HOSTNAME" --max-time 5 || echo "000")
+          if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 400 ]; then
+            printf "%-40s %s\n" "$NS/$NAME" "OK"
+          else
+            printf "%-40s %s\n" "$NS/$NAME" "NOK"
+          fi
+    vars:
+      HTTPROUTES:
+        sh: kubectl get httproute --all-namespaces --no-headers --output=jsonpath='{range .items[*]}{.metadata.namespace},{.metadata.name}{"\n"}{end}'
+    preconditions:
+      - which kubectl
+      - which curl
+
   # https://docs.github.com/en/enterprise-cloud@latest/actions/hosting-your-own-runners/managing-self-hosted-runners-with-actions-runner-controller/deploying-runner-scale-sets-with-actions-runner-controller#upgrading-arc
   upgrade-arc:
     desc: Upgrade the ARC
