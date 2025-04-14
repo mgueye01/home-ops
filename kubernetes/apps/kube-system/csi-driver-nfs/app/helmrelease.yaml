@@ -12,8 +12,6 @@ spec:
   url: oci://ghcr.io/home-operations/charts-mirror/csi-driver-nfs
   ref:
     tag: v4.11.0
-  verify:
-    provider: cosign
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
 apiVersion: helm.toolkit.fluxcd.io/v2
