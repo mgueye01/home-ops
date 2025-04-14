@@ -31,8 +31,8 @@ spec:
         containers:
           app:
             image:
-              repository: ghcr.io/onedr0p/jbops
-              tag: 1.0.893@sha256:f9285bf48d8f1fa919ea5eb794317380cf6b9852c051c60e854b4b40c258a31a
+              repository: ghcr.io/home-operations/jbops
+              tag: 2025.4.7@sha256:decc6107242a3eacac2792e0594327371f3843045091ef05b243ae1ca55e710a
             env:
               JBOPS__SCRIPT_PATH: utility/off_deck.py
             args: ["--markWatched", "--playlists", "Toons", "SleepMix"]
