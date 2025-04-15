@@ -5,13 +5,13 @@ kind: OCIRepository
 metadata:
   name: csi-driver-nfs
 spec:
-  interval: 1h
+  interval: 5m
   layerSelector:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
   url: oci://ghcr.io/home-operations/charts-mirror/csi-driver-nfs
   ref:
-    tag: v4.11.0
+    tag: 4.11.0
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
 apiVersion: helm.toolkit.fluxcd.io/v2
