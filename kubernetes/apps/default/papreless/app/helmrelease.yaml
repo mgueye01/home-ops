@@ -1,0 +1,147 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app paperless
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  maxHistory: 2
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  dependsOn:
+    - name: rook-ceph-cluster
+      namespace: rook-ceph
+  values:
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile: { type: RuntimeDefault }
+
+    controllers:
+      paperless:
+        annotations:
+          reloader.stakater.com/auto: "true"
+
+        initContainers:
+          01-init-db:
+            image:
+              repository: ghcr.io/home-operations/postgres-init
+              tag: "17"
+            envFrom:
+              - secretRef:
+                  name: paperless-initdb-secret
+
+        containers:
+          app:
+            image:
+              repository: ghcr.io/paperless-ngx/paperless-ngx
+              tag: 2.15.2
+            env:
+              PAPERLESS_CONSUMER_POLLING: 5
+              PAPERLESS_OCR_LANGUAGE: fra+eng
+              PAPERLESS_PORT: &port 8000
+              PAPERLESS_TIKA_ENABLED: 1
+              PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://paperless-gotenburg.default.svc.cluster.local:3000
+              PAPERLESS_TIKA_ENDPOINT: http://paperless-tika.default.svc.cluster.local:9998
+              PAPERLESS_TIME_ZONE: Europe/Paris
+              PAPERLESS_URL: https://{{ .Release.Name }}.g-eye.io
+              PAPERLESS_REDIS: redis://redis-headless.databases.svc.cluster.local:6379
+              PAPERLESS_SOCIAL_AUTO_SIGNUP: "true"
+              PAPERLESS_DISABLE_REGULAR_LOGIN: "true"
+              PAPERLESS_REDIRECT_LOGIN_TO_SSO: "true"
+              PAPERLESS_DBUSER:
+                valueFrom:
+                  secretKeyRef:
+                    name: &pguser paperless-pguser-secret
+                    key: user
+              PAPERLESS_DBPASS:
+                valueFrom:
+                  secretKeyRef:
+                    name: *pguser
+                    key: password
+              PAPERLESS_DBHOST:
+                valueFrom:
+                  secretKeyRef:
+                    name: *pguser
+                    key: host
+              PAPERLESS_DBNAME:
+                valueFrom:
+                  secretKeyRef:
+                    name: *pguser
+                    key: db
+            envFrom:
+              - secretRef:
+                  name: paperless-secret
+
+      gotenburg:
+        containers:
+          app:
+            image:
+              repository: ghcr.io/mchestr/gotenberg
+              tag: 8.17.3
+            env:
+              DISABLE_GOOGLE_CHROME: "1"
+
+      tika:
+        containers:
+          app:
+            image:
+              repository: ghcr.io/paperless-ngx/tika
+              tag: 2.9.1-full
+
+    service:
+      paperless:
+        controller: *app
+        ports:
+          http:
+            port: *port
+      gotenburg:
+        controller: gotenburg
+        ports:
+          http:
+            port: 3000
+      tika:
+        controller: tika
+        ports:
+          http:
+            port: 9998
+
+    route:
+      app:
+        hostnames: ["{{ .Release.Name }}.g-eye.io"]
+        parentRefs:
+          - name: internal
+            namespace: networking
+            sectionName: https
+        rules:
+          - backendRefs:
+              - name: *app
+                port: *port
+
+    persistence:
+      data:
+        existingClaim: *app
+        advancedMounts:
+          paperless:
+            app:
+              - subPath: data
+                path: /usr/src/paperless/data
+              - subPath: media
+                path: /usr/src/paperless/media
