@@ -15,7 +15,7 @@ spec:
     - name: cloudnative-pg-cluster
       namespace: database
     - name: dragonfly
-      namespace: database
+      namespace: databases
     - name: onepassword-store
       namespace: external-secrets
     - name: rook-ceph-cluster
