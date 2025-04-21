@@ -136,10 +136,16 @@ spec:
                 port: *port
 
     persistence:
-      library:
-        enabled: true
+      data:
         existingClaim: paperless-nfs
-        mountPath: /library
+        advancedMounts:
+          paperless:
+            app:
+              - subPath: data
+                path: /usr/src/paperless/data
+              - subPath: media
+                path: /usr/src/paperless/media
+
     resources:
       requests:
         cpu: 100m
