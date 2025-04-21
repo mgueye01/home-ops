@@ -137,7 +137,7 @@ spec:
 
     persistence:
       data:
-        existingClaim: paperless-nfs
+        existingClaim: *app
         advancedMounts:
           paperless:
             app:
@@ -145,10 +145,3 @@ spec:
                 path: /usr/src/paperless/data
               - subPath: media
                 path: /usr/src/paperless/media
-
-    resources:
-      requests:
-        cpu: 100m
-        memory: 1000Mi
-      limits:
-        memory: 5000Mi
