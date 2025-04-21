@@ -66,29 +66,29 @@ spec:
               PAPERLESS_SOCIAL_AUTO_SIGNUP: "true"
               PAPERLESS_DISABLE_REGULAR_LOGIN: "true"
               PAPERLESS_REDIRECT_LOGIN_TO_SSO: "true"
-              PAPERLESS_DBUSER:
-                valueFrom:
-                  secretKeyRef:
-                    name: &pguser paperless-pguser-secret
-                    key: user
-              PAPERLESS_DBPASS:
-                valueFrom:
-                  secretKeyRef:
-                    name: *pguser
-                    key: password
-              PAPERLESS_DBHOST:
-                valueFrom:
-                  secretKeyRef:
-                    name: *pguser
-                    key: host
-              PAPERLESS_DBNAME:
-                valueFrom:
-                  secretKeyRef:
-                    name: *pguser
-                    key: db
-            envFrom:
-              - secretRef:
-                  name: paperless-secret
+            #   PAPERLESS_DBUSER:
+            #     valueFrom:
+            #       secretKeyRef:
+            #         name: &pguser paperless-pguser-secret
+            #         key: user
+            #   PAPERLESS_DBPASS:
+            #     valueFrom:
+            #       secretKeyRef:
+            #         name: *pguser
+            #         key: password
+            #   PAPERLESS_DBHOST:
+            #     valueFrom:
+            #       secretKeyRef:
+            #         name: *pguser
+            #         key: host
+            #   PAPERLESS_DBNAME:
+            #     valueFrom:
+            #       secretKeyRef:
+            #         name: *pguser
+            #         key: db
+            # envFrom:
+            #   - secretRef:
+            #       name: paperless-secret
 
       gotenburg:
         containers:
