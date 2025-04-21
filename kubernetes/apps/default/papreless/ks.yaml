@@ -16,7 +16,7 @@ spec:
       namespace: databases
     - name: redis
       namespace: databases
-    - name: onepassword-store
+    - name: onepassword-connect
       namespace: external-secrets
     - name: rook-ceph-cluster
       namespace: rook-ceph
