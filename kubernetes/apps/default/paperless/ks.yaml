@@ -8,6 +8,7 @@ metadata:
 spec:
   dependsOn:
     - name: cloudnative-pg
+      namespace: databases
     - name: external-secrets
   path: ./kubernetes/apps/default/paperless/app
   prune: true
