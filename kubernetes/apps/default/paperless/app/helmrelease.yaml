@@ -26,7 +26,7 @@ spec:
       enableServiceLinks: false
 
     controllers:
-      main:
+      paperless:
         annotations:
           reloader.stakater.com/auto: "true"
 
