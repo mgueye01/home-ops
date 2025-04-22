@@ -9,7 +9,7 @@ spec:
   dependsOn:
     - name: cloudnative-pg
     - name: external-secrets
-  path: ./kubernetes/apps/default/papreless/app
+  path: ./kubernetes/apps/default/paperless/app
   prune: true
   sourceRef:
     kind: GitRepository
