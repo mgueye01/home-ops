@@ -116,9 +116,9 @@ spec:
 
     persistence:
       library:
-        enabled: true
         existingClaim: paperless-nfs
-        mountPath: /library
+        globalMounts:
+          - path: /library
     resources:
       requests:
         cpu: 100m
