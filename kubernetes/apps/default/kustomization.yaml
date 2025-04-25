@@ -18,6 +18,7 @@ resources:
   - ./mosquitto/ks.yaml
   - ./n8n/ks.yaml
   - ./paperless/ks.yaml
+  - ./paperless-ai/ks.yaml
   - ./plex/ks.yaml
   - ./prowlarr/ks.yaml
   - ./radarr/ks.yaml
