@@ -54,7 +54,8 @@ spec:
               PAPERLESS_MEDIA_ROOT: /library/media
               PAPERLESS_OCR_LANGUAGE: fra+eng
               PAPERLESS_PORT: &port 80
-              PAPERLESS_REDIS: redis://redis-headless.databases.svc.cluster.local:6379
+              # PAPERLESS_REDIS: redis://redis-headless.databases.svc.cluster.local:6379
+              PAPERLESS_REDIS: redis://paperless-redis.default.svc.cluster.local:6379
               PAPERLESS_TASK_WORKERS: 2
               PAPERLESS_TIKA_ENABLED: 1
               PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://localhost:3000
@@ -80,9 +81,21 @@ spec:
             image:
               repository: ghcr.io/paperless-ngx/tika
               tag: 2.9.1-full
-
+      redis:
+        containers:
+          redis:
+            image:
+              repository: docker.io/valkey/valkey
+              tag: 8.1.1
+            resources:
+              requests:
+                cpu: 5m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
     service:
       paperless:
+        primary: true
         controller: *app
         ports:
           http:
@@ -97,6 +110,11 @@ spec:
         ports:
           http:
             port: 9998
+      redis:
+        controller: redis
+        ports:
+          http:
+            port: 6379
 
     route:
       app:
