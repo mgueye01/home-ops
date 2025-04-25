@@ -68,7 +68,7 @@ spec:
               - secretRef:
                   name: paperless-secret
           gotenburg:
-            containers:
+            # containers:
               app:
                 image:
                   repository: ghcr.io/mchestr/gotenberg
@@ -77,7 +77,7 @@ spec:
                   DISABLE_GOOGLE_CHROME: "1"
 
           tika:
-            containers:
+            # containers:
               app:
                 image:
                   repository: ghcr.io/paperless-ngx/tika
