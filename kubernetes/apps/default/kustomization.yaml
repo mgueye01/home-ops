@@ -17,7 +17,7 @@ resources:
   - ./littlelinks/ks.yaml
   - ./mosquitto/ks.yaml
   - ./n8n/ks.yaml
-  # - ./paperless/ks.yaml
+  - ./paperless/ks.yaml
   - ./plex/ks.yaml
   - ./prowlarr/ks.yaml
   - ./radarr/ks.yaml
