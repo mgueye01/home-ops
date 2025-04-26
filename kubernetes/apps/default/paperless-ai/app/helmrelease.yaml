@@ -58,11 +58,6 @@ spec:
     route:
       app:
         hostnames: ["{{ .Release.Name }}.g-eye.io"]
-        annotations:
-          gethomepage.dev/enabled: "true"
-          gethomepage.dev/icon: si-paperlessngx
-          gethomepage.dev/name: Paperless AI
-          gethomepage.dev/group: AI
         parentRefs:
           - name: internal
             namespace: kube-system
