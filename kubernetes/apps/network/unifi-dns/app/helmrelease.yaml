@@ -27,7 +27,7 @@ spec:
     name: unifi-dns
   install:
     remediation:
-      retries: 3
+      retries: -1
   upgrade:
     cleanupOnFail: true
     remediation:
@@ -35,9 +35,9 @@ spec:
       retries: 3
   values:
     fullnameOverride: *app
-    image: # TODO: https://github.com/kubernetes-sigs/external-dns/pull/4943
-      repository: registry.k8s.io/external-dns/external-dns
-      tag: v0.16.1
+    # image: # TODO: https://github.com/kubernetes-sigs/external-dns/pull/4943
+    #   repository: registry.k8s.io/external-dns/external-dns
+    #   tag: v0.16.1
     provider:
       name: webhook
       webhook:
