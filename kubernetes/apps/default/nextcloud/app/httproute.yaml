@@ -7,7 +7,7 @@ spec:
   hostnames: ["cloud.g-eye.io"]
   parentRefs:
     - name: external
-      namespace: networking-system
+      namespace: kube-system
       port: 443
   rules:
     - backendRefs:
