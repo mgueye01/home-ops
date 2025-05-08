@@ -16,6 +16,7 @@ resources:
   - ./kometa/ks.yaml
   - ./littlelinks/ks.yaml
   - ./mosquitto/ks.yaml
+  - ./nextcloud/ks.yaml
   - ./n8n/ks.yaml
   - ./paperless/ks.yaml
   - ./paperless-ai/ks.yaml
