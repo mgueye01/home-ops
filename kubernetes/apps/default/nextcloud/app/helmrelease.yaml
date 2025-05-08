@@ -1,0 +1,154 @@
+---
+# yaml-language-server: $schema=https://github.com/fluxcd-community/flux2-schemas/raw/main/helmrelease-helm-v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app nextcloud
+spec:
+  timeout: 15m
+  interval: 30m
+  chart:
+    spec:
+      chart: nextcloud
+      version: 6.6.10
+      sourceRef:
+        kind: HelmRepository
+        name: nextcloud
+        namespace: default
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  dependsOn:
+    - name: rook-ceph-cluster
+      namespace: rook-ceph
+    - name: volsync
+      namespace: storage
+  values:
+    deploymentAnnotations:
+      reloader.stakater.com/auto: 'true'
+    image:
+      repository: nextcloud
+      flavor: fpm-alpine
+      tag: 31.0.4-fpm-alpine
+      pullPolicy: IfNotPresent
+    nginx:
+      enabled: true
+    nextcloud:
+      extraInitContainers:
+        - name: init-db
+          image: ghcr.io/home-operations/postgres-init:17.4
+          envFrom:
+            - secretRef:
+                name: nextcloud-secret
+      datadir: /var/www/data
+      extraEnv:
+        - name: REDIS_HOST
+          value: redis.database.svc.cluster.local.
+        - name: REDIS_HOST_PORT
+          value: "6379"
+      existingSecret:
+        enabled: true
+        secretName: nextcloud-secret
+        smtpHostKey: smtp_host
+        smtpUsernameKey: smtp_username
+        smtpPasswordKey: smtp_password
+      host: &host cloud.g-eye.io
+      mail:
+        enabled: true
+        fromAddress: no-reply
+        domain: g-eye.io
+      securityContext:
+        runAsUser: 1022
+        runAsGroup: 1022
+        runAsNonRoot: true
+      configs:
+        custom.config.php: |-
+          <?php
+          $CONFIG = array (
+            'overwriteprotocol' => 'https',
+            'overwrite.cli.url' => 'https://cloud.g-eye.io',
+            'overewritehost' => 'cloud.g-eye.io',
+            'check_data_directory_permissions' => false,
+            'filelocking.enabled' => 'true',
+            'default_phone_region' => 'DE',
+            'loglevel' => '2',
+            'enable_previews' => true,
+            'log_type' => 'syslog',
+            'maintenance_window_start' => 1,
+            'trusted_proxies' =>
+              array (
+                0 => '127.0.0.1',
+                1 => '10.42.0.0/16',
+                2 => '10.43.0.0/16',
+              ),
+            'trusted_domains' => array(
+              0 => '127.0.0.1',
+              1 => 'cloud.g-eye.io',
+            ),
+            'forwarded_for_headers' => array('HTTP_X_FORWARDED_FOR'),
+          );
+      phpConfigs:
+        uploadLimit.ini: |
+          upload_max_filesize = 16G
+          post_max_size = 16G
+          max_input_time = 3600
+          max_execution_time = 3600
+        www.conf: |
+          [www]
+          user = www-data
+          group = www-data
+          listen = 127.0.0.1:9000
+          pm = dynamic
+          pm.max_children = 57
+          pm.start_servers = 14
+          pm.min_spare_servers = 14
+          pm.max_spare_servers = 42
+          pm.max_requests = 500
+          pm.process_idle_timeout = 10s
+      hooks:
+        post-installation: |-
+          printf "Add missing DB indices\n"
+          php occ db:add-missing-indices
+        before-starting: |-
+          # disable unneceserry apps
+          for appname in activity circles systemtags federation privacy \
+              nextcloud_announcements announcementcenter support survey_client \
+              user_status weather_status dashboard
+            do
+            php occ app:disable "$appname"
+          done
+        post-upgrade: |-
+          # based on https://github.com/nextcloud/all-in-one/blob/25c580bca370eaead5f1fad9d3842a9c49562dff/Containers/nextcloud/entrypoint.sh#L451-L457
+          php occ maintenance:repair --include-expensive
+          php occ db:add-missing-indices
+          php occ db:add-missing-columns
+          php occ db:add-missing-primary-keys
+    internalDatabase:
+      enabled: false
+    externalDatabase:
+      enabled: true
+      type: postgresql
+      host: postgres16-rw.databases.svc.cluster.local.
+      database: nextcloud
+      existingSecret:
+        enabled: true
+        secretName: nextcloud-secret
+        usernameKey: INIT_POSTGRES_USER
+        passwordKey: INIT_POSTGRES_PASS
+    persistence:
+      enabled: true
+      existingClaim: *app
+
+    # this seems to be required for nextcloud initialization which takes a long time
+    startupProbe:
+      enabled: true
+      initialDelaySeconds: 10
+      periodSeconds: 20
+      timeoutSeconds: 5
+      failureThreshold: 30
+      successThreshold: 1
