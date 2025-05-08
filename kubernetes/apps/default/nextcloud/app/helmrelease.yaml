@@ -37,7 +37,7 @@ spec:
       tag: 31.0.4-fpm-alpine
       pullPolicy: IfNotPresent
     nginx:
-      enabled: true
+      enabled: false
     nextcloud:
       extraInitContainers:
         - name: init-db
@@ -75,7 +75,7 @@ spec:
             'overewritehost' => 'cloud.g-eye.io',
             'check_data_directory_permissions' => false,
             'filelocking.enabled' => 'true',
-            'default_phone_region' => 'DE',
+            'default_phone_region' => 'FR',
             'loglevel' => '2',
             'enable_previews' => true,
             'log_type' => 'syslog',
