@@ -37,7 +37,10 @@ spec:
       tag: 31.0.4-fpm-alpine
       pullPolicy: IfNotPresent
     nginx:
-      enabled: false
+      enabled: true
+      image:
+        repository: nginx
+        tag: 1.27-alpine
     nextcloud:
       extraInitContainers:
         - name: init-db
