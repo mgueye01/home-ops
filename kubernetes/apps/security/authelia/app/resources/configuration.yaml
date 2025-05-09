@@ -35,20 +35,8 @@ session:
       authelia_url: https://auth.g-eye.io
       default_redirection_url: https://g-eye.io
   redis:
-    # database_index: 2
-    # host: dragonfly.database.svc.cluster.local
-    # redis:
-    host: redis.databases.svc.cluster.local
+    host: redis-master.databases.svc.cluster.local
     database_index: 14
-    high_availability:
-      sentinel_name: redis-master
-      nodes:
-        - host: redis-node-0.redis-headless.databases.svc.cluster.local
-          port: 26379
-        - host: redis-node-1.redis-headless.databases.svc.cluster.local
-          port: 26379
-        - host: redis-node-2.redis-headless.databases.svc.cluster.local
-          port: 26379
 
 notifier:
   disable_startup_check: true
