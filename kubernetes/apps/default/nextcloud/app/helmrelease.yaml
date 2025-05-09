@@ -51,7 +51,7 @@ spec:
       datadir: /var/www/data
       extraEnv:
         - name: REDIS_HOST
-          value: redis.database.svc.cluster.local.
+          value: redis.databases.svc.cluster.local.
         - name: REDIS_HOST_PORT
           value: "6379"
       existingSecret:
@@ -76,6 +76,7 @@ spec:
             'overwriteprotocol' => 'https',
             'overwrite.cli.url' => 'https://cloud.g-eye.io',
             'overewritehost' => 'cloud.g-eye.io',
+            'overwritehost' => 'cloud.g-eye.io',
             'check_data_directory_permissions' => false,
             'filelocking.enabled' => 'true',
             'default_phone_region' => 'FR',
@@ -94,6 +95,12 @@ spec:
               1 => 'cloud.g-eye.io',
             ),
             'forwarded_for_headers' => array('HTTP_X_FORWARDED_FOR'),
+            'redis' =>
+              array (
+                'host' => 'redis.databases.svc.cluster.local.',
+                'password' => '',
+                'port' => 6379,
+              ),
           );
       phpConfigs:
         uploadLimit.ini: |
