@@ -60,8 +60,7 @@ spec:
     redis:
       type: external
       external:
-        sentinelMasterSet: redis-master
-        addr: "redis-node-0.redis-headless.databases.svc.cluster.local:26379,redis-node-1.redis-headless.databases.svc.cluster.local:26379,redis-node-2.redis-headless.databases.svc.cluster.local:26379"
+        addr: "redis-master.databases.svc.cluster.local:6379"
         coreDatabaseIndex: "0"
         jobserviceDatabaseIndex: "1"
         registryDatabaseIndex: "2"
