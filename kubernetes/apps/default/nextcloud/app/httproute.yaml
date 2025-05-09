@@ -15,6 +15,21 @@ spec:
           port: 8080
     - matches:
         - path:
+            type: Exact
+            value: /
+          headers:
+            - name: User-Agent
+              type: RegularExpression
+              value: "^DavClnt.*"
+      filters:
+        - type: RequestRedirect
+          requestRedirect:
+            path:
+              type: ReplaceFullPath
+              replaceFullPath: /remote.php/webdav/
+            statusCode: 302
+    - matches:
+        - path:
             type: RegularExpression
             value: /.well-known/(?:card|cal)dav
       filters:
