@@ -107,7 +107,7 @@ spec:
       media:
         type: nfs
         server: nas.g-eye.tech
-        path: /volume1/video/Media
+        path: /volume1/video
         globalMounts:
           - path: /media
       scripts:
