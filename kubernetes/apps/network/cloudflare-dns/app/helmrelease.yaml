@@ -37,7 +37,7 @@ spec:
     fullnameOverride: *app
     image: # TODO: https://github.com/kubernetes-sigs/external-dns/pull/4943
       repository: registry.k8s.io/external-dns/external-dns
-      tag: v0.17.0
+      tag: v0.18.0
     provider: cloudflare
     env:
       - name: &name CF_API_TOKEN
