@@ -43,7 +43,7 @@ spec:
               ACCESS_TOKEN_EXPIRES_IN: "7d"
               LOGIN_TOKEN_EXPIRES_IN: "1h"
               DISABLE_DB_MIGRATIONS: "false"
-              PG_DATABASE_URL: "postgres://twenty:$(TWENTY_POSTGRES_PASS)@postgres16-rw.databases.svc.cluster.local:5432/twenty"
+              PG_DATABASE_URL: "postgres://$(TWENTY_POSTGRES_USER):$(TWENTY_POSTGRES_PASS)@postgres16-rw.databases.svc.cluster.local:5432/$(TWENTY_POSTGRES_DB)"
               REDIS_URL: "redis://redis-master.databases.svc.cluster.local:6379"
               TIMEZONE: "Europe/Paris"
             envFrom: *envFrom
@@ -105,7 +105,7 @@ spec:
               SERVER_URL: "https://twenty.g-eye.io"
               STORAGE_TYPE: "local"
               DISABLE_DB_MIGRATIONS: "false"
-              PG_DATABASE_URL: "postgres://twenty:$(TWENTY_POSTGRES_PASS)@postgres16-rw.databases.svc.cluster.local:5432/twenty"
+              PG_DATABASE_URL: "postgres://$(TWENTY_POSTGRES_USER):$(TWENTY_POSTGRES_PASS)@postgres16-rw.databases.svc.cluster.local:5432/$(TWENTY_POSTGRES_DB)"
               REDIS_URL: "redis://redis-master.databases.svc.cluster.local:6379"
               TIMEZONE: "Europe/Paris"
             envFrom: *envFrom
