@@ -39,7 +39,10 @@ spec:
               NODE_PORT: &port 3000
               SERVER_URL: "https://twenty.g-eye.io"
               SIGN_IN_PREFILLED: "false"
-              STORAGE_TYPE: "local"
+              STORAGE_TYPE: "s3"
+              STORAGE_S3_REGION: "us-east-1"
+              STORAGE_S3_NAME: "twenty"
+              STORAGE_S3_ENDPOINT: "http://nas.g-eye.tech:9000"
               ACCESS_TOKEN_EXPIRES_IN: "7d"
               LOGIN_TOKEN_EXPIRES_IN: "1h"
               DISABLE_DB_MIGRATIONS: "false"
@@ -103,7 +106,10 @@ spec:
             command: ["yarn", "worker:prod"]
             env:
               SERVER_URL: "https://twenty.g-eye.io"
-              STORAGE_TYPE: "local"
+              STORAGE_TYPE: "s3"
+              STORAGE_S3_REGION: "us-east-1"
+              STORAGE_S3_NAME: "twenty"
+              STORAGE_S3_ENDPOINT: "http://nas.g-eye.tech:9000"
               DISABLE_DB_MIGRATIONS: "false"
               PG_DATABASE_URL: "postgres://$(TWENTY_POSTGRES_USER):$(TWENTY_POSTGRES_PASS)@postgres16-rw.databases.svc.cluster.local:5432/$(TWENTY_POSTGRES_DB)"
               REDIS_URL: "redis://redis-master.databases.svc.cluster.local:6379"
