@@ -39,6 +39,13 @@ spec:
               NODE_PORT: &port 3000
               SERVER_URL: "https://twenty.g-eye.io"
               SIGN_IN_PREFILLED: "false"
+              # Google OAuth Authentication
+              MESSAGING_PROVIDER_GMAIL_ENABLED: "true"
+              CALENDAR_PROVIDER_GOOGLE_ENABLED: "true"
+              AUTH_GOOGLE_CLIENT_ID: "$(GOOGLE_CLIENT_ID)"
+              AUTH_GOOGLE_CLIENT_SECRET: "$(GOOGLE_CLIENT_SECRET)"
+              AUTH_GOOGLE_CALLBACK_URL: "https://twenty.g-eye.io/auth/google/redirect"
+              AUTH_GOOGLE_APIS_CALLBACK_URL: "https://twenty.g-eye.io/auth/google-apis/get-access-token"
               STORAGE_TYPE: "s3"
               STORAGE_S3_REGION: "us-east-1"
               STORAGE_S3_NAME: "twenty"
@@ -106,6 +113,13 @@ spec:
             command: ["yarn", "worker:prod"]
             env:
               SERVER_URL: "https://twenty.g-eye.io"
+              # Google OAuth Authentication
+              MESSAGING_PROVIDER_GMAIL_ENABLED: "true"
+              CALENDAR_PROVIDER_GOOGLE_ENABLED: "true"
+              AUTH_GOOGLE_CLIENT_ID: "$(GOOGLE_CLIENT_ID)"
+              AUTH_GOOGLE_CLIENT_SECRET: "$(GOOGLE_CLIENT_SECRET)"
+              AUTH_GOOGLE_CALLBACK_URL: "https://twenty.g-eye.io/auth/google/redirect"
+              AUTH_GOOGLE_APIS_CALLBACK_URL: "https://twenty.g-eye.io/auth/google-apis/get-access-token"
               STORAGE_TYPE: "s3"
               STORAGE_S3_REGION: "us-east-1"
               STORAGE_S3_NAME: "twenty"
