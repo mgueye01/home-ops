@@ -80,7 +80,7 @@ spec:
       app:
         hostnames: ["{{ .Release.Name }}.g-eye.io"]
         parentRefs:
-          - name: internal
+          - name: external
             namespace: kube-system
             sectionName: https
         rules:
