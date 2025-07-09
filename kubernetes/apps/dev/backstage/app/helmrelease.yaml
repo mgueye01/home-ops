@@ -35,7 +35,7 @@ spec:
                 name: &secret backstage-secret
       image:
         repository: ghcr.io/backstage/backstage
-        tag: 1.40.0-next.2@sha256:2cc11847f90c8dece3f0680bba07278fe29efe7b3bd6b4d26a15fc3e200c1359
+        tag: 1.41.0-next.2@sha256:950b2ac33b519f1dc8e8e328409a7ce943432615483e528772efeed38f9275dc
         pullPolicy: IfNotPresent
       containerPorts:
         backend: 7007
