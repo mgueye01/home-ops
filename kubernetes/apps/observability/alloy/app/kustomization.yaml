@@ -1,5 +1,4 @@
 ---
-# yaml-language-server: $schema=https://json.schemastore.org/kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
@@ -7,8 +6,6 @@ resources:
 configMapGenerator:
   - name: alloy-configmap
     files:
-      - config.alloy=./resources/config.alloy
+      - ./resources/config.alloy
 generatorOptions:
   disableNameSuffixHash: true
-  annotations:
-    kustomize.toolkit.fluxcd.io/substitute: disabled
