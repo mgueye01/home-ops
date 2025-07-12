@@ -38,6 +38,10 @@ spec:
         enabled: true
         forceConflicts: true
     cleanPrometheusOperatorObjectNames: true
+    defaultRules:
+      create: true
+      disabled:
+        KubeHpaMaxedOut: true
     alertmanager:
       route:
         main:
