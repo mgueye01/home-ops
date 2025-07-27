@@ -12,7 +12,7 @@
     "editor.stickyScroll.enabled": false,
     "explorer.autoReveal": false,
     "files.associations": {
-        "**/*.json5": "jsonc"
+      "*.yaml": "home-assistant"
     },
     "files.trimTrailingWhitespace": true,
     "material-icon-theme.files.associations": {
