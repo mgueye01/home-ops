@@ -11,6 +11,7 @@ resources:
   # - ./bazarr/ks.yaml
   - ./changedetection/ks.yaml
   # - ./beets/ks.yaml
+  - ./fusion/ks.yaml
   # - ./home-assistant/ks.yaml
   - ./jellyseerr/ks.yaml
   - ./kometa/ks.yaml
