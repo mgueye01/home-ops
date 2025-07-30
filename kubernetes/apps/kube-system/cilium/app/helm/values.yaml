@@ -82,5 +82,3 @@ securityContext:
       - NET_ADMIN
       - SYS_ADMIN
       - SYS_RESOURCE
-debug:
-  verbose: false
