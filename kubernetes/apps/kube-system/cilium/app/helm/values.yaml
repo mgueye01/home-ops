@@ -83,4 +83,4 @@ securityContext:
       - SYS_ADMIN
       - SYS_RESOURCE
 debug:
-  verbose: ""
+  verbose: false
