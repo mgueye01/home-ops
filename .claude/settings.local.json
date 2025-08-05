@@ -12,7 +12,8 @@
       "Bash(kubectl logs:*)",
       "Bash(kubectl exec:*)",
       "Bash(kubectl delete pod:*)",
-      "WebFetch(domain:twenty.com)"
+      "WebFetch(domain:twenty.com)",
+      "Bash(grep:*)"
     ],
     "deny": []
   }
