@@ -135,3 +135,5 @@ identity_providers:
         token_endpoint_auth_method: client_secret_basic
         response_types: ["code"]
         grant_types: ["authorization_code"]
+        require_pkce: false
+        pkce_challenge_method: ''
