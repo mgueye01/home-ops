@@ -67,6 +67,9 @@ identity_providers:
     cors:
       endpoints: ["authorization", "token", "revocation", "introspection"]
       allowed_origins_from_client_redirect_uris: true
+    claims_policies:
+      default:
+        id_token: ['groups', 'email', 'email_verified', 'preferred_username', 'name']
     clients:
       - id: grafana
         description: Grafana
@@ -137,3 +140,4 @@ identity_providers:
         grant_types: ["authorization_code"]
         require_pkce: false
         pkce_challenge_method: ''
+        claims_policy: default
