@@ -29,7 +29,7 @@ spec:
               tag: 2.15.3@sha256:3e0eaca8c082ebe121a0ae9125bea1b4e2d177fca34ac8df4ec14a28e62f63a4
             env:
               TZ: Europe/Paris
-              TAUTULLI__PORT: &port 80
+              TAUTULLI__PORT: &port 8181
             probes:
               liveness: &probes
                 enabled: true
@@ -46,7 +46,9 @@ spec:
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
-              capabilities: { drop: ["ALL"] }
+              capabilities:
+                drop: ["ALL"]
+                add: ["NET_BIND_SERVICE"]
             resources:
               requests:
                 cpu: 10m
