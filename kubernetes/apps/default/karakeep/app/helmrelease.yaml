@@ -26,13 +26,13 @@ spec:
           app:
             image:
               repository: ghcr.io/karakeep-app/karakeep
-              tag: 0.25.0
+              tag: 0.26.0
             env:
               BROWSER_WEB_URL: http://karakeep-chrome.default.svc.cluster.local:9222
               CRAWLER_DOWNLOAD_BANNER_IMAGE: true
               CRAWLER_ENABLE_ADBLOCKER: true
               CRAWLER_STORE_SCREENSHOT: true
-              DISABLE_SIGNUPS: true
+              DISABLE_SIGNUPS: false
               DATA_DIR: /data
               MEILI_ADDR: http://karakeep-meilisearch.default.svc.cluster.local:7700
               NEXTAUTH_URL: https://karakeep.g-eye.io
@@ -100,7 +100,7 @@ spec:
           app:
             image:
               repository: docker.io/getmeili/meilisearch
-              tag: v1.15.2
+              tag: v1.16.0
             args:
               - /bin/meilisearch
               - --experimental-dumpless-upgrade
