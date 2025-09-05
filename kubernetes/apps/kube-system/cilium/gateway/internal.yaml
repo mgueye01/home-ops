@@ -6,15 +6,11 @@ metadata:
   name: internal
   annotations:
     external-dns.alpha.kubernetes.io/target: &hostname internal.g-eye.io
-  labels:
-    gateway: internal
 spec:
   gatewayClassName: cilium
   addresses:
     - type: IPAddress
       value: 192.168.10.50
-    - type: IPAddress
-      value: ::ffff:192.168.10.50
   infrastructure:
     annotations:
       external-dns.alpha.kubernetes.io/hostname: *hostname
@@ -25,7 +21,7 @@ spec:
       hostname: "*.g-eye.io"
       allowedRoutes:
         namespaces:
-          from: All
+          from: Same
     - name: https
       protocol: HTTPS
       port: 443
