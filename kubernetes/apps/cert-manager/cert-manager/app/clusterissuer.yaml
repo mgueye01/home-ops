@@ -16,4 +16,5 @@ spec:
               name: cloudflare-issuer-secret
               key: CLOUDFLARE_DNS_TOKEN
         selector:
-          dnsZones: ["g-eye.io"]
+          dnsZones:
+            - g-eye.io

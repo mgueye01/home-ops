@@ -1,9 +1,0 @@
-machine:
-  network:
-    hostname: k8s-2
-  disks:
-    - device: /dev/disk/by-id/ata-CT480BX500SSD1_2249E68E6B31
-      partitions:
-        - mountpoint: /var/mnt/extra
-  install:
-    image: factory.talos.dev/installer/d715f723f882b1e1e8063f1b89f237dcc0e3bd000f9f970243af59c8baae0100:{{ ENV.TALOS_VERSION }}
