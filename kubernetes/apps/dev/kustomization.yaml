@@ -5,10 +5,10 @@ namespace: dev
 components:
   - ../../components/common
 resources:
-  # - ./namespace.yaml
-  # - ./backstage/ks.yaml
-  - ./gitea/ks.yaml
-  - ./harbor/ks.yaml
-  # - drone
-  - ./buildkit/ks.yaml
-  # - ./backstage/ks.yaml
+  # # - ./namespace.yaml
+  # # - ./backstage/ks.yaml
+  # - ./gitea/ks.yaml
+  # - ./harbor/ks.yaml
+  # # - drone
+  # - ./buildkit/ks.yaml
+  # # - ./backstage/ks.yaml
