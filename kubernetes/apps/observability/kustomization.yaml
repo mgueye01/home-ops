@@ -7,17 +7,17 @@ components:
   - ../../components/common
 resources:
   - ./alloy/ks.yaml
-  # - ./blackbox-exporter/ks.yaml
-  # - ./gatus/ks.yaml
-  # - ./grafana/ks.yaml
-  # - ./keda/ks.yaml
-  # - ./kromgo/ks.yaml
-  # - ./kube-prometheus-stack/ks.yaml
-  # - ./loki/ks.yaml
-  # # - ./promtail/ks.yaml
-  # - ./silence-operator/ks.yaml
-  # - ./smartctl-exporter/ks.yaml
-  # # - ./snmp-exporter/ks.yaml
-  # - ./unpoller/ks.yaml
-  # - ./teslamate/ks.yaml
-  # - ./karma/ks.yaml
+  - ./blackbox-exporter/ks.yaml
+  - ./gatus/ks.yaml
+  - ./grafana/ks.yaml
+  - ./keda/ks.yaml
+  - ./kromgo/ks.yaml
+  - ./kube-prometheus-stack/ks.yaml
+  - ./loki/ks.yaml
+  # - ./promtail/ks.yaml
+  - ./silence-operator/ks.yaml
+  - ./smartctl-exporter/ks.yaml
+  # - ./snmp-exporter/ks.yaml
+  - ./unpoller/ks.yaml
+  - ./teslamate/ks.yaml
+  - ./karma/ks.yaml
