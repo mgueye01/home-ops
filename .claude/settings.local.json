@@ -14,7 +14,8 @@
       "Bash(kubectl delete pod:*)",
       "WebFetch(domain:twenty.com)",
       "Bash(grep:*)",
-      "Bash(kubectl:*)"
+      "Bash(kubectl:*)",
+      "Bash(talosctl:*)"
     ],
     "deny": []
   }
