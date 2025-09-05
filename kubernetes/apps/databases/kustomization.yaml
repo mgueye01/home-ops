@@ -6,6 +6,6 @@ namespace: databases
 components:
   - ../../components/common
 resources:
-  - ./cloudnative-pg/ks.yaml
-  - ./redis/ks.yaml
-  - ./pgadmin/ks.yaml
+  # - ./cloudnative-pg/ks.yaml
+  # - ./redis/ks.yaml
+  # - ./pgadmin/ks.yaml
