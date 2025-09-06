@@ -7,29 +7,29 @@ components:
   - ../../components/common
 resources:
   - ./atuin/ks.yaml
-  # - ./autobrr/ks.yaml
-  # - ./bazarr/ks.yaml
+  # # - ./autobrr/ks.yaml
+  # # - ./bazarr/ks.yaml
   - ./changedetection/ks.yaml
-  # - ./beets/ks.yaml
-  - ./fusion/ks.yaml
-  # - ./home-assistant/ks.yaml
-  - ./jellyseerr/ks.yaml
-  - ./karakeep/ks.yaml
-  - ./kometa/ks.yaml
-  - ./littlelinks/ks.yaml
-  - ./mosquitto/ks.yaml
-  - ./nextcloud/ks.yaml
-  - ./n8n/ks.yaml
-  - ./paperless/ks.yaml
-  - ./paperless-ai/ks.yaml
-  - ./plex/ks.yaml
-  - ./prowlarr/ks.yaml
-  - ./radarr/ks.yaml
-  - ./recommendarr/ks.yaml
-  # - ./recyclarr/ks.yaml
-  - ./sabnzbd/ks.yaml
-  - ./shlink/ks.yaml
-  # - ./slskd/ks.yaml
-  - ./sonarr/ks.yaml
-  - ./tautulli/ks.yaml
-  - ./twenty/ks.yaml
+  # # - ./beets/ks.yaml
+  # - ./fusion/ks.yaml
+  # # - ./home-assistant/ks.yaml
+  # - ./jellyseerr/ks.yaml
+  # - ./karakeep/ks.yaml
+  # - ./kometa/ks.yaml
+  # - ./littlelinks/ks.yaml
+  # - ./mosquitto/ks.yaml
+  # - ./nextcloud/ks.yaml
+  # - ./n8n/ks.yaml
+  # - ./paperless/ks.yaml
+  # - ./paperless-ai/ks.yaml
+  # - ./plex/ks.yaml
+  # - ./prowlarr/ks.yaml
+  # - ./radarr/ks.yaml
+  # - ./recommendarr/ks.yaml
+  # # - ./recyclarr/ks.yaml
+  # - ./sabnzbd/ks.yaml
+  # - ./shlink/ks.yaml
+  # # - ./slskd/ks.yaml
+  # - ./sonarr/ks.yaml
+  # - ./tautulli/ks.yaml
+  # - ./twenty/ks.yaml
