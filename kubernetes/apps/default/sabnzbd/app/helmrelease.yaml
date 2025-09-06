@@ -128,4 +128,3 @@ spec:
           sabnzbd:
             app:
               - path: /incomplete
-                subPath: incomplete
