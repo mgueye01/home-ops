@@ -18,18 +18,18 @@ resources:
   - ./kometa/ks.yaml
   - ./littlelinks/ks.yaml
   - ./mosquitto/ks.yaml
-  - ./nextcloud/ks.yaml
+  # - ./nextcloud/ks.yaml
   - ./n8n/ks.yaml
   - ./paperless/ks.yaml
-  - ./paperless-ai/ks.yaml
-  - ./plex/ks.yaml
-  - ./prowlarr/ks.yaml
-  - ./radarr/ks.yaml
+  # - ./paperless-ai/ks.yaml
+  # - ./plex/ks.yaml
+  # - ./prowlarr/ks.yaml
+  # - ./radarr/ks.yaml
   - ./recommendarr/ks.yaml
-  # - ./recyclarr/ks.yaml
+  # # - ./recyclarr/ks.yaml
   - ./sabnzbd/ks.yaml
   - ./shlink/ks.yaml
-  # - ./slskd/ks.yaml
-  - ./sonarr/ks.yaml
-  - ./tautulli/ks.yaml
+  # # - ./slskd/ks.yaml
+  # - ./sonarr/ks.yaml
+  # - ./tautulli/ks.yaml
   - ./twenty/ks.yaml
