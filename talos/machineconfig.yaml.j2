@@ -14,7 +14,7 @@ machine:
     diskQuotaSupport: true
     hostDNS:
       enabled: true
-      forwardKubeDNSToHost: true
+      forwardKubeDNSToHost: false
       resolveMemberNames: true
     kubePrism:
       enabled: true
@@ -184,12 +184,20 @@ cluster:
   {% endif %}
 ---
 apiVersion: v1alpha1
+kind: VolumeConfig
+name: EPHEMERAL
+provisioning:
+  diskSelector:
+    match: system_disk
+  maxSize: 250GiB
+---
+apiVersion: v1alpha1
 kind: UserVolumeConfig
 name: local-hostpath
 provisioning:
   diskSelector:
-    match: disk.model == "Samsung SSD 980 PRO" && !system_disk
-  minSize: 1TB
+    match: system_disk
+  maxSize: 180GiB
 ---
 apiVersion: v1alpha1
 kind: WatchdogTimerConfig
