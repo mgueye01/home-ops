@@ -23,10 +23,10 @@ spec:
       namespace: external-secrets
     - name: volsync
       namespace: volsync-system
-  # components:
-  #   - ../../../../components/gatus/external
-    # - ../../../../components/volsync
-  # postBuild:
-  #   substitute:
-  #     APP: *app
-  #     VOLSYNC_CAPACITY: 5Gi
+  components:
+    - ../../../../components/gatus/external
+    - ../../../../components/volsync
+  postBuild:
+    substitute:
+      APP: *app
+      VOLSYNC_CAPACITY: 5Gi
