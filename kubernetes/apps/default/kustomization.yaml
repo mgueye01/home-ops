@@ -32,4 +32,4 @@ resources:
   # - ./slskd/ks.yaml
   - ./sonarr/ks.yaml
   - ./tautulli/ks.yaml
-  - ./twenty/ks.yaml
+  # - ./twenty/ks.yaml
