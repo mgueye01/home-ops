@@ -34,7 +34,7 @@ spec:
           app:
             image:
               repository: twentycrm/twenty
-              tag: latest
+              tag: v1.3
             env:
               NODE_PORT: &port 3000
               SERVER_URL: "https://twenty.g-eye.io"
