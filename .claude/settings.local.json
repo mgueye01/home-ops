@@ -15,7 +15,8 @@
       "WebFetch(domain:twenty.com)",
       "Bash(grep:*)",
       "Bash(kubectl:*)",
-      "Bash(talosctl:*)"
+      "Bash(talosctl:*)",
+      "Bash(curl:*)"
     ],
     "deny": []
   }
