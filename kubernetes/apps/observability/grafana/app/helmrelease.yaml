@@ -263,9 +263,6 @@ spec:
           gnetId: 11312
           revision: 9
           datasource: Prometheus
-        plex-exporter:
-          url: https://raw.githubusercontent.com/jsclayton/prometheus-plex-exporter/main/examples/dashboards/Media%20Server.json
-          datasource: Prometheus
         volsync:
           # renovate: depName="VolSync Dashboard"
           gnetId: 21356
