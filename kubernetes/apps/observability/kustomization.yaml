@@ -21,4 +21,3 @@ resources:
   - ./unpoller/ks.yaml
   - ./teslamate/ks.yaml
   - ./karma/ks.yaml
-  - ./plex-exporter/ks.yaml
