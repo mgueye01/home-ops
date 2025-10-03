@@ -1,0 +1,21 @@
+---
+connectivity:
+  checker:
+    target: 1.1.1.1:53
+    interval: 1m
+
+metrics: true
+
+ui:
+  title: Status | Gatus
+  header: Status
+  logo: https://avatars.githubusercontent.com/u/39132800
+  link: https://github.com/mgueye01
+  buttons:
+    - name: Github
+      link: https://github.com/mgueye01
+    - name: Homelab
+      link: https://github.com/mgueye01/home-ops
+
+web:
+  port: ${GATUS_WEB_PORT}
