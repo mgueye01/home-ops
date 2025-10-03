@@ -7,7 +7,6 @@ components:
   - ../../components/common
 resources:
   - ./atuin/ks.yaml
-  # - ./autobrr/ks.yaml
   - ./bazarr/ks.yaml
   - ./changedetection/ks.yaml
   # - ./beets/ks.yaml
@@ -26,10 +25,9 @@ resources:
   - ./prowlarr/ks.yaml
   - ./radarr/ks.yaml
   - ./recommendarr/ks.yaml
-  # - ./recyclarr/ks.yaml
+  - ./recyclarr/ks.yaml
   - ./sabnzbd/ks.yaml
   - ./shlink/ks.yaml
-  # - ./slskd/ks.yaml
   - ./sonarr/ks.yaml
   - ./tautulli/ks.yaml
   - ./twenty/ks.yaml
