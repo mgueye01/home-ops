@@ -55,6 +55,10 @@ spec:
             port: &port 4000
     route:
       app:
+        annotations:
+          gatus.home-operations.com/enabled: "true"
+          gatus.home-operations.com/endpoint: |-
+            conditions: ["[STATUS] == 200"]
         enabled: true
         hostnames:
           - "{{ .Release.Name }}.g-eye.io"
