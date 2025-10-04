@@ -118,7 +118,7 @@ spec:
           redis:
             image:
               repository: public.ecr.aws/docker/library/redis
-              tag: 7.4.1-alpine
+              tag: 7.4.6-alpine
             command:
               - redis-server
               - --save
@@ -177,7 +177,7 @@ spec:
           redis:
             image:
               repository: public.ecr.aws/docker/library/redis
-              tag: 7.4.1-alpine
+              tag: 7.4.6-alpine
             command:
               - redis-server
               - --save
