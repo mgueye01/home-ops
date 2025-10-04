@@ -126,9 +126,9 @@ spec:
               - --appendonly
               - "no"
               - --maxmemory
-              - 256mb
+              - 512mb
               - --maxmemory-policy
-              - allkeys-lru
+              - noeviction
       lelabo-crm-worker:
         annotations:
           reloader.stakater.com/auto: "true"
@@ -185,9 +185,9 @@ spec:
               - --appendonly
               - "no"
               - --maxmemory
-              - 256mb
+              - 512mb
               - --maxmemory-policy
-              - allkeys-lru
+              - noeviction
         pod:
           securityContext:
             runAsUser: 568
