@@ -174,11 +174,26 @@ spec:
               limits:
                 memory: 2Gi
                 cpu: 1000m
+          redis:
+            image:
+              repository: public.ecr.aws/docker/library/redis
+              tag: 7.4.1-alpine
+            command:
+              - redis-server
+              - --save
+              - ""
+              - --appendonly
+              - "no"
+              - --maxmemory
+              - 256mb
+              - --maxmemory-policy
+              - allkeys-lru
         pod:
           securityContext:
-            runAsUser: 1001
-            runAsGroup: 1001
-            runAsNonRoot: true
+            runAsUser: 568
+            runAsGroup: 568
+            fsGroup: 568
+            fsGroupChangePolicy: OnRootMismatch
     service:
       app:
         controller: lelabo-crm
