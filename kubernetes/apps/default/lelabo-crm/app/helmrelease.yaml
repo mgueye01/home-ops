@@ -66,7 +66,7 @@ spec:
               LOGIN_TOKEN_EXPIRES_IN: "1h"
               DISABLE_DB_MIGRATIONS: "false"
               PG_DATABASE_URL: "postgres://$(LELABO_CRM_POSTGRES_USER):$(LELABO_CRM_POSTGRES_PASS)@postgres16-rw.databases.svc.cluster.local:5432/$(LELABO_CRM_POSTGRES_DB)"
-              REDIS_URL: "redis://localhost:6379"
+              REDIS_URL: "redis://redis-master.databases.svc.cluster.local:6379"
               TIMEZONE: "Europe/Paris"
             envFrom: *envFrom
             probes:
@@ -114,20 +114,6 @@ spec:
               limits:
                 memory: 1Gi
                 cpu: 1000m
-          redis:
-            image:
-              repository: public.ecr.aws/docker/library/redis
-              tag: 7.4.1-alpine
-            command:
-              - redis-server
-              - --save
-              - ""
-              - --appendonly
-              - "no"
-              - --maxmemory
-              - 512mb
-              - --maxmemory-policy
-              - noeviction
       lelabo-crm-worker:
         annotations:
           reloader.stakater.com/auto: "true"
@@ -164,7 +150,7 @@ spec:
               STORAGE_S3_ENDPOINT: "http://nas.g-eye.tech:9000"
               DISABLE_DB_MIGRATIONS: "false"
               PG_DATABASE_URL: "postgres://$(LELABO_CRM_POSTGRES_USER):$(LELABO_CRM_POSTGRES_PASS)@postgres16-rw.databases.svc.cluster.local:5432/$(LELABO_CRM_POSTGRES_DB)"
-              REDIS_URL: "redis://localhost:6379"
+              REDIS_URL: "redis://redis-master.databases.svc.cluster.local:6379"
               TIMEZONE: "Europe/Paris"
             envFrom: *envFrom
             securityContext:
@@ -178,20 +164,6 @@ spec:
               limits:
                 memory: 2Gi
                 cpu: 1000m
-          redis:
-            image:
-              repository: public.ecr.aws/docker/library/redis
-              tag: 7.4.1-alpine
-            command:
-              - redis-server
-              - --save
-              - ""
-              - --appendonly
-              - "no"
-              - --maxmemory
-              - 512mb
-              - --maxmemory-policy
-              - noeviction
     service:
       app:
         controller: lelabo-crm
@@ -217,8 +189,10 @@ spec:
     persistence:
       data:
         existingClaim: lelabo-crm
-        globalMounts:
-          - path: /app/data
+        advancedMounts:
+          lelabo-crm:
+            app:
+              - path: /app/data
       tmp:
         type: emptyDir
         globalMounts:
