@@ -31,4 +31,4 @@ resources:
   - ./sonarr/ks.yaml
   - ./tautulli/ks.yaml
   - ./twenty/ks.yaml
-  # - ./lelabo-crm/ks.yaml
+  - ./lelabo-crm/ks.yaml
