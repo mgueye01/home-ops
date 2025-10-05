@@ -45,6 +45,7 @@ spec:
               SERVER_URL: "https://lelabo-crm.g-eye.io"
               SIGN_IN_PREFILLED: "false"
               # Google OAuth Authentication
+              AUTH_GOOGLE_ENABLED: "true"
               MESSAGING_PROVIDER_GMAIL_ENABLED: "true"
               CALENDAR_PROVIDER_GOOGLE_ENABLED: "true"
               AUTH_GOOGLE_CLIENT_ID: "$(GOOGLE_CLIENT_ID)"
@@ -131,6 +132,7 @@ spec:
             env:
               SERVER_URL: "https://lelabo-crm.g-eye.io"
               # Google OAuth Authentication
+              AUTH_GOOGLE_ENABLED: "true"
               MESSAGING_PROVIDER_GMAIL_ENABLED: "true"
               CALENDAR_PROVIDER_GOOGLE_ENABLED: "true"
               AUTH_GOOGLE_CLIENT_ID: "$(GOOGLE_CLIENT_ID)"
