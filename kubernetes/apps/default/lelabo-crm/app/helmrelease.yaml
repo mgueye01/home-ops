@@ -22,12 +22,6 @@ spec:
       lelabo-crm:
         annotations:
           reloader.stakater.com/auto: "true"
-        pod:
-          securityContext:
-            runAsUser: 568
-            runAsGroup: 568
-            fsGroup: 568
-            fsGroupChangePolicy: OnRootMismatch
         initContainers:
           init-db:
             image:
@@ -174,6 +168,11 @@ spec:
               limits:
                 memory: 2Gi
                 cpu: 1000m
+        pod:
+          securityContext:
+            runAsUser: 1001
+            runAsGroup: 1001
+            runAsNonRoot: true
           redis:
             image:
               repository: public.ecr.aws/docker/library/redis
@@ -188,12 +187,6 @@ spec:
               - 512mb
               - --maxmemory-policy
               - noeviction
-        pod:
-          securityContext:
-            runAsUser: 568
-            runAsGroup: 568
-            fsGroup: 568
-            fsGroupChangePolicy: OnRootMismatch
     service:
       app:
         controller: lelabo-crm
