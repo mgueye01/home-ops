@@ -1,0 +1,90 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: redis-lelabo-crm-exporter
+  namespace: databases
+spec:
+  groups:
+    - name: redis-lelabo-crm-exporter
+      rules:
+        - alert: RedisLeLaboCRMExporterAbsent
+          annotations:
+            description: Redis LeLabo CRM Exporter has disappeared from Prometheus target discovery.
+            summary: Redis LeLabo CRM Exporter is down.
+          expr: |
+            absent(up{job=~".*redis-lelabo-crm.*"} == 1)
+          for: 5m
+          labels:
+            severity: critical
+        - alert: RedisLeLaboCRMDown
+          annotations:
+            description: Redis LeLabo CRM service is down.
+            summary: Redis LeLabo CRM is down.
+          expr: |
+            redis_up{job=~".*redis-lelabo-crm.*"} == 0
+          for: 0m
+          labels:
+            severity: critical
+        - alert: RedisLeLaboCRMOutOfSystemMemory
+          annotations:
+            description: Redis LeLabo CRM is running out of system memory (> 90%).
+            summary: Redis LeLabo CRM out of system memory.
+          expr: |
+            redis_memory_used_bytes{job=~".*redis-lelabo-crm.*"}
+              /
+            redis_total_system_memory_bytes{job=~".*redis-lelabo-crm.*"} * 100
+              > 90
+          for: 2m
+          labels:
+            severity: warning
+        - alert: RedisLeLaboCRMOutOfConfiguredMaxmemory
+          annotations:
+            description: Redis LeLabo CRM is running out of configured maxmemory (> 90%).
+            summary: Redis LeLabo CRM out of configured maxmemory.
+          expr: |
+            redis_memory_used_bytes{job=~".*redis-lelabo-crm.*"}
+              /
+            redis_memory_max_bytes{job=~".*redis-lelabo-crm.*"} * 100
+              > 90 != +inf
+          for: 2m
+          labels:
+            severity: warning
+        - alert: RedisLeLaboCRMTooManyConnections
+          annotations:
+            description: Redis LeLabo CRM instance has too many connections.
+            summary: Redis LeLabo CRM too many connections.
+          expr: |
+            redis_connected_clients{job=~".*redis-lelabo-crm.*"}
+              > 200
+          for: 2m
+          labels:
+            severity: warning
+        - alert: RedisLeLaboCRMNotEnoughConnections
+          annotations:
+            description: Redis LeLabo CRM instance should have more connections (> 1).
+            summary: Redis LeLabo CRM not enough connections.
+          expr: |
+            redis_connected_clients{job=~".*redis-lelabo-crm.*"}
+              < 1
+          for: 5m
+          labels:
+            severity: warning
+        - alert: RedisLeLaboCRMRejectedConnections
+          annotations:
+            description: Some connections to Redis LeLabo CRM has been rejected.
+            summary: Redis LeLabo CRM rejected connections.
+          expr: |
+            increase(redis_rejected_connections_total{job=~".*redis-lelabo-crm.*"}[1m]) > 0
+          for: 1m
+          labels:
+            severity: critical
+        - alert: RedisLeLaboCRMKeyEviction
+          annotations:
+            description: Redis LeLabo CRM instance has evicted {{ $value }} keys in the last 5 minutes.
+            summary: Redis LeLabo CRM instance has evicted keys.
+          expr: |
+            increase(redis_evicted_keys_total{job=~".*redis-lelabo-crm.*"}[5m]) > 0
+          for: 1s
+          labels:
+            severity: warning
