@@ -1,0 +1,79 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: redis-lelabo-crm
+spec:
+  interval: 5m
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  ref:
+    tag: 22.0.7
+  url: oci://registry-1.docker.io/bitnamicharts/redis
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: redis-lelabo-crm
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: redis-lelabo-crm
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    auth:
+      enabled: true
+      existingSecret: redis-lelabo-crm-secret
+      existingSecretPasswordKey: redis-password
+    master:
+      persistence:
+        enabled: true
+        size: 2Gi
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          memory: 1Gi
+      configuration: |-
+        # RDB snapshots
+        save 900 1
+        save 300 10
+        save 60 10000
+        # AOF persistence
+        appendonly yes
+        appendfsync everysec
+        # Memory management
+        maxmemory 900mb
+        maxmemory-policy allkeys-lru
+    replica:
+      replicaCount: 0
+      persistence:
+        enabled: false
+    sentinel:
+      enabled: false
+    networkPolicy:
+      enabled: false
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+        interval: 1m
+        additionalLabels:
+          app.kubernetes.io/name: redis-lelabo-crm
+      resources:
+        requests:
+          cpu: 10m
+          memory: 20Mi
+        limits:
+          memory: 80Mi

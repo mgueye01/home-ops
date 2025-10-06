@@ -23,6 +23,8 @@ spec:
       namespace: external-secrets
     - name: volsync
       namespace: volsync-system
+    - name: redis-lelabo-crm
+      namespace: databases
   components:
     - ../../../../components/volsync
   postBuild:
