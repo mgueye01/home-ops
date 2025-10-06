@@ -69,8 +69,6 @@ spec:
       serviceMonitor:
         enabled: true
         interval: 1m
-        additionalLabels:
-          app.kubernetes.io/name: redis-lelabo-crm
       resources:
         requests:
           cpu: 10m
