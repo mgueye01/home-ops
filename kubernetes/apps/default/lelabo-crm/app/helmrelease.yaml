@@ -70,6 +70,8 @@ spec:
               DISABLE_DB_MIGRATIONS: "false"
               PG_DATABASE_URL: "postgres://$(LELABO_CRM_POSTGRES_USER):$(LELABO_CRM_POSTGRES_PASS)@postgres16-rw.databases.svc.cluster.local:5432/$(LELABO_CRM_POSTGRES_DB)"
               REDIS_URL: "redis://:$(redis-password)@redis-lelabo-crm-master.databases.svc.cluster.local:6379"
+              CACHE_STORAGE_TYPE: "redis"
+              MESSAGE_QUEUE_TYPE: "bull-mq"
               TIMEZONE: "Europe/Paris"
             envFrom: *envFrom
             probes:
@@ -155,6 +157,8 @@ spec:
               DISABLE_DB_MIGRATIONS: "false"
               PG_DATABASE_URL: "postgres://$(LELABO_CRM_POSTGRES_USER):$(LELABO_CRM_POSTGRES_PASS)@postgres16-rw.databases.svc.cluster.local:5432/$(LELABO_CRM_POSTGRES_DB)"
               REDIS_URL: "redis://:$(redis-password)@redis-lelabo-crm-master.databases.svc.cluster.local:6379"
+              CACHE_STORAGE_TYPE: "redis"
+              MESSAGE_QUEUE_TYPE: "bull-mq"
               TIMEZONE: "Europe/Paris"
             envFrom: *envFrom
             securityContext:
