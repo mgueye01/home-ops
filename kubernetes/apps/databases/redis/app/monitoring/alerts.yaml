@@ -31,7 +31,7 @@ spec:
             description: Redis cluster has no node marked as master.
             summary: Redis missing master.
           expr: |
-            (count(redis_instance_info{role="master",service="redis"}) or vector(0))
+            (count(redis_instance_info{role="master",service="redis-metrics"}) or vector(0))
               < 1
           for: 1m
           labels:
@@ -41,7 +41,7 @@ spec:
             description: Redis cluster has too many nodes marked as master.
             summary: Redis too many masters.
           expr: |
-            count(redis_instance_info{role="master",service="redis"})
+            count(redis_instance_info{role="master",service="redis-metrics"})
               > 1
           for: 1m
           labels:
