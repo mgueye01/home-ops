@@ -559,6 +559,9 @@ app.get('/sse', async (req, res) => {
 
   console.log(`[SSE] Session ${transport.sessionId} established. Active: ${activeTransports.size}`);
 
+  // Start the transport (handles initial SSE connection)
+  await transport.start();
+
   // Connect MCP server to transport
   await mcpServer.connect(transport);
 
