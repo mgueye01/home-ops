@@ -33,7 +33,7 @@ spec:
             env:
               PORT: "3000"
               NODE_ENV: production
-              TWENTY_API_URL: https://lelabo-crm.g-eye.io/graphql
+              TWENTY_API_URL: https://lelabo-crm.g-eye.io
               TZ: Europe/Paris
 
             envFrom:
