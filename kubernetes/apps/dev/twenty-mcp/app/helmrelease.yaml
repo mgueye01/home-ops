@@ -31,7 +31,7 @@ spec:
               pullPolicy: Always
 
             env:
-              PORT: &port "3000"
+              PORT: "3000"
               NODE_ENV: production
               TWENTY_API_URL: https://lelabo-crm.g-eye.io/graphql
               TZ: Europe/Paris
@@ -47,7 +47,7 @@ spec:
                 spec:
                   httpGet:
                     path: /health
-                    port: *port
+                    port: 3000
                   initialDelaySeconds: 10
                   periodSeconds: 10
                   timeoutSeconds: 3
@@ -58,7 +58,7 @@ spec:
                 spec:
                   httpGet:
                     path: /ready
-                    port: *port
+                    port: 3000
                   initialDelaySeconds: 5
                   periodSeconds: 5
                   timeoutSeconds: 3
@@ -92,7 +92,7 @@ spec:
         ports:
           http:
             port: 80
-            targetPort: *port
+            targetPort: 3000
 
     route:
       app:
