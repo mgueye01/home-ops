@@ -1,6 +1,7 @@
 import express from 'express';
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
+import { ListToolsRequestSchema, CallToolRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import cors from 'cors';
 
 const app = express();
@@ -31,7 +32,7 @@ const mcpServer = new Server({
 });
 
 // Define Twenty CRM Tools
-mcpServer.setRequestHandler('tools/list', async () => {
+mcpServer.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
     tools: [
       {
@@ -98,7 +99,7 @@ mcpServer.setRequestHandler('tools/list', async () => {
 });
 
 // Handle tool calls
-mcpServer.setRequestHandler('tools/call', async (request) => {
+mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
 
   try {
