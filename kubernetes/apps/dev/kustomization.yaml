@@ -12,3 +12,4 @@ resources:
   # - drone
   - ./buildkit/ks.yaml
   # - ./backstage/ks.yaml
+  - ./twenty-mcp/ks.yaml
