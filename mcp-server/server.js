@@ -544,11 +544,10 @@ mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
 app.get('/sse', async (req, res) => {
   console.log('[SSE] New connection from:', req.headers['user-agent']);
 
-  res.writeHead(200, {
-    'Content-Type': 'text/event-stream',
-    'Cache-Control': 'no-cache',
-    'Connection': 'keep-alive',
-  });
+  // Set headers before SSEServerTransport takes over
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
 
   const transport = new SSEServerTransport('/messages', res);
   await mcpServer.connect(transport);
