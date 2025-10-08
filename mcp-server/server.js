@@ -612,9 +612,8 @@ app.post('/messages', async (req, res) => {
     console.log(`[Messages] Processing message for session ${sessionId}:`, JSON.stringify(req.body).substring(0, 200));
 
     // The transport will handle the message and send response via SSE
-    await transport.handleMessage(req.body);
-
-    res.status(202).send(); // 202 Accepted - response will come via SSE
+    // IMPORTANT: Must pass req, res, and req.body
+    await transport.handlePostMessage(req, res, req.body);
   } catch (error) {
     console.error(`[Messages] Error processing message for session ${sessionId}:`, error);
     res.status(500).json({ error: error.message });
