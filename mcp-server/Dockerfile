@@ -19,8 +19,8 @@ COPY --from=builder /app /app
 # Add Express for HTTP/SSE wrapper
 RUN npm install --omit=dev express@4.21.2 cors@2.8.5
 
-# Copy HTTP wrapper
-COPY server-wrapper.js .
+# Copy HTTP wrapper (with SSE fix)
+COPY server.js .
 
 # Create non-root user (node user already exists in alpine)
 USER node
@@ -33,4 +33,4 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD node -e "require('http').get('http://localhost:3000/health', (r) => { process.exit(r.statusCode === 200 ? 0 : 1); }).on('error', () => process.exit(1));"
 
-CMD ["node", "server-wrapper.js"]
+CMD ["node", "server.js"]
