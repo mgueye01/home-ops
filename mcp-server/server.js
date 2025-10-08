@@ -593,22 +593,32 @@ app.get('/sse', async (req, res) => {
 
 // POST endpoint for messages
 app.post('/messages', async (req, res) => {
-  const sessionId = req.query.sessionId || req.body.sessionId;
+  const sessionId = req.query.sessionId;
 
   if (!sessionId) {
-    console.error('[Messages] No sessionId provided');
-    return res.status(400).json({ error: 'sessionId required' });
+    console.error('[Messages] No sessionId provided in query');
+    return res.status(400).json({ error: 'sessionId required in query parameter' });
   }
 
   const transport = activeTransports.get(sessionId);
 
   if (!transport) {
-    console.error(`[Messages] Session ${sessionId} not found`);
+    console.error(`[Messages] Session ${sessionId} not found. Active sessions: ${Array.from(activeTransports.keys()).join(', ')}`);
     return res.status(404).json({ error: 'Session not found' });
   }
 
-  // MCP SDK handles message routing internally
-  res.status(200).send();
+  try {
+    // Forward the message to the transport for processing
+    console.log(`[Messages] Processing message for session ${sessionId}:`, JSON.stringify(req.body).substring(0, 200));
+
+    // The transport will handle the message and send response via SSE
+    await transport.handleMessage(req.body);
+
+    res.status(202).send(); // 202 Accepted - response will come via SSE
+  } catch (error) {
+    console.error(`[Messages] Error processing message for session ${sessionId}:`, error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // Health check endpoint
