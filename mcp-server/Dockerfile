@@ -16,11 +16,11 @@ WORKDIR /app
 # Copy from builder
 COPY --from=builder /app /app
 
+# Copy HTTP wrapper (with SSE fix) BEFORE installing additional dependencies
+COPY server.js .
+
 # Add Express for HTTP/SSE wrapper
 RUN npm install --omit=dev express@4.21.2 cors@2.8.5
-
-# Copy HTTP wrapper (with SSE fix)
-COPY server.js .
 
 # Create non-root user (node user already exists in alpine)
 USER node
