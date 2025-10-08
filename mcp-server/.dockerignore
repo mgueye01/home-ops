@@ -1,8 +1,3 @@
-node_modules
-npm-debug.log
-.git
-.gitignore
-README.md
-.env
-.dockerignore
-Dockerfile
+# Ignore everything except server-wrapper.js
+*
+!server-wrapper.js

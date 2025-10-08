@@ -1,34 +1,36 @@
+# Build stage - clone official repository
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Clone official mhenry3164 repository
+RUN apk add --no-cache git && \
+    git clone https://github.com/mhenry3164/twenty-crm-mcp-server.git . && \
+    npm ci --omit=dev
 
-# Install dependencies
-RUN npm ci --omit=dev
-
-# Copy application code
-COPY server.js ./
-
-# Production stage
+# Runtime stage
 FROM node:20-alpine
 
 WORKDIR /app
 
 # Copy from builder
-COPY --from=builder /app ./
+COPY --from=builder /app /app
 
-# Create non-root user
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001
+# Add Express for HTTP/SSE wrapper
+RUN npm install --omit=dev express@4.21.2 cors@2.8.5
 
-USER nodejs
+# Copy HTTP wrapper
+COPY server-wrapper.js .
+
+# Create non-root user (node user already exists in alpine)
+USER node
+
+ENV NODE_ENV=production
+ENV PORT=3000
 
 EXPOSE 3000
 
-# Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
+  CMD node -e "require('http').get('http://localhost:3000/health', (r) => { process.exit(r.statusCode === 200 ? 0 : 1); }).on('error', () => process.exit(1));"
 
-CMD ["node", "server.js"]
+CMD ["node", "server-wrapper.js"]
