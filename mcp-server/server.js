@@ -613,10 +613,15 @@ app.post('/messages', async (req, res) => {
 
     // The transport will handle the message and send response via SSE
     // IMPORTANT: Must pass req, res, and req.body
+    // handlePostMessage will send the HTTP response itself - don't send one after
     await transport.handlePostMessage(req, res, req.body);
+    console.log(`[Messages] Message processed successfully for session ${sessionId}`);
   } catch (error) {
     console.error(`[Messages] Error processing message for session ${sessionId}:`, error);
-    res.status(500).json({ error: error.message });
+    console.error(`[Messages] Error stack:`, error.stack);
+    if (!res.headersSent) {
+      res.status(500).json({ error: error.message });
+    }
   }
 });
 
