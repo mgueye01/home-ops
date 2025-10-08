@@ -27,7 +27,7 @@ spec:
           app:
             image:
               repository: ghcr.io/mgueye01/twenty-crm-mcp-server
-              tag: 29c8b53d3b50b15e797c1e2f9aed17fe0f6ddfb4
+              tag: 29c8b53da3ce59d8fba56620d9a1948e59ff8919
               pullPolicy: IfNotPresent
 
             env:
