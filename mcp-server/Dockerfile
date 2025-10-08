@@ -16,6 +16,9 @@ WORKDIR /app
 # Copy from builder
 COPY --from=builder /app /app
 
+# Invalidate cache for server.js copy using build timestamp
+ARG CACHEBUST=1
+
 # Copy HTTP wrapper (with SSE fix) BEFORE installing additional dependencies
 COPY server.js .
 
