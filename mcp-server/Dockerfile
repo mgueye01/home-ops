@@ -1,31 +1,18 @@
-# Build stage - clone official repository
-FROM node:20-alpine AS builder
-
-WORKDIR /app
-
-# Clone official mhenry3164 repository
-RUN apk add --no-cache git && \
-    git clone https://github.com/mhenry3164/twenty-crm-mcp-server.git . && \
-    npm ci --omit=dev
-
-# Runtime stage
+# Standalone Twenty CRM MCP Server with SSE support
 FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy from builder
-COPY --from=builder /app /app
+# Copy package files first for better caching
+COPY package.json package-lock.json ./
 
-# Invalidate cache for server.js copy using build timestamp
-ARG CACHEBUST=1
+# Install dependencies
+RUN npm ci --omit=dev
 
-# Copy HTTP wrapper (with SSE fix) BEFORE installing additional dependencies
-COPY server.js .
+# Copy server code
+COPY server.js ./
 
-# Add Express for HTTP/SSE wrapper
-RUN npm install --omit=dev express@4.21.2 cors@2.8.5
-
-# Create non-root user (node user already exists in alpine)
+# Create non-root user
 USER node
 
 ENV NODE_ENV=production

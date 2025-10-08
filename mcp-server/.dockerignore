@@ -1,3 +1,5 @@
-# Ignore everything except server.js
+# Ignore everything except necessary files
 *
 !server.js
+!package.json
+!package-lock.json
