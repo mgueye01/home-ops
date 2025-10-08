@@ -40,6 +40,8 @@ jobs:
           context: ./mcp-server
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name == 'push' }}
+          build-args: |
+            CACHEBUST=${{ github.sha }}
           tags: |
             ghcr.io/${{ github.repository_owner }}/twenty-crm-mcp-server:latest
             ghcr.io/${{ github.repository_owner }}/twenty-crm-mcp-server:${{ github.sha }}
