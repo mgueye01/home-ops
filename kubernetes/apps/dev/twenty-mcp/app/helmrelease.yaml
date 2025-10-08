@@ -27,8 +27,8 @@ spec:
           app:
             image:
               repository: ghcr.io/mgueye01/twenty-crm-mcp-server
-              tag: 85cb1279a850330042fb3287d2d2b8c98e5c9d15
-              pullPolicy: IfNotPresent
+              tag: latest
+              pullPolicy: Always
 
             env:
               PORT: "3000"
