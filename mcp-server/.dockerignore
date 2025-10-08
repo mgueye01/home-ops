@@ -1,3 +1,3 @@
-# Ignore everything except server-wrapper.js
+# Ignore everything except server.js
 *
-!server-wrapper.js
+!server.js
