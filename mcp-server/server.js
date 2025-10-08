@@ -31,6 +31,9 @@ const mcpServer = new Server({
   },
 });
 
+// Track active SSE connections by sessionId
+const activeTransports = new Map();
+
 // Helper function to make API requests to Twenty CRM
 async function makeRequest(endpoint, method = 'GET', data = null) {
   const url = `${TWENTY_API_URL}${endpoint}`;
@@ -544,22 +547,67 @@ mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
 app.get('/sse', async (req, res) => {
   console.log('[SSE] New connection from:', req.headers['user-agent']);
 
-  // Set headers before SSEServerTransport takes over
+  // Set SSE headers
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no');
 
+  // Create transport and register session
   const transport = new SSEServerTransport('/messages', res);
+  activeTransports.set(transport.sessionId, transport);
+
+  console.log(`[SSE] Session ${transport.sessionId} established. Active: ${activeTransports.size}`);
+
+  // Connect MCP server to transport
   await mcpServer.connect(transport);
 
+  // Implement heartbeat to keep connection alive (every 30 seconds)
+  const heartbeat = setInterval(() => {
+    try {
+      res.write(': heartbeat\n\n');
+    } catch (error) {
+      console.error('[SSE] Heartbeat failed:', error.message);
+      clearInterval(heartbeat);
+    }
+  }, 30000);
+
+  // Handle disconnect
   req.on('close', () => {
-    console.log('[SSE] Connection closed');
+    clearInterval(heartbeat);
+    activeTransports.delete(transport.sessionId);
+    console.log(`[SSE] Session ${transport.sessionId} closed. Active: ${activeTransports.size}`);
     transport.close();
   });
+
+  // Handle errors
+  req.on('error', (error) => {
+    console.error(`[SSE] Connection error for ${transport.sessionId}:`, error);
+    clearInterval(heartbeat);
+    activeTransports.delete(transport.sessionId);
+    transport.close();
+  });
+
+  // CRITICAL: DO NOT call res.end() - keep connection open!
 });
 
 // POST endpoint for messages
 app.post('/messages', async (req, res) => {
+  const sessionId = req.query.sessionId || req.body.sessionId;
+
+  if (!sessionId) {
+    console.error('[Messages] No sessionId provided');
+    return res.status(400).json({ error: 'sessionId required' });
+  }
+
+  const transport = activeTransports.get(sessionId);
+
+  if (!transport) {
+    console.error(`[Messages] Session ${sessionId} not found`);
+    return res.status(404).json({ error: 'Session not found' });
+  }
+
+  // MCP SDK handles message routing internally
   res.status(200).send();
 });
 
@@ -570,6 +618,7 @@ app.get('/health', (req, res) => {
     service: 'twenty-crm-mcp-server',
     version: '2.0.0',
     tools: 23,
+    activeConnections: activeTransports.size,
     timestamp: new Date().toISOString(),
     twentyCrmUrl: TWENTY_API_URL
   });
