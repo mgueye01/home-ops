@@ -6,7 +6,7 @@ import cors from 'cors';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const TWENTY_API_URL = process.env.TWENTY_API_URL || 'https://lelabo-crm.g-eye.io/graphql';
+const TWENTY_API_URL = process.env.TWENTY_API_URL || 'https://api.twenty.com';
 const TWENTY_API_KEY = process.env.TWENTY_API_KEY;
 
 if (!TWENTY_API_KEY) {
@@ -24,63 +24,123 @@ app.use(express.json());
 // Initialize MCP Server
 const mcpServer = new Server({
   name: 'twenty-crm-server',
-  version: '1.0.0',
+  version: '2.0.0',
 }, {
   capabilities: {
     tools: {},
   },
 });
 
-// Define Twenty CRM Tools
+// Helper function to make API requests to Twenty CRM
+async function makeRequest(endpoint, method = 'GET', data = null) {
+  const url = `${TWENTY_API_URL}${endpoint}`;
+  const options = {
+    method,
+    headers: {
+      'Authorization': `Bearer ${TWENTY_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+  };
+
+  if (data && (method === 'POST' || method === 'PUT' || method === 'PATCH' || method === 'DELETE')) {
+    options.body = JSON.stringify(data);
+  }
+
+  try {
+    const response = await fetch(url, options);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    throw new Error(`API request failed: ${error.message}`);
+  }
+}
+
+// Define all Twenty CRM Tools (23 tools total)
 mcpServer.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
     tools: [
+      // ===== PEOPLE MANAGEMENT (5 tools) =====
       {
-        name: 'list_contacts',
-        description: 'List contacts from Twenty CRM',
-        inputSchema: {
-          type: 'object',
-          properties: {
-            limit: { type: 'number', description: 'Number of contacts (default: 10)', default: 10 },
-            search: { type: 'string', description: 'Search by name or email' }
-          }
-        }
-      },
-      {
-        name: 'create_contact',
-        description: 'Create a new contact in Twenty CRM',
+        name: 'create_person',
+        description: 'Create a new person in Twenty CRM',
         inputSchema: {
           type: 'object',
           properties: {
             firstName: { type: 'string', description: 'First name' },
             lastName: { type: 'string', description: 'Last name' },
             email: { type: 'string', description: 'Email address' },
-            phone: { type: 'string', description: 'Phone number' }
+            phone: { type: 'string', description: 'Phone number' },
+            jobTitle: { type: 'string', description: 'Job title' },
+            companyId: { type: 'string', description: 'Company ID to associate with' },
+            linkedinUrl: { type: 'string', description: 'LinkedIn profile URL' },
+            city: { type: 'string', description: 'City' },
+            avatarUrl: { type: 'string', description: 'Avatar image URL' }
           },
           required: ['firstName', 'lastName']
         }
       },
       {
-        name: 'get_contact',
-        description: 'Get a specific contact by ID',
+        name: 'get_person',
+        description: 'Get details of a specific person by ID',
         inputSchema: {
           type: 'object',
           properties: {
-            id: { type: 'string', description: 'Contact ID' }
+            id: { type: 'string', description: 'Person ID' }
           },
           required: ['id']
         }
       },
       {
-        name: 'list_companies',
-        description: 'List companies from Twenty CRM',
+        name: 'update_person',
+        description: 'Update an existing person\'s information',
         inputSchema: {
           type: 'object',
           properties: {
-            limit: { type: 'number', description: 'Number of companies (default: 10)', default: 10 }
+            id: { type: 'string', description: 'Person ID' },
+            firstName: { type: 'string', description: 'First name' },
+            lastName: { type: 'string', description: 'Last name' },
+            email: { type: 'string', description: 'Email address' },
+            phone: { type: 'string', description: 'Phone number' },
+            jobTitle: { type: 'string', description: 'Job title' },
+            companyId: { type: 'string', description: 'Company ID' },
+            linkedinUrl: { type: 'string', description: 'LinkedIn profile URL' },
+            city: { type: 'string', description: 'City' }
+          },
+          required: ['id']
+        }
+      },
+      {
+        name: 'list_people',
+        description: 'List people with optional filtering and pagination',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: { type: 'number', description: 'Number of results to return (default: 20)' },
+            offset: { type: 'number', description: 'Number of results to skip (default: 0)' },
+            search: { type: 'string', description: 'Search term for name or email' },
+            companyId: { type: 'string', description: 'Filter by company ID' }
           }
         }
       },
+      {
+        name: 'delete_person',
+        description: 'Delete a person from Twenty CRM',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            id: { type: 'string', description: 'Person ID to delete' }
+          },
+          required: ['id']
+        }
+      },
+
+      // ===== COMPANY MANAGEMENT (5 tools) =====
       {
         name: 'create_company',
         description: 'Create a new company in Twenty CRM',
@@ -89,16 +149,241 @@ mcpServer.setRequestHandler(ListToolsRequestSchema, async () => {
           properties: {
             name: { type: 'string', description: 'Company name' },
             domainName: { type: 'string', description: 'Company domain' },
-            address: { type: 'string', description: 'Company address' }
+            address: { type: 'string', description: 'Company address' },
+            employees: { type: 'number', description: 'Number of employees' },
+            linkedinUrl: { type: 'string', description: 'LinkedIn company URL' },
+            xUrl: { type: 'string', description: 'X (Twitter) URL' },
+            annualRecurringRevenue: { type: 'number', description: 'Annual recurring revenue' },
+            idealCustomerProfile: { type: 'boolean', description: 'Is this an ideal customer profile' }
           },
           required: ['name']
+        }
+      },
+      {
+        name: 'get_company',
+        description: 'Get details of a specific company by ID',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            id: { type: 'string', description: 'Company ID' }
+          },
+          required: ['id']
+        }
+      },
+      {
+        name: 'update_company',
+        description: 'Update an existing company\'s information',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            id: { type: 'string', description: 'Company ID' },
+            name: { type: 'string', description: 'Company name' },
+            domainName: { type: 'string', description: 'Company domain' },
+            address: { type: 'string', description: 'Company address' },
+            employees: { type: 'number', description: 'Number of employees' },
+            linkedinUrl: { type: 'string', description: 'LinkedIn company URL' },
+            annualRecurringRevenue: { type: 'number', description: 'Annual recurring revenue' }
+          },
+          required: ['id']
+        }
+      },
+      {
+        name: 'list_companies',
+        description: 'List companies with optional filtering and pagination',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: { type: 'number', description: 'Number of results to return (default: 20)' },
+            offset: { type: 'number', description: 'Number of results to skip (default: 0)' },
+            search: { type: 'string', description: 'Search term for company name' }
+          }
+        }
+      },
+      {
+        name: 'delete_company',
+        description: 'Delete a company from Twenty CRM',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            id: { type: 'string', description: 'Company ID to delete' }
+          },
+          required: ['id']
+        }
+      },
+
+      // ===== TASK MANAGEMENT (5 tools) =====
+      {
+        name: 'create_task',
+        description: 'Create a new task in Twenty CRM',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            title: { type: 'string', description: 'Task title' },
+            body: { type: 'string', description: 'Task description' },
+            dueAt: { type: 'string', description: 'Due date (ISO 8601 format)' },
+            status: { type: 'string', description: 'Task status (TODO, IN_PROGRESS, DONE)' },
+            assigneeId: { type: 'string', description: 'Person ID to assign task to' }
+          },
+          required: ['title']
+        }
+      },
+      {
+        name: 'get_task',
+        description: 'Get details of a specific task by ID',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            id: { type: 'string', description: 'Task ID' }
+          },
+          required: ['id']
+        }
+      },
+      {
+        name: 'update_task',
+        description: 'Update an existing task',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            id: { type: 'string', description: 'Task ID' },
+            title: { type: 'string', description: 'Task title' },
+            body: { type: 'string', description: 'Task description' },
+            dueAt: { type: 'string', description: 'Due date (ISO 8601 format)' },
+            status: { type: 'string', description: 'Task status (TODO, IN_PROGRESS, DONE)' },
+            assigneeId: { type: 'string', description: 'Person ID to assign task to' }
+          },
+          required: ['id']
+        }
+      },
+      {
+        name: 'list_tasks',
+        description: 'List tasks with optional filtering and pagination',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: { type: 'number', description: 'Number of results to return (default: 20)' },
+            offset: { type: 'number', description: 'Number of results to skip (default: 0)' },
+            status: { type: 'string', description: 'Filter by status (TODO, IN_PROGRESS, DONE)' },
+            assigneeId: { type: 'string', description: 'Filter by assignee ID' }
+          }
+        }
+      },
+      {
+        name: 'delete_task',
+        description: 'Delete a task from Twenty CRM',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            id: { type: 'string', description: 'Task ID to delete' }
+          },
+          required: ['id']
+        }
+      },
+
+      // ===== NOTE MANAGEMENT (5 tools) =====
+      {
+        name: 'create_note',
+        description: 'Create a new note in Twenty CRM',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            title: { type: 'string', description: 'Note title' },
+            body: { type: 'string', description: 'Note content' },
+            position: { type: 'number', description: 'Position for ordering' }
+          },
+          required: ['title', 'body']
+        }
+      },
+      {
+        name: 'get_note',
+        description: 'Get details of a specific note by ID',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            id: { type: 'string', description: 'Note ID' }
+          },
+          required: ['id']
+        }
+      },
+      {
+        name: 'update_note',
+        description: 'Update an existing note',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            id: { type: 'string', description: 'Note ID' },
+            title: { type: 'string', description: 'Note title' },
+            body: { type: 'string', description: 'Note content' },
+            position: { type: 'number', description: 'Position for ordering' }
+          },
+          required: ['id']
+        }
+      },
+      {
+        name: 'list_notes',
+        description: 'List notes with optional filtering and pagination',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            limit: { type: 'number', description: 'Number of results to return (default: 20)' },
+            offset: { type: 'number', description: 'Number of results to skip (default: 0)' },
+            search: { type: 'string', description: 'Search term for note title or content' }
+          }
+        }
+      },
+      {
+        name: 'delete_note',
+        description: 'Delete a note from Twenty CRM',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            id: { type: 'string', description: 'Note ID to delete' }
+          },
+          required: ['id']
+        }
+      },
+
+      // ===== METADATA & SEARCH (3 tools) =====
+      {
+        name: 'get_metadata_objects',
+        description: 'Get all object types and their schemas from Twenty CRM',
+        inputSchema: {
+          type: 'object',
+          properties: {}
+        }
+      },
+      {
+        name: 'get_object_metadata',
+        description: 'Get metadata for a specific object type',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            objectName: { type: 'string', description: 'Object name (e.g., person, company, task, note)' }
+          },
+          required: ['objectName']
+        }
+      },
+      {
+        name: 'search_records',
+        description: 'Search across multiple object types in Twenty CRM',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            query: { type: 'string', description: 'Search query' },
+            objectTypes: {
+              type: 'array',
+              items: { type: 'string' },
+              description: 'Object types to search (person, company, task, note)'
+            },
+            limit: { type: 'number', description: 'Maximum number of results (default: 20)' }
+          },
+          required: ['query']
         }
       }
     ]
   };
 });
 
-// Handle tool calls
+// Handle tool calls - this is where we'll implement the actual API calls
 mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
 
@@ -106,95 +391,127 @@ mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
     let result;
 
     switch (name) {
-      case 'list_contacts':
-        result = await fetchTwentyCRM(`
-          query {
-            people(first: ${args.limit || 10}) {
-              edges {
-                node {
-                  id
-                  firstName
-                  lastName
-                  email
-                  phone
-                  createdAt
-                }
-              }
-            }
-          }
-        `);
+      // ===== PEOPLE OPERATIONS =====
+      case 'create_person':
+        result = await makeRequest('/rest/people', 'POST', args);
         break;
 
-      case 'create_contact':
-        result = await fetchTwentyCRM(`
-          mutation {
-            createPerson(data: {
-              firstName: "${args.firstName}"
-              lastName: "${args.lastName}"
-              ${args.email ? `email: "${args.email}"` : ''}
-              ${args.phone ? `phone: "${args.phone}"` : ''}
-            }) {
-              id
-              firstName
-              lastName
-              email
-              phone
-            }
-          }
-        `);
+      case 'get_person':
+        result = await makeRequest(`/rest/people/${args.id}`, 'GET');
         break;
 
-      case 'get_contact':
-        result = await fetchTwentyCRM(`
-          query {
-            person(id: "${args.id}") {
-              id
-              firstName
-              lastName
-              email
-              phone
-              createdAt
-              company {
-                id
-                name
-              }
-            }
-          }
-        `);
+      case 'update_person':
+        const { id: personId, ...personData } = args;
+        result = await makeRequest(`/rest/people/${personId}`, 'PATCH', personData);
+        break;
+
+      case 'list_people':
+        const personParams = new URLSearchParams();
+        if (args.limit) personParams.append('limit', args.limit);
+        if (args.offset) personParams.append('offset', args.offset);
+        if (args.search) personParams.append('search', args.search);
+        if (args.companyId) personParams.append('companyId', args.companyId);
+        result = await makeRequest(`/rest/people?${personParams}`, 'GET');
+        break;
+
+      case 'delete_person':
+        result = await makeRequest(`/rest/people/${args.id}`, 'DELETE');
+        break;
+
+      // ===== COMPANY OPERATIONS =====
+      case 'create_company':
+        result = await makeRequest('/rest/companies', 'POST', args);
+        break;
+
+      case 'get_company':
+        result = await makeRequest(`/rest/companies/${args.id}`, 'GET');
+        break;
+
+      case 'update_company':
+        const { id: companyId, ...companyData } = args;
+        result = await makeRequest(`/rest/companies/${companyId}`, 'PATCH', companyData);
         break;
 
       case 'list_companies':
-        result = await fetchTwentyCRM(`
-          query {
-            companies(first: ${args.limit || 10}) {
-              edges {
-                node {
-                  id
-                  name
-                  domainName
-                  employees
-                  createdAt
-                }
-              }
-            }
-          }
-        `);
+        const companyParams = new URLSearchParams();
+        if (args.limit) companyParams.append('limit', args.limit);
+        if (args.offset) companyParams.append('offset', args.offset);
+        if (args.search) companyParams.append('search', args.search);
+        result = await makeRequest(`/rest/companies?${companyParams}`, 'GET');
         break;
 
-      case 'create_company':
-        result = await fetchTwentyCRM(`
-          mutation {
-            createCompany(data: {
-              name: "${args.name}"
-              ${args.domainName ? `domainName: "${args.domainName}"` : ''}
-              ${args.address ? `address: "${args.address}"` : ''}
-            }) {
-              id
-              name
-              domainName
-            }
-          }
-        `);
+      case 'delete_company':
+        result = await makeRequest(`/rest/companies/${args.id}`, 'DELETE');
+        break;
+
+      // ===== TASK OPERATIONS =====
+      case 'create_task':
+        result = await makeRequest('/rest/tasks', 'POST', args);
+        break;
+
+      case 'get_task':
+        result = await makeRequest(`/rest/tasks/${args.id}`, 'GET');
+        break;
+
+      case 'update_task':
+        const { id: taskId, ...taskData } = args;
+        result = await makeRequest(`/rest/tasks/${taskId}`, 'PATCH', taskData);
+        break;
+
+      case 'list_tasks':
+        const taskParams = new URLSearchParams();
+        if (args.limit) taskParams.append('limit', args.limit);
+        if (args.offset) taskParams.append('offset', args.offset);
+        if (args.status) taskParams.append('status', args.status);
+        if (args.assigneeId) taskParams.append('assigneeId', args.assigneeId);
+        result = await makeRequest(`/rest/tasks?${taskParams}`, 'GET');
+        break;
+
+      case 'delete_task':
+        result = await makeRequest(`/rest/tasks/${args.id}`, 'DELETE');
+        break;
+
+      // ===== NOTE OPERATIONS =====
+      case 'create_note':
+        result = await makeRequest('/rest/notes', 'POST', args);
+        break;
+
+      case 'get_note':
+        result = await makeRequest(`/rest/notes/${args.id}`, 'GET');
+        break;
+
+      case 'update_note':
+        const { id: noteId, ...noteData } = args;
+        result = await makeRequest(`/rest/notes/${noteId}`, 'PATCH', noteData);
+        break;
+
+      case 'list_notes':
+        const noteParams = new URLSearchParams();
+        if (args.limit) noteParams.append('limit', args.limit);
+        if (args.offset) noteParams.append('offset', args.offset);
+        if (args.search) noteParams.append('search', args.search);
+        result = await makeRequest(`/rest/notes?${noteParams}`, 'GET');
+        break;
+
+      case 'delete_note':
+        result = await makeRequest(`/rest/notes/${args.id}`, 'DELETE');
+        break;
+
+      // ===== METADATA & SEARCH =====
+      case 'get_metadata_objects':
+        result = await makeRequest('/rest/metadata/objects', 'GET');
+        break;
+
+      case 'get_object_metadata':
+        result = await makeRequest(`/rest/metadata/objects/${args.objectName}`, 'GET');
+        break;
+
+      case 'search_records':
+        const searchParams = new URLSearchParams();
+        searchParams.append('q', args.query);
+        if (args.limit) searchParams.append('limit', args.limit);
+        if (args.objectTypes) searchParams.append('objectTypes', args.objectTypes.join(','));
+        result = await makeRequest(`/rest/search?${searchParams}`, 'GET');
         break;
 
       default:
@@ -222,30 +539,6 @@ mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
     };
   }
 });
-
-// Fetch data from Twenty CRM GraphQL API
-async function fetchTwentyCRM(query) {
-  const response = await fetch(TWENTY_API_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${TWENTY_API_KEY}`
-    },
-    body: JSON.stringify({ query })
-  });
-
-  if (!response.ok) {
-    throw new Error(`Twenty CRM API error: ${response.status} ${response.statusText}`);
-  }
-
-  const data = await response.json();
-
-  if (data.errors) {
-    throw new Error(data.errors[0].message);
-  }
-
-  return data.data;
-}
 
 // SSE endpoint for MCP connection
 app.get('/sse', async (req, res) => {
@@ -276,6 +569,8 @@ app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'healthy',
     service: 'twenty-crm-mcp-server',
+    version: '2.0.0',
+    tools: 23,
     timestamp: new Date().toISOString(),
     twentyCrmUrl: TWENTY_API_URL
   });
@@ -285,8 +580,8 @@ app.get('/health', (req, res) => {
 app.get('/ready', async (req, res) => {
   try {
     // Test connection to Twenty CRM
-    await fetchTwentyCRM('query { __typename }');
-    res.status(200).json({ status: 'ready' });
+    await makeRequest('/rest/metadata/objects', 'GET');
+    res.status(200).json({ status: 'ready', tools: 23 });
   } catch (error) {
     res.status(503).json({ status: 'not ready', error: error.message });
   }
@@ -294,8 +589,9 @@ app.get('/ready', async (req, res) => {
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`✓ Twenty CRM MCP Server running on port ${PORT}`);
+  console.log(`✓ Twenty CRM MCP Server v2.0 running on port ${PORT}`);
   console.log(`✓ SSE endpoint: http://localhost:${PORT}/sse`);
   console.log(`✓ Health check: http://localhost:${PORT}/health`);
   console.log(`✓ Connected to Twenty CRM: ${TWENTY_API_URL}`);
+  console.log(`✓ Tools available: 23 (People, Companies, Tasks, Notes, Metadata, Search)`);
 });
