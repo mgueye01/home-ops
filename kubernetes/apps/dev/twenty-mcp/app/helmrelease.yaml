@@ -41,6 +41,18 @@ spec:
                   name: twenty-mcp-secret
 
             probes:
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: 3000
+                  initialDelaySeconds: 0
+                  periodSeconds: 2
+                  timeoutSeconds: 3
+                  failureThreshold: 15
+                  successThreshold: 1
               liveness:
                 enabled: true
                 custom: true
@@ -49,8 +61,8 @@ spec:
                     path: /health
                     port: 3000
                   initialDelaySeconds: 10
-                  periodSeconds: 10
-                  timeoutSeconds: 3
+                  periodSeconds: 30
+                  timeoutSeconds: 5
                   failureThreshold: 3
               readiness:
                 enabled: true
@@ -60,15 +72,16 @@ spec:
                     path: /ready
                     port: 3000
                   initialDelaySeconds: 5
-                  periodSeconds: 5
-                  timeoutSeconds: 3
-                  failureThreshold: 3
+                  periodSeconds: 15
+                  timeoutSeconds: 5
+                  failureThreshold: 2
 
             resources:
               requests:
-                cpu: 50m
+                cpu: 100m
                 memory: 128Mi
               limits:
+                cpu: 500m
                 memory: 256Mi
 
             securityContext:
