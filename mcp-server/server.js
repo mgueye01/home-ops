@@ -553,17 +553,18 @@ app.get('/sse', async (req, res) => {
   res.setHeader('Connection', 'keep-alive');
   res.setHeader('X-Accel-Buffering', 'no');
 
-  // Create transport and register session
+  // Create transport instance
   const transport = new SSEServerTransport('/messages', res);
+
+  console.log(`[SSE] Session ${transport.sessionId} initializing...`);
+
+  // Connect MCP server to transport (this calls transport.start() internally)
+  await mcpServer.connect(transport);
+
+  // Register in activeTransports after successful initialization
   activeTransports.set(transport.sessionId, transport);
 
   console.log(`[SSE] Session ${transport.sessionId} established. Active: ${activeTransports.size}`);
-
-  // Start the transport (handles initial SSE connection)
-  await transport.start();
-
-  // Connect MCP server to transport
-  await mcpServer.connect(transport);
 
   // Implement heartbeat to keep connection alive (every 30 seconds)
   const heartbeat = setInterval(() => {
