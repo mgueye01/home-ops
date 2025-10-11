@@ -586,7 +586,16 @@ app.get('/sse', async (req, res) => {
 
   // Handle errors
   req.on('error', (error) => {
-    console.error(`[SSE] Connection error for ${transport.sessionId}:`, error);
+    // Expected disconnection errors - log as info, not error
+    const expectedErrors = ['ECONNRESET', 'ECONNABORTED', 'EPIPE', 'ECANCELED'];
+    const isExpectedDisconnect = expectedErrors.includes(error.code) || error.message === 'aborted';
+
+    if (isExpectedDisconnect) {
+      console.log(`[SSE] Client disconnected (session ${transport.sessionId})`);
+    } else {
+      console.error(`[SSE] Unexpected error for ${transport.sessionId}:`, error);
+    }
+
     clearInterval(heartbeat);
     activeTransports.delete(transport.sessionId);
     transport.close();
