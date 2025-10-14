@@ -78,17 +78,12 @@ jobs:
           PRS=$(eval "$GH_CMD")
 
           RAW_COUNT=$(echo "$PRS" | jq '. | length')
-          echo "Debug: Raw PRs count: ${RAW_COUNT}"
+          echo "Found ${RAW_COUNT} open PRs in repository"
 
           if [ "$RAW_COUNT" -eq 0 ]; then
-            echo "❌ No open PRs found in repository"
+            echo "❌ No open PRs found"
             exit 0
           fi
-
-          # Show sample PR for debugging
-          echo "Debug: Sample PR:"
-          echo "$PRS" | jq '.[0] | {number, author: .author.login, labels: (.labels // [] | map(.name))}' || true
-          echo ""
 
           # Filter PRs
           FILTERED_PRS=$(echo "$PRS" | jq -c --arg author "$AUTHOR_FILTER" --arg label "$LABEL_FILTER" '
@@ -101,7 +96,7 @@ jobs:
           ')
 
           FILTERED_COUNT=$(echo "$FILTERED_PRS" | wc -l | tr -d ' ')
-          echo "Debug: Filtered PRs count: ${FILTERED_COUNT}"
+          echo "After filtering: ${FILTERED_COUNT} PRs match criteria"
           echo ""
 
           if [ "$FILTERED_COUNT" -eq 0 ] || [ -z "$FILTERED_PRS" ]; then
@@ -164,26 +159,33 @@ jobs:
               echo "   ⚠️  Attempting merge anyway..."
             fi
 
-            # Approve PR
-            echo "   ✅ Approving PR..."
-            if gh pr review "$PR_NUMBER" --approve --body "✅ Bulk approval via GitHub Actions" 2>&1; then
-              echo "   ✅ Approved successfully"
+            # Approve PR (skip if bot is the author - can't self-approve)
+            if [ "$PR_AUTHOR" != "app/g-eye-bot" ]; then
+              echo "   👍 Approving PR..."
+              if gh pr review "$PR_NUMBER" --approve --body "✅ Bulk approval via GitHub Actions" 2>&1; then
+                echo "   ✅ Approved successfully"
+              else
+                echo "   ⚠️  Approval failed (may already be approved)"
+              fi
             else
-              echo "   ⚠️  Approval failed (may already be approved)"
+              echo "   ⏭️  Skipping approval (bot can't self-approve)"
             fi
 
             # Merge PR
             echo "   🔀 Merging PR..."
-            if gh pr merge "$PR_NUMBER" --auto --squash --delete-branch 2>&1; then
+            MERGE_OUTPUT=$(gh pr merge "$PR_NUMBER" --auto --squash --delete-branch 2>&1)
+            MERGE_EXIT_CODE=$?
+
+            if [ $MERGE_EXIT_CODE -eq 0 ]; then
               echo "   ✅ Merged successfully"
               MERGED_COUNT=$((MERGED_COUNT + 1))
             else
-              echo "   ❌ Merge failed"
+              echo "   ❌ Merge failed: $MERGE_OUTPUT"
               FAILED_COUNT=$((FAILED_COUNT + 1))
             fi
 
             # Small delay to avoid rate limiting
-            sleep 2
+            sleep 1
 
           done <<< "$FILTERED_PRS"
 
