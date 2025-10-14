@@ -1,0 +1,169 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+name: Bulk Merge Pull Requests
+
+on:
+  workflow_dispatch:
+    inputs:
+      author:
+        description: 'PR Author Filter (e.g., renovate[bot], leave empty for all)'
+        required: false
+        default: 'renovate[bot]'
+      label:
+        description: 'PR Label Filter (leave empty for all)'
+        required: false
+        default: ''
+      limit:
+        description: 'Maximum number of PRs to merge'
+        required: false
+        default: '20'
+      dryRun:
+        description: 'Dry run (only show what would be merged)'
+        required: false
+        default: 'false'
+        type: boolean
+
+jobs:
+  bulk-merge:
+    name: Bulk Merge PRs
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Generate Token
+        uses: actions/create-github-app-token@67018539274d69449ef7c02e8e71183d1719ab42 # v2
+        id: app-token
+        with:
+          app-id: "${{ secrets.BOT_APP_ID }}"
+          private-key: "${{ secrets.BOT_APP_PRIVATE_KEY }}"
+
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        with:
+          token: "${{ steps.app-token.outputs.token }}"
+
+      - name: Bulk Approve and Merge PRs
+        env:
+          GH_TOKEN: "${{ steps.app-token.outputs.token }}"
+          AUTHOR_FILTER: "${{ inputs.author }}"
+          LABEL_FILTER: "${{ inputs.label }}"
+          LIMIT: "${{ inputs.limit }}"
+          DRY_RUN: "${{ inputs.dryRun }}"
+        run: |
+          echo "🤖 Bulk PR Merge Tool"
+          echo "===================="
+          echo "Author Filter: ${AUTHOR_FILTER:-all}"
+          echo "Label Filter: ${LABEL_FILTER:-all}"
+          echo "Limit: ${LIMIT}"
+          echo "Dry Run: ${DRY_RUN}"
+          echo ""
+
+          # Build gh pr list command
+          GH_CMD="gh pr list --state open --limit ${LIMIT} --json number,title,author,labels,headRefName"
+
+          # Fetch PRs
+          echo "📋 Fetching open PRs..."
+          PRS=$(eval "$GH_CMD")
+
+          # Filter PRs
+          FILTERED_PRS=$(echo "$PRS" | jq -c --arg author "$AUTHOR_FILTER" --arg label "$LABEL_FILTER" '
+            map(select(
+              (($author == "" or $author == "all") or .author.login == $author) and
+              (($label == "" or $label == "all") or (.labels | map(.name) | contains([$label])))
+            ))[]
+          ')
+
+          if [ -z "$FILTERED_PRS" ]; then
+            echo "❌ No PRs found matching the criteria"
+            exit 0
+          fi
+
+          # Count PRs
+          PR_COUNT=$(echo "$FILTERED_PRS" | wc -l | tr -d ' ')
+          echo "✅ Found ${PR_COUNT} PRs to process"
+          echo ""
+
+          # Process each PR
+          MERGED_COUNT=0
+          FAILED_COUNT=0
+
+          while IFS= read -r pr; do
+            PR_NUMBER=$(echo "$pr" | jq -r '.number')
+            PR_TITLE=$(echo "$pr" | jq -r '.title')
+            PR_AUTHOR=$(echo "$pr" | jq -r '.author.login')
+            PR_BRANCH=$(echo "$pr" | jq -r '.headRefName')
+
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            echo "🔄 Processing PR #${PR_NUMBER}"
+            echo "   Title: ${PR_TITLE}"
+            echo "   Author: ${PR_AUTHOR}"
+            echo "   Branch: ${PR_BRANCH}"
+
+            if [ "$DRY_RUN" = "true" ]; then
+              echo "   ⚠️  DRY RUN - Would approve and merge this PR"
+              MERGED_COUNT=$((MERGED_COUNT + 1))
+              continue
+            fi
+
+            # Check if PR is mergeable
+            PR_STATE=$(gh pr view "$PR_NUMBER" --json mergeable,mergeStateStatus --jq '.mergeable + "|" + .mergeStateStatus')
+            MERGEABLE=$(echo "$PR_STATE" | cut -d'|' -f1)
+            MERGE_STATUS=$(echo "$PR_STATE" | cut -d'|' -f2)
+
+            echo "   Status: mergeable=$MERGEABLE, state=$MERGE_STATUS"
+
+            if [ "$MERGEABLE" != "MERGEABLE" ]; then
+              echo "   ❌ Cannot merge - PR is not mergeable (status: $MERGE_STATUS)"
+              FAILED_COUNT=$((FAILED_COUNT + 1))
+              continue
+            fi
+
+            # Approve PR
+            echo "   ✅ Approving PR..."
+            if gh pr review "$PR_NUMBER" --approve --body "✅ Bulk approval via GitHub Actions" 2>&1; then
+              echo "   ✅ Approved successfully"
+            else
+              echo "   ⚠️  Approval failed (may already be approved)"
+            fi
+
+            # Merge PR
+            echo "   🔀 Merging PR..."
+            if gh pr merge "$PR_NUMBER" --auto --squash --delete-branch 2>&1; then
+              echo "   ✅ Merged successfully"
+              MERGED_COUNT=$((MERGED_COUNT + 1))
+            else
+              echo "   ❌ Merge failed"
+              FAILED_COUNT=$((FAILED_COUNT + 1))
+            fi
+
+            # Small delay to avoid rate limiting
+            sleep 2
+
+          done <<< "$FILTERED_PRS"
+
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📊 Summary"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "Total PRs Found: ${PR_COUNT}"
+          echo "Successfully Merged: ${MERGED_COUNT}"
+          echo "Failed/Skipped: ${FAILED_COUNT}"
+
+          if [ "$DRY_RUN" = "true" ]; then
+            echo ""
+            echo "⚠️  DRY RUN MODE - No actual changes were made"
+          fi
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "### 🤖 Bulk PR Merge Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Configuration:**" >> $GITHUB_STEP_SUMMARY
+          echo "- Author Filter: \`${{ inputs.author || 'all' }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Label Filter: \`${{ inputs.label || 'all' }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Limit: \`${{ inputs.limit }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Dry Run: \`${{ inputs.dryRun }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Check the job logs for detailed results." >> $GITHUB_STEP_SUMMARY
