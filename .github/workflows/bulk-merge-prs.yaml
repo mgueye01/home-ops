@@ -53,10 +53,21 @@ jobs:
         run: |
           echo "🤖 Bulk PR Merge Tool"
           echo "===================="
-          echo "Author Filter: ${AUTHOR_FILTER:-all}"
-          echo "Label Filter: ${LABEL_FILTER:-all}"
+          echo "Author Filter: ${AUTHOR_FILTER:-(none)}"
+          echo "Label Filter: ${LABEL_FILTER:-(none)}"
           echo "Limit: ${LIMIT}"
           echo "Dry Run: ${DRY_RUN}"
+          echo ""
+
+          # Normalize empty strings
+          if [ -z "$AUTHOR_FILTER" ]; then
+            AUTHOR_FILTER="all"
+          fi
+          if [ -z "$LABEL_FILTER" ]; then
+            LABEL_FILTER="all"
+          fi
+
+          echo "Normalized filters: author='${AUTHOR_FILTER}' label='${LABEL_FILTER}'"
           echo ""
 
           # Build gh pr list command
@@ -66,13 +77,32 @@ jobs:
           echo "📋 Fetching open PRs..."
           PRS=$(eval "$GH_CMD")
 
+          RAW_COUNT=$(echo "$PRS" | jq '. | length')
+          echo "Debug: Raw PRs count: ${RAW_COUNT}"
+
+          if [ "$RAW_COUNT" -eq 0 ]; then
+            echo "❌ No open PRs found in repository"
+            exit 0
+          fi
+
+          # Show sample PR for debugging
+          echo "Debug: Sample PR:"
+          echo "$PRS" | jq '.[0] | {number, author: .author.login, labels: (.labels // [] | map(.name))}' || true
+          echo ""
+
           # Filter PRs
           FILTERED_PRS=$(echo "$PRS" | jq -c --arg author "$AUTHOR_FILTER" --arg label "$LABEL_FILTER" '
             map(select(
-              (($author == "" or $author == "all") or .author.login == $author) and
-              (($label == "" or $label == "all") or (.labels | map(.name) | contains([$label])))
+              # Author filter
+              (($author == "" or $author == "all") or (.author.login == $author)) and
+              # Label filter (if empty or "all", skip label check)
+              (($label == "" or $label == "all") or ((.labels // []) | map(.name) | contains([$label])))
             ))[]
           ')
+
+          FILTERED_COUNT=$(echo "$FILTERED_PRS" | wc -l | tr -d ' ')
+          echo "Debug: Filtered PRs count: ${FILTERED_COUNT}"
+          echo ""
 
           if [ -z "$FILTERED_PRS" ]; then
             echo "❌ No PRs found matching the criteria"
