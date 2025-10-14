@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
     inputs:
       author:
-        description: 'PR Author Filter (e.g., renovate[bot], leave empty for all)'
+        description: 'PR Author Filter (e.g., app/g-eye-bot, leave empty for all)'
         required: false
-        default: 'renovate[bot]'
+        default: 'app/g-eye-bot'
       label:
         description: 'PR Label Filter (leave empty for all)'
         required: false
@@ -104,8 +104,12 @@ jobs:
           echo "Debug: Filtered PRs count: ${FILTERED_COUNT}"
           echo ""
 
-          if [ -z "$FILTERED_PRS" ]; then
+          if [ "$FILTERED_COUNT" -eq 0 ] || [ -z "$FILTERED_PRS" ]; then
             echo "❌ No PRs found matching the criteria"
+            echo ""
+            echo "Troubleshooting:"
+            echo "- Check that author matches: '${AUTHOR_FILTER}'"
+            echo "- Current PRs have authors like: $(echo "$PRS" | jq -r '.[0].author.login')"
             exit 0
           fi
 
