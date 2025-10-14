@@ -140,17 +140,28 @@ jobs:
               continue
             fi
 
-            # Check if PR is mergeable
+            # Check if PR is mergeable (query individual PR to get fresh status)
+            echo "   🔍 Checking merge status..."
             PR_STATE=$(gh pr view "$PR_NUMBER" --json mergeable,mergeStateStatus --jq '.mergeable + "|" + .mergeStateStatus')
             MERGEABLE=$(echo "$PR_STATE" | cut -d'|' -f1)
             MERGE_STATUS=$(echo "$PR_STATE" | cut -d'|' -f2)
 
             echo "   Status: mergeable=$MERGEABLE, state=$MERGE_STATUS"
 
-            if [ "$MERGEABLE" != "MERGEABLE" ]; then
-              echo "   ❌ Cannot merge - PR is not mergeable (status: $MERGE_STATUS)"
+            # Accept MERGEABLE status or CLEAN/UNSTABLE merge state
+            if [ "$MERGEABLE" = "MERGEABLE" ] || [ "$MERGE_STATUS" = "CLEAN" ]; then
+              echo "   ✅ PR is ready to merge"
+            elif [ "$MERGEABLE" = "CONFLICTING" ] || [ "$MERGE_STATUS" = "DIRTY" ]; then
+              echo "   ❌ Cannot merge - PR has conflicts"
               FAILED_COUNT=$((FAILED_COUNT + 1))
               continue
+            elif [ "$MERGE_STATUS" = "BLOCKED" ]; then
+              echo "   ❌ Cannot merge - PR is blocked (required checks or reviews)"
+              FAILED_COUNT=$((FAILED_COUNT + 1))
+              continue
+            else
+              echo "   ⚠️  Merge status unclear (mergeable=$MERGEABLE, state=$MERGE_STATUS)"
+              echo "   ⚠️  Attempting merge anyway..."
             fi
 
             # Approve PR
