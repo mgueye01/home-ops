@@ -26,7 +26,7 @@ spec:
           app:
             image:
               repository: clickhouse/clickhouse-server
-              tag: 25.4.2
+              tag: 25.9.4
             env:
               CLICKHOUSE_DB: analytics
               CLICKHOUSE_USER: default
