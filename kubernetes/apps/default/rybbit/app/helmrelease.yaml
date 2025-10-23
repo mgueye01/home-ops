@@ -284,27 +284,13 @@ spec:
                 port: *clientPort
 
     persistence:
-      data:
-        enabled: true
-        storageClass: nfs-slow
-        accessMode: ReadWriteOnce
-        size: 20Gi
+      clickhouse-data:
+        existingClaim: rybbit
         advancedMounts:
           rybbit-clickhouse:
             app:
               - path: /var/lib/clickhouse
       tmp:
-        enabled: true
         type: emptyDir
-        medium: Memory
-        advancedMounts:
-          rybbit-clickhouse:
-            app:
-              - path: /tmp
-      logs:
-        enabled: true
-        type: emptyDir
-        advancedMounts:
-          rybbit-clickhouse:
-            app:
-              - path: /var/log/clickhouse-server
+        globalMounts:
+          - path: /tmp
