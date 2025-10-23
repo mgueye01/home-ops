@@ -26,7 +26,7 @@ spec:
           app:
             image:
               repository: clickhouse/clickhouse-server
-              tag: 25.4.2
+              tag: 25.7-alpine@sha256:193825bef496e029f56b014ef82f10c3c1355d79f60e8720f45d5abc5b78f6c9
             env:
               CLICKHOUSE_DB: analytics
               CLICKHOUSE_USER: default
@@ -35,6 +35,7 @@ spec:
                   secretKeyRef:
                     name: rybbit-secret
                     key: CLICKHOUSE_PASSWORD
+              CLICKHOUSE_DO_NOT_CHOWN: "1"
             probes:
               liveness:
                 enabled: true
@@ -125,7 +126,7 @@ spec:
           app:
             image:
               repository: ghcr.io/rybbit-io/rybbit-backend
-              tag: latest
+              tag: v2.0.1
             env:
               PORT: &backendPort 3001
               NODE_ENV: production
@@ -188,7 +189,7 @@ spec:
           app:
             image:
               repository: ghcr.io/rybbit-io/rybbit-client
-              tag: latest
+              tag: v2.0.1
             env:
               PORT: &clientPort 3002
               NODE_ENV: production
@@ -283,13 +284,27 @@ spec:
                 port: *clientPort
 
     persistence:
-      clickhouse-data:
-        existingClaim: rybbit
+      data:
+        enabled: true
+        type: nfs
+        server: 192.168.1.3
+        path: /volume1/network-storage/cluster/rybbit/clickhouse
         advancedMounts:
           rybbit-clickhouse:
             app:
               - path: /var/lib/clickhouse
       tmp:
+        enabled: true
         type: emptyDir
-        globalMounts:
-          - path: /tmp
+        medium: Memory
+        advancedMounts:
+          rybbit-clickhouse:
+            app:
+              - path: /tmp
+      logs:
+        enabled: true
+        type: emptyDir
+        advancedMounts:
+          rybbit-clickhouse:
+            app:
+              - path: /var/log/clickhouse-server
