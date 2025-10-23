@@ -34,7 +34,7 @@ spec:
                 valueFrom:
                   secretKeyRef:
                     name: rybbit-secret
-                    key: RYBBIT_CLICKHOUSE_PASSWORD
+                    key: CLICKHOUSE_PASSWORD
             probes:
               liveness:
                 enabled: true
