@@ -189,7 +189,7 @@ spec:
           app:
             image:
               repository: ghcr.io/rybbit-io/rybbit-client
-              tag: v2.0.1
+              tag: v2.1.1
             env:
               PORT: &clientPort 3002
               NODE_ENV: production
