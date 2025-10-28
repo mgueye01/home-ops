@@ -1,0 +1,149 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafana_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: Grafana
+metadata:
+  name: grafana
+  labels:
+    grafana.internal/instance: grafana
+spec:
+  config:
+    analytics:
+      check_for_updates: "false"
+      check_for_plugin_updates: "false"
+      feedback_links_enabled: "false"
+      reporting_enabled: "false"
+    auth:
+      oauth_auto_login: "true"
+      signout_redirect_url: "https://auth.g-eye.io/logout"
+    auth.generic_oauth:
+      enabled: "true"
+      name: "Authelia"
+      icon: "signin"
+      scopes: "openid profile email groups"
+      empty_scopes: "false"
+      login_attribute_path: "preferred_username"
+      groups_attribute_path: "groups"
+      name_attribute_path: "name"
+      use_pkce: "true"
+    auth.generic_oauth.group_mapping:
+      org_id: "1"
+      role_attribute_path: "contains(groups[*], 'admins') && 'Admin' || contains(groups[*], 'people') && 'Viewer'"
+    auth.basic:
+      enabled: "true"
+    auth.anonymous:
+      enabled: "true"
+      org_id: "1"
+      org_name: "Main Org."
+      org_role: "Viewer"
+    database:
+      type: "postgres"
+      host: "postgres16-rw.databases.svc.cluster.local:5432"
+      name: "grafana"
+      ssl_mode: "disable"
+    date_formats:
+      use_browser_locale: "true"
+    explore:
+      enabled: "true"
+    log:
+      mode: "console"
+    metrics:
+      enabled: "true"
+    news:
+      news_feed_enabled: "false"
+    plugins:
+      plugin_admin_enabled: "false"
+    security:
+      angular_support_enabled: "true"
+      allow_embedding: "true"
+      cookie_samesite: "grafana"
+    server:
+      enable_gzip: "true"
+      root_url: "https://grafana.g-eye.io"
+  deployment:
+    spec:
+      strategy:
+        type: Recreate
+      template:
+        spec:
+          initContainers:
+            - name: init-db
+              image: ghcr.io/home-operations/postgres-init:17.6@sha256:86a1992d46273c58fd4ad95b626081dfaabfe16bd56944675169e406d1a660dd
+              imagePullPolicy: IfNotPresent
+              envFrom:
+                - secretRef:
+                    name: grafana-admin-secret
+          containers:
+            - name: grafana
+              env:
+                - name: GF_SECURITY_ADMIN_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-admin-secret
+                      key: admin-user
+                - name: GF_SECURITY_ADMIN_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-admin-secret
+                      key: admin-password
+                - name: GF_DATABASE_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-admin-secret
+                      key: GF_DATABASE_USER
+                - name: GF_DATABASE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-admin-secret
+                      key: GF_DATABASE_PASSWORD
+                - name: GF_AUTH_GENERIC_OAUTH_API_URL
+                  value: "https://auth.g-eye.io/api/oidc/userinfo"
+                - name: GF_AUTH_GENERIC_OAUTH_AUTH_URL
+                  value: "https://auth.g-eye.io/api/oidc/authorization"
+                - name: GF_AUTH_GENERIC_OAUTH_CLIENT_ID
+                  value: "grafana"
+                - name: GF_AUTH_GENERIC_OAUTH_TOKEN_URL
+                  value: "https://auth.g-eye.io/api/oidc/token"
+                - name: GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-admin-secret
+                      key: GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET
+                - name: TESLAMATE_POSTGRES_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-admin-secret
+                      key: TESLAMATE_POSTGRES_USER
+                - name: TESLAMATE_DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-admin-secret
+                      key: TESLAMATE_DB_PASSWORD
+                - name: GF_INSTALL_PLUGINS
+                  value: "grafana-clock-panel,grafana-piechart-panel,grafana-worldmap-panel,natel-discrete-panel,pr0ps-trackmap-panel,vonage-status-panel"
+                - name: GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS
+                  value: "natel-discrete-panel,pr0ps-trackmap-panel,panodata-map-panel"
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: ["ALL"]
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            fsGroupChangePolicy: OnRootMismatch
+          volumes:
+            - name: grafana-data
+              persistentVolumeClaim:
+                claimName: grafana-pvc
+  persistentVolumeClaim:
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi
+      storageClassName: ceph-block
+  disableDefaultSecurityContext: All
