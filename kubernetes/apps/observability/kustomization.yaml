@@ -6,14 +6,15 @@ namespace: observability
 components:
   - ../../components/common
 resources:
-  - ./alloy/ks.yaml
+  # - ./alloy/ks.yaml
   - ./blackbox-exporter/ks.yaml
+  - ./fluent-bit/ks.yaml
   - ./gatus/ks.yaml
   - ./grafana/ks.yaml
   - ./keda/ks.yaml
   - ./kromgo/ks.yaml
   - ./kube-prometheus-stack/ks.yaml
-  - ./loki/ks.yaml
+  # - ./loki/ks.yaml
   # - ./promtail/ks.yaml
   - ./silence-operator/ks.yaml
   - ./smartctl-exporter/ks.yaml
@@ -21,3 +22,4 @@ resources:
   - ./unpoller/ks.yaml
   - ./teslamate/ks.yaml
   - ./karma/ks.yaml
+  - ./victoria-logs/ks.yaml
