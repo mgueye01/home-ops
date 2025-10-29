@@ -8,3 +8,4 @@ resources:
   - ./helmrelease.yaml
   - ./harbor-charts.yaml
   - ./httproute.yaml
+  - ./grafanadashboard.yaml
