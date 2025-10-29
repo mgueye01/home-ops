@@ -100,3 +100,7 @@ spec:
         type: emptyDir
         globalMounts:
           - path: /app/OPENAPI
+      nltk-data:
+        type: emptyDir
+        globalMounts:
+          - path: /home/node/nltk_data
