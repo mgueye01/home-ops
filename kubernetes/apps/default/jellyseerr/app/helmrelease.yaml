@@ -44,7 +44,7 @@ spec:
                     port: *port
                   initialDelaySeconds: 0
                   periodSeconds: 10
-                  timeoutSeconds: 1
+                  timeoutSeconds: 5
                   failureThreshold: 3
               readiness: *probes
             securityContext:
@@ -83,9 +83,18 @@ spec:
             namespace: kube-system
             sectionName: https
         rules:
-          - backendRefs:
+          - filters:
+              - type: ResponseHeaderModifier
+                responseHeaderModifier:
+                  set:
+                    - name: alt-svc
+                      value: 'clear'
+            backendRefs:
               - name: *app
                 port: *port
+            timeouts:
+              request: "300s"
+              backendRequest: "60s"
     persistence:
       config:
         existingClaim: jellyseerr
