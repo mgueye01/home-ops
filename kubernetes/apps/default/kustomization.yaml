@@ -24,6 +24,7 @@ resources:
   - ./plex/ks.yaml
   - ./prowlarr/ks.yaml
   - ./radarr/ks.yaml
+  - ./notifier/ks.yaml
   - ./recommendarr/ks.yaml
   - ./recyclarr/ks.yaml
   - ./rybbit/ks.yaml
