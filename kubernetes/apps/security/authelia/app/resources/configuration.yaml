@@ -9,6 +9,7 @@ authentication_backend:
     implementation: lldap
     timeout: 5s
     start_tls: false
+    permit_feature_detection_failure: true
     base_dn: dc=home,dc=arpa
     additional_users_dn: ou=people
     users_filter: (&({username_attribute}={input})(objectClass=person))
