@@ -35,8 +35,6 @@ spec:
             envFrom: &envFrom
               - secretRef:
                   name: lelabo-crm-secret
-              - secretRef:
-                  name: redis-lelabo-crm-secret
         containers:
           app:
             image:
@@ -69,7 +67,7 @@ spec:
               LOGIN_TOKEN_EXPIRES_IN: "1h"
               DISABLE_DB_MIGRATIONS: "false"
               PG_DATABASE_URL: "postgres://$(LELABO_CRM_POSTGRES_USER):$(LELABO_CRM_POSTGRES_PASS)@postgres16-rw.databases.svc.cluster.local:5432/$(LELABO_CRM_POSTGRES_DB)"
-              REDIS_URL: "redis://:$(redis-password)@redis-lelabo-crm-master.databases.svc.cluster.local:6379"
+              REDIS_URL: "redis://redis-master.databases.svc.cluster.local:6379"
               CACHE_STORAGE_TYPE: "redis"
               MESSAGE_QUEUE_TYPE: "bull-mq"
               TIMEZONE: "Europe/Paris"
@@ -156,7 +154,7 @@ spec:
               STORAGE_S3_ENDPOINT: "http://nas.g-eye.tech:9000"
               DISABLE_DB_MIGRATIONS: "false"
               PG_DATABASE_URL: "postgres://$(LELABO_CRM_POSTGRES_USER):$(LELABO_CRM_POSTGRES_PASS)@postgres16-rw.databases.svc.cluster.local:5432/$(LELABO_CRM_POSTGRES_DB)"
-              REDIS_URL: "redis://:$(redis-password)@redis-lelabo-crm-master.databases.svc.cluster.local:6379"
+              REDIS_URL: "redis://redis-master.databases.svc.cluster.local:6379"
               CACHE_STORAGE_TYPE: "redis"
               MESSAGE_QUEUE_TYPE: "bull-mq"
               TIMEZONE: "Europe/Paris"
