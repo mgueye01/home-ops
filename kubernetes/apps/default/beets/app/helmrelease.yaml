@@ -26,7 +26,7 @@ spec:
           app:
             image:
               repository: ghcr.io/jee-r/beets
-              tag: latest@sha256:94f18f5e1aeb92cbc9125f3107a69c41628e340962ae8e0252726f5dfa464007
+              tag: latest@sha256:f35301c86204e2cefecc2ce46d824c8e48fbfa5d72786249ab36f80f43e8ade2
             env:
               BETANIN_HOST: 0.0.0.0
               BETANIN_PORT: &port 80
