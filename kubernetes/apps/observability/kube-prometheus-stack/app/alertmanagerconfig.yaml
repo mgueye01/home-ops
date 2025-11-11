@@ -26,6 +26,13 @@ spec:
             value: Watchdog
             matchType: =
       - receiver: pushover
+        groupWait: 10s
+        repeatInterval: 6h
+        matchers:
+          - name: component
+            value: storage
+            matchType: =
+      - receiver: pushover
         matchers:
           - name: severity
             value: critical
