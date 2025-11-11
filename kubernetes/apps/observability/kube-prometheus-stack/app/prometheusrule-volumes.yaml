@@ -1,0 +1,37 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: volume-critical-alerts
+  namespace: observability
+  labels:
+    app.kubernetes.io/part-of: kube-prometheus-stack
+spec:
+  groups:
+    - name: volumes.critical
+      interval: 30s
+      rules:
+        - alert: PersistentVolumeCriticallyFull
+          expr: |
+            (
+              kubelet_volume_stats_used_bytes{job="kubelet", namespace=~".*", metrics_path="/metrics"}
+              /
+              kubelet_volume_stats_capacity_bytes{job="kubelet", namespace=~".*", metrics_path="/metrics"}
+            ) * 100 > 95
+            unless on (cluster, namespace, persistentvolumeclaim)
+            kube_persistentvolumeclaim_access_mode{access_mode="ReadOnlyMany"} == 1
+          for: 5m
+          labels:
+            severity: critical
+            component: storage
+          annotations:
+            summary: "PersistentVolume {{ $labels.persistentvolumeclaim }} critically full"
+            description: |
+              PersistentVolume claimed by {{ $labels.persistentvolumeclaim }} in namespace
+              {{ $labels.namespace }} is {{ $value | humanizePercentage }} full.
+
+              Current usage: {{ $value | humanizePercentage }}
+              Threshold: 95%
+
+              Action required: Expand volume or clean up data immediately.
+            runbook_url: "https://github.com/mgueye01/home-ops/blob/main/docs/runbooks/storage-full.md"
