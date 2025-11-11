@@ -111,6 +111,18 @@ spec:
               resources:
                 requests:
                   storage: 50Gi
+    kubelet:
+      enabled: true
+      serviceMonitor:
+        metricRelabelings:
+          # Keep kubelet volume stats metrics (override default drops)
+          - sourceLabels: [__name__]
+            regex: 'kubelet_volume_stats_(available|capacity|used|inodes|inodes_free|inodes_used)_bytes'
+            action: keep
+          # Drop other high-cardinality metrics we don't need
+          - sourceLabels: [__name__]
+            regex: 'container_(cpu_(cfs_throttled_seconds_total|load_average_10s|system_seconds_total|user_seconds_total)|fs_(io_current|io_time_seconds_total|io_time_weighted_seconds_total|reads_merged_total|sector_reads_total|sector_writes_total|writes_merged_total)|memory_(mapped_file|swap)|(file_descriptors|tasks_state|threads_max))'
+            action: drop
     prometheus-node-exporter:
       fullnameOverride: node-exporter
       prometheus:
