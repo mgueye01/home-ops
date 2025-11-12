@@ -37,25 +37,13 @@ spec:
       existingSecretPasswordKey: redis-password
     master:
       persistence:
-        enabled: true
-        size: 2Gi
+        enabled: false
       resources:
         requests:
-          cpu: 100m
-          memory: 256Mi
+          cpu: 15m
+          memory: 20Mi
         limits:
-          memory: 1Gi
-      configuration: |-
-        # RDB snapshots
-        save 900 1
-        save 300 10
-        save 60 10000
-        # AOF persistence
-        appendonly yes
-        appendfsync everysec
-        # Memory management
-        maxmemory 900mb
-        maxmemory-policy allkeys-lru
+          memory: 100Mi
     replica:
       replicaCount: 0
       persistence:
