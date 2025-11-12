@@ -26,7 +26,7 @@ spec:
           app:
             image:
               repository: clickhouse/clickhouse-server
-              tag: 25.10-alpine@sha256:fd9ddbd4891d29df76ff91f20d7d5b580a57ea261917ee944136c4813e44f198
+              tag: 25.10-alpine@sha256:81ce9121febca7b12c75cf1aae448ccfaef0f68da25802ad805e81f8af610de9
             env:
               CLICKHOUSE_DB: analytics
               CLICKHOUSE_USER: default
@@ -100,7 +100,7 @@ spec:
           init-db:
             image:
               repository: ghcr.io/home-operations/postgres-init
-              tag: 17.6@sha256:86a1992d46273c58fd4ad95b626081dfaabfe16bd56944675169e406d1a660dd
+              tag: 18.0@sha256:12df386a1609aada0f9c19bdcb8a59db7e2c08b5a91757f7115cce8c3d502568
             envFrom: &envFrom
               - secretRef:
                   name: rybbit-secret
