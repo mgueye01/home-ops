@@ -54,7 +54,7 @@ spec:
             preferred_ip_protocol: ipv4
         tcp_connect:
           prober: tcp
-          timeout: 5s
+          timeout: 15s
           tcp:
             preferred_ip_protocol: ipv4
     serviceMonitor:
