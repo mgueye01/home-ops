@@ -36,6 +36,9 @@ spec:
                     name: rybbit-secret
                     key: CLICKHOUSE_PASSWORD
               CLICKHOUSE_DO_NOT_CHOWN: "1"
+            args:
+              - --config-file=/etc/clickhouse-server/config.xml
+              - --logger.level=warning
             probes:
               liveness:
                 enabled: true
