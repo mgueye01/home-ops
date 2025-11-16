@@ -88,3 +88,10 @@ spec:
         port: 8001
       serviceMonitor:
         enabled: true
+        additionalLabels:
+          job: harbor-exporter
+        relabelings:
+          - sourceLabels: [__address__]
+            targetLabel: instance
+          - targetLabel: job
+            replacement: harbor-exporter
