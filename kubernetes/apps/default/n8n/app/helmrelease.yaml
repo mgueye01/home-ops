@@ -96,7 +96,7 @@ spec:
         existingClaim: n8n
         advancedMounts:
           n8n:
-            n8n:
+            app:
               - path: /home/node/.n8n
 
     resources:
