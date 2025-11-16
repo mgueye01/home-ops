@@ -309,6 +309,6 @@ spec:
           logging.xml: |
             <clickhouse>
               <logger>
-                <level>warning</level>
+                <level replace="true">warning</level>
               </logger>
             </clickhouse>
