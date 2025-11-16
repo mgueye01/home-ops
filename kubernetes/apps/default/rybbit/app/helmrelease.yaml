@@ -36,9 +36,6 @@ spec:
                     name: rybbit-secret
                     key: CLICKHOUSE_PASSWORD
               CLICKHOUSE_DO_NOT_CHOWN: "1"
-            args:
-              - --config-file=/etc/clickhouse-server/config.xml
-              - --logger.level=warning
             probes:
               liveness:
                 enabled: true
@@ -103,7 +100,7 @@ spec:
           init-db:
             image:
               repository: ghcr.io/home-operations/postgres-init
-              tag: 18.0@sha256:12df386a1609aada0f9c19bdcb8a59db7e2c08b5a91757f7115cce8c3d502568
+              tag: 18.1@sha256:866f15038ed5185a2b8118821f470bb7ca0df8c4231b8e277446e681ebb1ed84
             envFrom: &envFrom
               - secretRef:
                   name: rybbit-secret
@@ -292,7 +289,26 @@ spec:
           rybbit-clickhouse:
             app:
               - path: /var/lib/clickhouse
+      clickhouse-config:
+        type: configMap
+        name: rybbit-clickhouse-config
+        advancedMounts:
+          rybbit-clickhouse:
+            app:
+              - path: /etc/clickhouse-server/config.d/logging.xml
+                subPath: logging.xml
+                readOnly: true
       tmp:
         type: emptyDir
         globalMounts:
           - path: /tmp
+
+    configMaps:
+      rybbit-clickhouse-config:
+        data:
+          logging.xml: |
+            <clickhouse>
+              <logger>
+                <level>warning</level>
+              </logger>
+            </clickhouse>
