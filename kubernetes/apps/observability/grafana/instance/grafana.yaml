@@ -58,6 +58,8 @@ spec:
       angular_support_enabled: "true"
       allow_embedding: "true"
       cookie_samesite: "grafana"
+    unified_alerting:
+      enabled: "true"
     server:
       enable_gzip: "true"
       root_url: "https://grafana.g-eye.io"
