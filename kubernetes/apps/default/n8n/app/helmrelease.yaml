@@ -67,6 +67,7 @@ spec:
 
               N8N_METRICS: true
               N8N_USER_FOLDER: /home/node
+              N8N_PROXY_HOPS: "1"
               #NODE_FUNCTION_ALLOW_EXTERNAL: databricks/sql
             envFrom: *envFrom
     service:
