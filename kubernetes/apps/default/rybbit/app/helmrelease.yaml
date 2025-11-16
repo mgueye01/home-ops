@@ -310,6 +310,12 @@ spec:
           logging.xml: |
             <clickhouse>
               <logger>
-                <level replace="true">none</level>
+                <level replace="true">warning</level>
               </logger>
+              <text_log remove="1"/>
+              <trace_log remove="1"/>
+              <query_log remove="1"/>
+              <query_thread_log remove="1"/>
+              <part_log remove="1"/>
+              <metric_log remove="1"/>
             </clickhouse>
