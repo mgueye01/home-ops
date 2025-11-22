@@ -6,6 +6,12 @@
       "matchDatasources": ["docker"],
       "matchPackageNames": ["/plex/"],
       "versioning": "loose"
+    },
+    {
+      "description": ["Block Authelia 4.39.14 due to lldap incompatibility"],
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["ghcr.io/authelia/authelia"],
+      "allowedVersions": "!/^4\\.39\\.14$/"
     }
   ]
 }
