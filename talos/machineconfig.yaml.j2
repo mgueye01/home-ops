@@ -64,6 +64,8 @@ machine:
       featureGates:
         ImageVolume: true
       serializeImagePulls: false
+      imageGCHighThresholdPercent: 60
+      imageGCLowThresholdPercent: 50
     image: ghcr.io/siderolabs/kubelet:v1.34.0
     nodeIP:
       validSubnets:
