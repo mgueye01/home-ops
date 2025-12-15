@@ -10,7 +10,7 @@ spec:
   chart:
     spec:
       chart: harbor
-      version: 1.18.0
+      version: 1.18.1
       sourceRef:
         kind: HelmRepository
         name: harbor-charts
@@ -23,9 +23,15 @@ spec:
     cleanupOnFail: true
     remediation:
       retries: 3
+      # Disable automatic rollback - Harbor DB migrations are irreversible
+      strategy: ""
   uninstall:
     keepHistory: false
   values:
+    # Use Recreate strategy for core to prevent DB migration conflicts during upgrades
+    core:
+      updateStrategy:
+        type: Recreate
     logLevel: debug
     externalURL: "https://harbor.g-eye.io"
     existingSecretAdminPassword: &secret harbor-secret
