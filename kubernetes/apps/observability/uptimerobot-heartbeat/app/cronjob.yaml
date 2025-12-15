@@ -1,0 +1,53 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: uptimerobot-heartbeat
+spec:
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: heartbeat
+              image: curlimages/curl:8.11.1
+              envFrom:
+                - secretRef:
+                    name: uptimerobot-heartbeat-secret
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  # Check K8s API health using ServiceAccount token
+                  TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+                  API_HEALTH=$(curl -s -k -H "Authorization: Bearer $TOKEN" \
+                    https://kubernetes.default.svc/healthz)
+
+                  if [ "$API_HEALTH" = "ok" ]; then
+                    echo "API server healthy, sending heartbeat..."
+                    curl -s "$HEARTBEAT_URL"
+                    echo "Heartbeat sent successfully"
+                  else
+                    echo "API server unhealthy: $API_HEALTH"
+                    exit 1
+                  fi
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 16Mi
+                limits:
+                  cpu: 50m
+                  memory: 32Mi
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                runAsNonRoot: true
+                runAsUser: 1000
+                capabilities:
+                  drop:
+                    - ALL
