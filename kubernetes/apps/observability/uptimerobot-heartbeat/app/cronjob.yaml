@@ -15,7 +15,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: heartbeat
-              image: curlimages/curl:8.11.1
+              image: curlimages/curl:8.17.0
               envFrom:
                 - secretRef:
                     name: uptimerobot-heartbeat-secret
