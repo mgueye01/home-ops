@@ -22,9 +22,8 @@ spec:
   upgrade:
     cleanupOnFail: true
     remediation:
-      retries: 3
-      # Disable automatic rollback - Harbor DB migrations are irreversible
-      strategy: ""
+      # Set retries to 0 to prevent rollback attempts - Harbor DB migrations are irreversible
+      retries: 0
   uninstall:
     keepHistory: false
   values:
