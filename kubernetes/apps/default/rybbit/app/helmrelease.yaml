@@ -126,7 +126,7 @@ spec:
           app:
             image:
               repository: ghcr.io/rybbit-io/rybbit-backend
-              tag: v2.2.1
+              tag: v2.2.4
             env:
               PORT: &backendPort 3001
               NODE_ENV: production
