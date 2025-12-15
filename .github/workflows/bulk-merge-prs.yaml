@@ -173,7 +173,7 @@ jobs:
 
             # Merge PR
             echo "   🔀 Merging PR..."
-            MERGE_OUTPUT=$(gh pr merge "$PR_NUMBER" --auto --squash --delete-branch 2>&1)
+            MERGE_OUTPUT=$(gh pr merge "$PR_NUMBER" --squash --delete-branch 2>&1) || true
             MERGE_EXIT_CODE=$?
 
             if [ $MERGE_EXIT_CODE -eq 0 ]; then
