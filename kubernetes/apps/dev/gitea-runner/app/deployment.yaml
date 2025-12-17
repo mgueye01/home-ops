@@ -26,12 +26,29 @@ spec:
             - sh
             - -c
             - |
+              # Wait for Docker daemon
               while ! nc -z localhost 2376; do
                 echo "Waiting for Docker daemon..."
                 sleep 2
               done
               echo "Docker daemon is ready"
+
+              # Register runner if not already registered
+              cd /data
+              if [ ! -f .runner ]; then
+                echo "Registering runner..."
+                act_runner register \
+                  --no-interactive \
+                  --instance "${GITEA_INSTANCE_URL}" \
+                  --token "${GITEA_RUNNER_REGISTRATION_TOKEN}" \
+                  --name "${GITEA_RUNNER_NAME}" \
+                  --labels "ubuntu-latest:docker://node:20-bookworm,ubuntu-22.04:docker://node:20-bookworm,node:docker://node:20-bookworm"
+              fi
+
+              # Start the daemon
+              echo "Starting runner daemon..."
               act_runner daemon --config /config/config.yaml
+          workingDir: /data
           env:
             - name: DOCKER_HOST
               value: tcp://localhost:2376
