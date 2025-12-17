@@ -8,6 +8,7 @@ resources:
   # - ./namespace.yaml
   # - ./backstage/ks.yaml
   - ./gitea/ks.yaml
+  - ./gitea-runner/ks.yaml
   - ./harbor/ks.yaml
   # - drone
   - ./buildkit/ks.yaml
