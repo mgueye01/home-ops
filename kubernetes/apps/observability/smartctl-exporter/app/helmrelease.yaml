@@ -35,5 +35,7 @@ spec:
     fullnameOverride: *app
     serviceMonitor:
       enabled: true
+      attachMetadata:
+        node: true
     prometheusRules:
       enabled: false
