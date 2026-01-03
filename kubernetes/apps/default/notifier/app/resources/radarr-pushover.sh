@@ -17,6 +17,20 @@ function notify() {
     local event_type=$(_jq '.eventType')
 
     case "${event_type}" in
+        "Grab")
+            printf -v PUSHOVER_TITLE "Movie Grabbed"
+            printf -v PUSHOVER_MESSAGE "<b>%s (%s)</b><small>\n%s</small><small>\n\n<b>Quality:</b> %s</small><small>\n<b>Indexer:</b> %s</small>" \
+                "$(_jq '.movie.title')" \
+                "$(_jq '.movie.year')" \
+                "$(_jq '.movie.overview')" \
+                "$(_jq '.release.quality')" \
+                "$(_jq '.release.indexer')"
+            printf -v PUSHOVER_URL "%s/movie/%s" \
+                "$(_jq '.applicationUrl')" \
+                "$(_jq '.movie.tmdbId')"
+            printf -v PUSHOVER_URL_TITLE "View Movie"
+            printf -v PUSHOVER_PRIORITY "low"
+            ;;
         "Download")
             printf -v PUSHOVER_TITLE "Movie %s" \
                 "$( [[ "$(_jq '.isUpgrade')" == "true" ]] && echo "Upgraded" || echo "Added" )"
