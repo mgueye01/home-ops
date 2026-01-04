@@ -62,6 +62,38 @@
           min_format_score: 2000
 
       custom_formats:
+        # French Language Priority
+        - trash_ids:
+            - 4b900e171accbfb172729b63323ea8ca # MULTi (French + Original)
+          assign_scores_to:
+            - name: SQP-1 (2160p)
+              score: 200
+
+        - trash_ids:
+            - 404c08fd0bd67f39b4d8e5709319094e # VFF (TRUEFRENCH)
+          assign_scores_to:
+            - name: SQP-1 (2160p)
+              score: 150
+
+        - trash_ids:
+            - 4cafa20d5584f6ba1871d1b8941aa3cb # VOF (Version Originale Française)
+          assign_scores_to:
+            - name: SQP-1 (2160p)
+              score: 100
+
+        - trash_ids:
+            - 52772f1cad6b5d26c2551f79bc538a50 # VFI (Version Française Internationale)
+          assign_scores_to:
+            - name: SQP-1 (2160p)
+              score: 80
+
+        - trash_ids:
+            - b6ace47331a1d3b77942fc18156f6df6 # VFQ (Version Française Québec)
+          assign_scores_to:
+            - name: SQP-1 (2160p)
+              score: 60
+
+        # Unwanted/Bad releases
         - trash_ids:
             - 7a0d1ad358fee9f5b074af3ef3f9d9ef # hallowed
             - b6832f586342ef70d9c128d40c07b872 # Bad Dual Groups
