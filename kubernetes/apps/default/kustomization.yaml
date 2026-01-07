@@ -19,7 +19,7 @@ resources:
   - ./mosquitto/ks.yaml
   # - ./nextcloud/ks.yaml
   - ./n8n/ks.yaml
-<<<<<<< Updated upstream:kubernetes/apps/default/kustomization.yaml
+  - ./open-webui/ks.yaml
   - ./paperless/ks.yaml
   - ./paperless-ai/ks.yaml
   - ./plex/ks.yaml
@@ -35,6 +35,3 @@ resources:
   - ./tautulli/ks.yaml
   - ./twenty/ks.yaml
   - ./lelabo-crm/ks.yaml
-=======
-  - ./open-webui/ks.yaml
->>>>>>> Stashed changes:kubernetes/main/apps/default/kustomization.yaml

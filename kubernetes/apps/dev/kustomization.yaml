@@ -11,6 +11,6 @@ resources:
   - ./gitea-runner/ks.yaml
   - ./harbor/ks.yaml
   # - drone
-  - ./buildkit/ks.yaml
+  # - ./buildkit/ks.yaml
   # - ./backstage/ks.yaml
   - ./twenty-mcp/ks.yaml
