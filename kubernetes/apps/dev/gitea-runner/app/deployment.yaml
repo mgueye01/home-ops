@@ -20,19 +20,24 @@ spec:
     spec:
       serviceAccountName: gitea-runner
       containers:
-        # Act Runner container
+        # Act Runner container (with docker CLI)
         - name: runner
-          image: gitea/act_runner:0.2.13
+          image: catthehacker/ubuntu:act-latest
           command:
             - sh
             - -c
             - |
+              # Install act_runner
+              curl -sL https://gitea.com/gitea/act_runner/releases/download/v0.2.13/act_runner-0.2.13-linux-amd64 -o /usr/local/bin/act_runner
+              chmod +x /usr/local/bin/act_runner
+
               # Wait for DinD to be ready
               echo "Waiting for Docker daemon..."
-              while ! nc -z localhost 2375; do
+              until docker info >/dev/null 2>&1; do
                 sleep 1
               done
               echo "Docker daemon is ready"
+              docker version
 
               cd /data
               rm -f .runner
