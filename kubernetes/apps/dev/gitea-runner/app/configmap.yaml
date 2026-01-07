@@ -11,7 +11,7 @@ data:
 
     runner:
       file: /data/.runner
-      capacity: 1
+      capacity: 2
       timeout: 3h
       insecure: false
       fetch_timeout: 5s
@@ -21,8 +21,19 @@ data:
       enabled: true
       dir: /data/cache
 
+    # Use Kubernetes instead of Docker for running jobs
     container:
-      network: ""
-      privileged: false
-      options:
-      workdir_parent:
+      backend: kubernetes
+      kubernetes:
+        namespace: dev
+        # Allow jobs to access K8s services (like BuildKit)
+        service_account: gitea-runner-jobs
+        # Mount BuildKit certs for build jobs
+        volumes:
+          - name: buildkit-certs
+            secret:
+              secretName: buildkit-daemon-certs
+        volume_mounts:
+          - name: buildkit-certs
+            mountPath: /buildkit-certs
+            readOnly: true

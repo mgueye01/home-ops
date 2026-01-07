@@ -5,4 +5,5 @@ kind: Kustomization
 resources:
   - externalsecret.yaml
   - configmap.yaml
+  - rbac.yaml
   - deployment.yaml
