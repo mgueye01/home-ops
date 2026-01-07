@@ -23,6 +23,8 @@ data:
 
     # Use Kubernetes instead of Docker for running jobs
     container:
+      # Skip docker daemon check - we use Kubernetes backend
+      docker_host: "-"
       backend: kubernetes
       kubernetes:
         namespace: dev
