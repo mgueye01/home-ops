@@ -48,7 +48,7 @@ spec:
                 --instance "${GITEA_INSTANCE_URL}" \
                 --token "${GITEA_RUNNER_REGISTRATION_TOKEN}" \
                 --name "${GITEA_RUNNER_NAME}" \
-                --labels "ubuntu-latest:docker://node:20-bookworm,ubuntu-22.04:docker://node:20-bookworm"
+                --labels "ubuntu-latest:host,ubuntu-22.04:host"
 
               echo "Starting runner daemon..."
               act_runner daemon --config /config/config.yaml
