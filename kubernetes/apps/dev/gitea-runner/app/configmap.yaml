@@ -21,21 +21,10 @@ data:
       enabled: true
       dir: /data/cache
 
-    # Use Kubernetes instead of Docker for running jobs
     container:
-      # Skip docker daemon check - we use Kubernetes backend
-      docker_host: "-"
-      backend: kubernetes
-      kubernetes:
-        namespace: dev
-        # Allow jobs to access K8s services (like BuildKit)
-        service_account: gitea-runner-jobs
-        # Mount BuildKit certs for build jobs
-        volumes:
-          - name: buildkit-certs
-            secret:
-              secretName: buildkit-daemon-certs
-        volume_mounts:
-          - name: buildkit-certs
-            mountPath: /buildkit-certs
-            readOnly: true
+      # Use Docker-in-Docker sidecar
+      docker_host: tcp://localhost:2376
+      # Mount BuildKit certs to job containers
+      valid_volumes:
+        - '**'
+      options: --network host
