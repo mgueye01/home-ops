@@ -23,7 +23,7 @@ data:
 
     container:
       # Use Docker-in-Docker sidecar
-      docker_host: tcp://localhost:2376
+      docker_host: tcp://localhost:2375
       # Mount BuildKit certs to job containers
       valid_volumes:
         - '**'
