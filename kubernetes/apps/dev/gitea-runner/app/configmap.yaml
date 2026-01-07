@@ -27,4 +27,3 @@ data:
       # Mount BuildKit certs to job containers
       valid_volumes:
         - '**'
-      options: --network host
