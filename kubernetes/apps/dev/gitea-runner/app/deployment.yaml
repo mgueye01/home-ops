@@ -18,14 +18,22 @@ spec:
       labels:
         app.kubernetes.io/name: *app
     spec:
-      serviceAccountName: gitea-runner-jobs
       containers:
+        # Act Runner container
         - name: runner
           image: gitea/act_runner:0.2.13
           command:
             - sh
             - -c
             - |
+              # Wait for Docker daemon
+              while ! nc -z localhost 2376; do
+                echo "Waiting for Docker daemon..."
+                sleep 2
+              done
+              echo "Docker daemon is ready"
+
+              # Register runner if not already registered
               cd /data
               if [ ! -f .runner ]; then
                 echo "Registering runner..."
@@ -34,15 +42,20 @@ spec:
                   --instance "${GITEA_INSTANCE_URL}" \
                   --token "${GITEA_RUNNER_REGISTRATION_TOKEN}" \
                   --name "${GITEA_RUNNER_NAME}" \
-                  --labels "ubuntu-latest:docker,ubuntu-22.04:docker,node:docker"
+                  --labels "ubuntu-latest:docker://node:20-bookworm,ubuntu-22.04:docker://node:20-bookworm,node:docker://node:20-bookworm"
               fi
 
+              # Start the daemon
               echo "Starting runner daemon..."
               act_runner daemon --config /config/config.yaml
           workingDir: /data
           env:
             - name: DOCKER_HOST
-              value: tcp://localhost:2375
+              value: tcp://localhost:2376
+            - name: DOCKER_TLS_VERIFY
+              value: "1"
+            - name: DOCKER_CERT_PATH
+              value: /certs/client
             - name: GITEA_INSTANCE_URL
               value: http://gitea-http.dev.svc.cluster.local:3000
             - name: GITEA_RUNNER_REGISTRATION_TOKEN
@@ -59,49 +72,50 @@ spec:
               mountPath: /data
             - name: config
               mountPath: /config
-          resources:
-            requests:
-              cpu: 100m
-              memory: 256Mi
-            limits:
-              cpu: "1"
-              memory: 512Mi
-
-        # Docker-in-Docker sidecar for job execution
-        - name: dind
-          image: docker:27-dind
-          securityContext:
-            privileged: true
-          env:
-            # Disable TLS - localhost only communication
-            - name: DOCKER_TLS_CERTDIR
-              value: ""
-          volumeMounts:
-            - name: docker-data
-              mountPath: /var/lib/docker
-            - name: buildkit-certs
-              mountPath: /buildkit-certs
+            - name: docker-certs
+              mountPath: /certs
               readOnly: true
           resources:
             requests:
-              cpu: 200m
+              cpu: 500m
               memory: 512Mi
             limits:
               cpu: "2"
               memory: 2Gi
 
+        # Docker-in-Docker sidecar
+        - name: dind
+          image: docker:29-dind
+          securityContext:
+            privileged: true
+          env:
+            - name: DOCKER_TLS_CERTDIR
+              value: /certs
+          volumeMounts:
+            - name: docker-certs
+              mountPath: /certs
+            - name: dind-storage
+              mountPath: /var/lib/docker
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: "4"
+              memory: 8Gi
+
       volumes:
-        - name: docker-data
-          emptyDir: {}
-        - name: buildkit-certs
-          secret:
-            secretName: buildkit-daemon-certs
         - name: runner-data
           emptyDir: {}
         - name: config
           configMap:
             name: gitea-runner-config
+        - name: docker-certs
+          emptyDir: {}
+        - name: dind-storage
+          emptyDir: {}
 
+      # Spread pods across nodes
       topologySpreadConstraints:
         - maxSkew: 1
           topologyKey: kubernetes.io/hostname
