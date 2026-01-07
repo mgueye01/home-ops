@@ -74,11 +74,11 @@ spec:
               mountPath: /config
           resources:
             requests:
-              cpu: 250m
-              memory: 256Mi
-            limits:
-              cpu: "1"
+              cpu: 500m
               memory: 1Gi
+            limits:
+              cpu: "2"
+              memory: 4Gi
 
         # Docker-in-Docker sidecar (no TLS for simplicity)
         - name: dind
