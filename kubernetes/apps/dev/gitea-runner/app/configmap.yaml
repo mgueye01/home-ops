@@ -28,11 +28,11 @@ data:
         namespace: dev
         # Allow jobs to access K8s services (like BuildKit)
         service_account: gitea-runner-jobs
-        # Mount BuildKit certs for build jobs
+        # Mount BuildKit CLIENT certs for build jobs to connect to BuildKit daemon
         volumes:
           - name: buildkit-certs
             secret:
-              secretName: buildkit-daemon-certs
+              secretName: buildkit-client-certs
         volume_mounts:
           - name: buildkit-certs
             mountPath: /buildkit-certs
