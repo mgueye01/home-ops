@@ -34,7 +34,7 @@ spec:
                   --instance "${GITEA_INSTANCE_URL}" \
                   --token "${GITEA_RUNNER_REGISTRATION_TOKEN}" \
                   --name "${GITEA_RUNNER_NAME}" \
-                  --labels "ubuntu-latest,ubuntu-22.04,node"
+                  --labels "ubuntu-latest:docker,ubuntu-22.04:docker,node:docker"
               fi
 
               echo "Starting runner daemon..."
