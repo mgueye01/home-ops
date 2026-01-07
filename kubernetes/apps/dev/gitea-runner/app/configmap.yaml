@@ -24,6 +24,8 @@ data:
     # Use Kubernetes instead of Docker for running jobs
     container:
       backend: kubernetes
+      # Default container image for jobs
+      default_image: node:20-bookworm
       kubernetes:
         namespace: dev
         # Allow jobs to access K8s services (like BuildKit)
