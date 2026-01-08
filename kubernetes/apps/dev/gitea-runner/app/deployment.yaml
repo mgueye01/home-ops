@@ -72,9 +72,6 @@ spec:
               mountPath: /data
             - name: config
               mountPath: /config
-            - name: buildkit-certs
-              mountPath: /buildkit-certs
-              readOnly: true
           resources:
             requests:
               cpu: 500m
@@ -110,9 +107,6 @@ spec:
             name: gitea-runner-config
         - name: dind-storage
           emptyDir: {}
-        - name: buildkit-certs
-          secret:
-            secretName: buildkit-client-certs
 
       # Spread pods across nodes
       topologySpreadConstraints:
