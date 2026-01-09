@@ -39,7 +39,7 @@ spec:
         containers:
           main:
             image:
-              repository: harbor.g-eye.io/library/elgato-photo
+              repository: harbor.g-eye.io/elgato/elgato-photo
               tag: latest
             env:
               NODE_ENV: production
