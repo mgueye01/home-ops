@@ -9,8 +9,7 @@ spec:
       namespace: kube-system
       sectionName: https
   hostnames:
-    - elgato-photo.fr
-    - www.elgato-photo.fr
+    - elgato-photo.g-eye.io
   rules:
     - matches:
         - path:
