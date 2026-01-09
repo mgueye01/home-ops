@@ -17,5 +17,5 @@ spec:
             type: PathPrefix
             value: /
       backendRefs:
-        - name: elgato-photo-main
+        - name: elgato-photo
           port: 3000
