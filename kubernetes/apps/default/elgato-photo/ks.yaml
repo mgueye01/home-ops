@@ -1,24 +1,26 @@
 ---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app elgato-photo
-  namespace: flux-system
+  namespace: &namespace default
 spec:
-  targetNamespace: default
+  targetNamespace: *namespace
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: cloudnative-pg-cluster
-      namespace: flux-system
-    - name: external-secrets-stores
-      namespace: flux-system
+      namespace: databases
+    - name: external-secrets
+      namespace: external-secrets
   path: ./kubernetes/apps/default/elgato-photo/app
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
+    namespace: flux-system
   wait: false
   interval: 30m
   retryInterval: 1m
