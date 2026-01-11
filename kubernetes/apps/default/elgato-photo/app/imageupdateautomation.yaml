@@ -20,7 +20,11 @@ spec:
         email: flux@g-eye.io
         name: Flux
       messageTemplate: |
-        chore(elgato-photo): update image to {{range .Changed.Changes}}{{.NewTag}}{{end}}
+        chore(elgato-photo): update image
+
+        {{range .Changed.Changes}}
+        - {{.OldValue}} -> {{.NewValue}}
+        {{end}}
     push:
       branch: main
   update:
