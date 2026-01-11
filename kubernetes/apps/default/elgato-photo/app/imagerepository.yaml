@@ -1,0 +1,12 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/image.toolkit.fluxcd.io/imagerepository_v1beta2.json
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: elgato-photo
+  namespace: default
+spec:
+  image: harbor.g-eye.io/elgato/elgato-photo
+  interval: 5m
+  secretRef:
+    name: harbor-registry-credentials

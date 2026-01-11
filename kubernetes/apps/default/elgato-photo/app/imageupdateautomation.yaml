@@ -1,0 +1,31 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/image.toolkit.fluxcd.io/imageupdateautomation_v1beta2.json
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageUpdateAutomation
+metadata:
+  name: elgato-photo
+  namespace: default
+spec:
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  git:
+    checkout:
+      ref:
+        branch: main
+    commit:
+      author:
+        email: flux@g-eye.io
+        name: Flux
+      messageTemplate: |
+        chore(elgato-photo): update image to {{range .Changed.Changes}}{{.NewTag}}{{end}}
+    push:
+      branch: main
+      refspec: refs/heads/main:refs/heads/main
+  pushSecret:
+    name: github-auth
+  update:
+    path: ./kubernetes/apps/default/elgato-photo
+    strategy: Setters

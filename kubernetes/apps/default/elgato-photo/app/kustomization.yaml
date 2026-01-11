@@ -5,3 +5,8 @@ resources:
   - ./helmrelease.yaml
   - ./externalsecret.yaml
   - ./httproute.yaml
+  - ./imagerepository.yaml
+  - ./imagepolicy.yaml
+  - ./imageupdateautomation.yaml
+  - ./harbor-registry-secret.yaml
+  - ./github-auth-secret.yaml
