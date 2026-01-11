@@ -10,3 +10,4 @@ resources:
   - ./imageupdateautomation.yaml
   - ./harbor-registry-secret.yaml
   - ./github-auth-secret.yaml
+  - ./gitrepository-write.yaml

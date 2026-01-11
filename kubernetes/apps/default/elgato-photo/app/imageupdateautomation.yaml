@@ -9,8 +9,8 @@ spec:
   interval: 5m
   sourceRef:
     kind: GitRepository
-    name: flux-system
-    namespace: flux-system
+    name: home-ops-write
+    namespace: default
   git:
     checkout:
       ref:
@@ -23,9 +23,6 @@ spec:
         chore(elgato-photo): update image to {{range .Changed.Changes}}{{.NewTag}}{{end}}
     push:
       branch: main
-      refspec: refs/heads/main:refs/heads/main
-      secretRef:
-        name: github-auth
   update:
     path: ./kubernetes/apps/default/elgato-photo
     strategy: Setters
