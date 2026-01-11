@@ -24,8 +24,8 @@ spec:
     push:
       branch: main
       refspec: refs/heads/main:refs/heads/main
-  pushSecret:
-    name: github-auth
+      secretRef:
+        name: github-auth
   update:
     path: ./kubernetes/apps/default/elgato-photo
     strategy: Setters
