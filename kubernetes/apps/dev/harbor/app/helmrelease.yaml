@@ -27,8 +27,11 @@ spec:
   uninstall:
     keepHistory: false
   values:
-    # Use Recreate strategy for core to prevent DB migration conflicts during upgrades
+    # Use Recreate strategy to prevent Multi-Attach errors on RWO PVCs
     core:
+      updateStrategy:
+        type: Recreate
+    jobservice:
       updateStrategy:
         type: Recreate
     logLevel: debug
