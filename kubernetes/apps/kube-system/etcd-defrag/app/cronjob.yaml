@@ -1,0 +1,61 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: etcd-defrag
+spec:
+  schedule: "0 4 * * 0" # Every Sunday at 4:00 AM
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 86400
+      template:
+        spec:
+          serviceAccountName: etcd-defrag
+          restartPolicy: OnFailure
+          containers:
+            - name: etcd-defrag
+              image: ghcr.io/siderolabs/talosctl:v1.12.2
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -e
+                  echo "Starting etcd defragmentation..."
+
+                  # Get all control-plane node IPs
+                  NODES=$(talosctl get members -o json | jq -r '.[].spec.addresses[0]')
+
+                  for NODE in $NODES; do
+                    echo "Defragmenting etcd on node $NODE..."
+                    talosctl etcd defrag -n "$NODE"
+                    echo "Successfully defragmented etcd on $NODE"
+                    # Wait between nodes to avoid disruption
+                    sleep 10
+                  done
+
+                  echo "etcd defragmentation completed on all nodes"
+                  talosctl etcd status -n $(echo $NODES | tr '\n' ',')
+              volumeMounts:
+                - name: talos-secrets
+                  mountPath: /var/run/secrets/talos.dev
+                  readOnly: true
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 64Mi
+                limits:
+                  memory: 128Mi
+          volumes:
+            - name: talos-secrets
+              secret:
+                secretName: etcd-defrag
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: node-role.kubernetes.io/control-plane
+                        operator: Exists

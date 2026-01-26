@@ -24,6 +24,8 @@ spec:
   values:
     image:
       rootless: true
+    strategy:
+      type: Recreate
     statefulset:
       annotations:
         reloader.stakater.com/auto: "true"
