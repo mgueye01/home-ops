@@ -1,0 +1,98 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: etcd-defrag
+spec:
+  schedule: "0 4 * * 0" # Every Sunday at 4:00 AM
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 86400
+      template:
+        spec:
+          serviceAccountName: etcd-defrag
+          restartPolicy: OnFailure
+          initContainers:
+            - name: defrag-node-1
+              image: ghcr.io/siderolabs/talosctl:v1.12.2
+              args:
+                - etcd
+                - defrag
+                - -n
+                - "192.168.10.11"
+              volumeMounts:
+                - name: talos-secrets
+                  mountPath: /var/run/secrets/talos.dev
+                  readOnly: true
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 64Mi
+                limits:
+                  memory: 128Mi
+            - name: defrag-node-2
+              image: ghcr.io/siderolabs/talosctl:v1.12.2
+              args:
+                - etcd
+                - defrag
+                - -n
+                - "192.168.10.12"
+              volumeMounts:
+                - name: talos-secrets
+                  mountPath: /var/run/secrets/talos.dev
+                  readOnly: true
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 64Mi
+                limits:
+                  memory: 128Mi
+            - name: defrag-node-3
+              image: ghcr.io/siderolabs/talosctl:v1.12.2
+              args:
+                - etcd
+                - defrag
+                - -n
+                - "192.168.10.13"
+              volumeMounts:
+                - name: talos-secrets
+                  mountPath: /var/run/secrets/talos.dev
+                  readOnly: true
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 64Mi
+                limits:
+                  memory: 128Mi
+          containers:
+            - name: status
+              image: ghcr.io/siderolabs/talosctl:v1.12.2
+              args:
+                - etcd
+                - status
+                - -n
+                - "192.168.10.11,192.168.10.12,192.168.10.13"
+              volumeMounts:
+                - name: talos-secrets
+                  mountPath: /var/run/secrets/talos.dev
+                  readOnly: true
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 64Mi
+                limits:
+                  memory: 128Mi
+          volumes:
+            - name: talos-secrets
+              secret:
+                secretName: etcd-defrag
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: node-role.kubernetes.io/control-plane
+                        operator: Exists
