@@ -1,0 +1,108 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: paperless-gpt
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  values:
+    controllers:
+      paperless-gpt:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/icereed/paperless-gpt
+              tag: v0.24.0@sha256:15bad5d455b98f21bb7b5d6615f56871ff67a8bb379dc0dd7ba411f4633071a6
+            env:
+              TZ: Europe/Paris
+              PAPERLESS_BASE_URL: http://paperless.default.svc.cluster.local:80
+              PAPERLESS_PUBLIC_URL: https://paperless.g-eye.io
+              LLM_PROVIDER: openai
+              LLM_MODEL: gpt-4o
+              LLM_LANGUAGE: French
+              OCR_PROVIDER: llm
+              VISION_LLM_PROVIDER: openai
+              VISION_LLM_MODEL: gpt-4o
+              OCR_LIMIT_PAGES: 5
+              OCR_PROCESS_MODE: image
+              PDF_SKIP_EXISTING_OCR: false
+              PDF_OCR_TAGGING: false
+              PDF_UPLOAD: true
+              PDF_COPY_METADATA: true
+              AUTO_GENERATE_TAGS: false
+              AUTO_TAG: AI-GPT-Auto
+              AUTO_OCR_TAG: AI-OCR-Auto
+              MANUAL_TAG: AI-GPT
+            envFrom:
+              - secretRef:
+                  name: paperless-gpt-secret
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 10m
+                memory: 256Mi
+              limits:
+                memory: 1Gi
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    service:
+      app:
+        controller: paperless-gpt
+        ports:
+          http:
+            port: 8080
+    route:
+      app:
+        annotations:
+          gatus.home-operations.com/enabled: "true"
+        hostnames:
+          - paperless-gpt.g-eye.io
+        parentRefs:
+          - name: internal
+            namespace: kube-system
+            sectionName: https
+        rules:
+          - backendRefs:
+              - name: paperless-gpt
+                port: 8080
+    persistence:
+      data:
+        type: emptyDir
+        advancedMounts:
+          paperless-gpt:
+            app:
+              - path: /app/db
+                subPath: db
+              - path: /app/prompts
+                subPath: prompts
+      tmpfs:
+        type: emptyDir
+        advancedMounts:
+          paperless-gpt:
+            app:
+              - path: /app/config
+                subPath: config
+              - path: /tmp
+                subPath: tmp

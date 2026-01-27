@@ -27,3 +27,27 @@ spec:
       namespace: default
   interval: 15m
   retryInterval: 1m
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: paperless-gpt
+  namespace: &namespace default
+spec:
+  dependsOn:
+    - name: external-secrets
+      namespace: external-secrets
+    - name: paperless
+      namespace: default
+  path: ./kubernetes/apps/default/paperless/gpt
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: *namespace
+  timeout: 5m
+  wait: false
+  interval: 15m
+  retryInterval: 1m
