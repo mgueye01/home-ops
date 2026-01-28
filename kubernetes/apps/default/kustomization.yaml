@@ -12,6 +12,7 @@ resources:
   # - ./beets/ks.yaml
   - ./elgato-photo/ks.yaml
   - ./fusion/ks.yaml
+  - ./garage-webui/ks.yaml
   # - ./home-assistant/ks.yaml
   - ./jellyseerr/ks.yaml
   - ./karakeep/ks.yaml
