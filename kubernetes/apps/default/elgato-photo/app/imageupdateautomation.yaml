@@ -26,7 +26,7 @@ spec:
         - {{.OldValue}} -> {{.NewValue}}
         {{end}}
     push:
-      branch: main
+      branch: flux/elgato-photo-image-update
   update:
     path: ./kubernetes/apps/default/elgato-photo
     strategy: Setters

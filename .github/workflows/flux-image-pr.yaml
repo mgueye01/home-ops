@@ -1,0 +1,41 @@
+name: Create PR from Flux Image Updates
+
+on:
+  push:
+    branches:
+      - 'flux/**'
+
+jobs:
+  create-pr:
+    name: Create Pull Request
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate Token
+        uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ secrets.BOT_APP_ID }}
+          private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          branch: ${{ github.ref_name }}
+          base: main
+          delete-branch: true
+          title: "🤖 Flux: Image update"
+          body: |
+            Automated image update by Flux Image Automation.
+
+            This PR was automatically created when Flux detected a new container image.
+
+            ---
+            _Merge this PR to deploy the new image version._
+          labels: |
+            flux
+            image-update
+            automation
