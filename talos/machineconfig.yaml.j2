@@ -50,7 +50,7 @@ machine:
   install:
     diskSelector:
       model: CT480BX500SSD1
-    image: factory.talos.dev/metal-installer/7af7f1f318d397e33e73ecd3f7aa4b8ce16a35ed812aab3072421187a0b5583b:v1.11.6
+    image: factory.talos.dev/metal-installer/7af7f1f318d397e33e73ecd3f7aa4b8ce16a35ed812aab3072421187a0b5583b:v1.12.2
     wipe: false
   kernel:
     modules:
@@ -66,7 +66,7 @@ machine:
       serializeImagePulls: false
       imageGCHighThresholdPercent: 60
       imageGCLowThresholdPercent: 50
-    image: ghcr.io/siderolabs/kubelet:v1.34.3
+    image: ghcr.io/siderolabs/kubelet:v1.35.0
     nodeIP:
       validSubnets:
         - 192.168.10.0/24
@@ -141,11 +141,11 @@ cluster:
       enable-aggregator-routing: "true"
       feature-gates: ImageVolume=true,MutatingAdmissionPolicy=true
       runtime-config: admissionregistration.k8s.io/v1beta1=true
-    image: registry.k8s.io/kube-apiserver:v1.34.3
+    image: registry.k8s.io/kube-apiserver:v1.35.0
   controllerManager:
     extraArgs:
       bind-address: 0.0.0.0
-    image: registry.k8s.io/kube-controller-manager:v1.34.3
+    image: registry.k8s.io/kube-controller-manager:v1.35.0
   coreDNS:
     disabled: true
   etcd:
@@ -156,9 +156,17 @@ cluster:
       key: op://kubernetes/talos/CLUSTER_ETCD_CA_KEY
     extraArgs:
       listen-metrics-urls: http://0.0.0.0:2381
+      # Tuning for robustness under I/O pressure
+      heartbeat-interval: "500"
+      election-timeout: "5000"
+      # Auto-compaction to keep DB size in check
+      auto-compaction-mode: periodic
+      auto-compaction-retention: "1h"
+      # Increase quota to 8GB (default is 2GB)
+      quota-backend-bytes: "8589934592"
   proxy:
     disabled: true
-    image: registry.k8s.io/kube-proxy:v1.34.3
+    image: registry.k8s.io/kube-proxy:v1.35.0
   scheduler:
     config:
       apiVersion: kubescheduler.config.k8s.io/v1
@@ -179,7 +187,7 @@ cluster:
                     whenUnsatisfiable: ScheduleAnyway
     extraArgs:
       bind-address: 0.0.0.0
-    image: registry.k8s.io/kube-scheduler:v1.34.3
+    image: registry.k8s.io/kube-scheduler:v1.35.0
   secretboxEncryptionSecret: op://kubernetes/talos/CLUSTER_SECRETBOXENCRYPTIONSECRET
   serviceAccount:
     key: op://kubernetes/talos/CLUSTER_SERVICEACCOUNT_KEY
