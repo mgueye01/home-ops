@@ -1,14 +1,8 @@
-name: Create PR from Flux Image Updates
+name: Create PR for elgato-photo Image Updates
 
 on:
-  # Run on schedule to catch any flux branches without PRs
   schedule:
-    - cron: '*/5 * * * *'  # Every 5 minutes
-  # Also run on push for immediate PR creation (when workflow is on the branch)
-  push:
-    branches:
-      - 'flux/**'
-  # Allow manual trigger
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -28,35 +22,36 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Create PRs for Flux branches
+      - name: Create PR for elgato-photo if needed
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          BRANCH: flux/elgato-photo-image-update
         run: |
-          # Get all remote flux branches
           git fetch origin
 
-          for branch in $(git branch -r | grep 'origin/flux/' | sed 's|origin/||'); do
-            echo "Checking branch: $branch"
+          # Check if branch exists
+          if ! git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
+            echo "Branch $BRANCH does not exist, nothing to do"
+            exit 0
+          fi
 
-            # Check if PR already exists for this branch
-            existing_pr=$(gh pr list --head "$branch" --json number --jq '.[0].number')
+          # Check if PR already exists
+          existing_pr=$(gh pr list --head "$BRANCH" --json number --jq '.[0].number')
 
-            if [ -n "$existing_pr" ]; then
-              echo "  PR #$existing_pr already exists"
-            else
-              echo "  Creating PR for $branch"
-              gh pr create \
-                --title "🤖 Flux: Image update" \
-                --body "Automated image update by Flux Image Automation.
+          if [ -n "$existing_pr" ]; then
+            echo "PR #$existing_pr already exists for $BRANCH"
+          else
+            echo "Creating PR for $BRANCH"
+            gh pr create \
+              --title "🐱 elgato-photo: new image available" \
+              --body "Automated image update by Flux Image Automation.
 
-          This PR was automatically created when Flux detected a new container image.
+This PR updates the elgato-photo container image to the latest version.
 
-          ---
-          _Merge this PR to deploy the new image version._" \
-                --base main \
-                --head "$branch" \
-                --label "flux" \
-                --label "image-update" \
-                --label "automation" || echo "  Failed to create PR (may already exist or no diff)"
-            fi
-          done
+---
+_Merge this PR to deploy the new image._" \
+              --base main \
+              --head "$BRANCH" \
+              --label "elgato-photo" \
+              --label "image-update"
+          fi
