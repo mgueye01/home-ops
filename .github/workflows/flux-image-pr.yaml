@@ -1,9 +1,15 @@
 name: Create PR from Flux Image Updates
 
 on:
+  # Run on schedule to catch any flux branches without PRs
+  schedule:
+    - cron: '*/5 * * * *'  # Every 5 minutes
+  # Also run on push for immediate PR creation (when workflow is on the branch)
   push:
     branches:
       - 'flux/**'
+  # Allow manual trigger
+  workflow_dispatch:
 
 jobs:
   create-pr:
@@ -19,30 +25,38 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Create Pull Request
+      - name: Create PRs for Flux branches
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
-          BRANCH_NAME: ${{ github.ref_name }}
         run: |
-          # Check if PR already exists for this branch
-          existing_pr=$(gh pr list --head "$BRANCH_NAME" --json number --jq '.[0].number')
+          # Get all remote flux branches
+          git fetch origin
 
-          if [ -n "$existing_pr" ]; then
-            echo "PR #$existing_pr already exists for branch $BRANCH_NAME"
-          else
-            echo "Creating PR for branch $BRANCH_NAME"
-            gh pr create \
-              --title "🤖 Flux: Image update" \
-              --body "Automated image update by Flux Image Automation.
+          for branch in $(git branch -r | grep 'origin/flux/' | sed 's|origin/||'); do
+            echo "Checking branch: $branch"
 
-This PR was automatically created when Flux detected a new container image.
+            # Check if PR already exists for this branch
+            existing_pr=$(gh pr list --head "$branch" --json number --jq '.[0].number')
 
----
-_Merge this PR to deploy the new image version._" \
-              --base main \
-              --head "$BRANCH_NAME" \
-              --label "flux" \
-              --label "image-update" \
-              --label "automation"
-          fi
+            if [ -n "$existing_pr" ]; then
+              echo "  PR #$existing_pr already exists"
+            else
+              echo "  Creating PR for $branch"
+              gh pr create \
+                --title "🤖 Flux: Image update" \
+                --body "Automated image update by Flux Image Automation.
+
+          This PR was automatically created when Flux detected a new container image.
+
+          ---
+          _Merge this PR to deploy the new image version._" \
+                --base main \
+                --head "$branch" \
+                --label "flux" \
+                --label "image-update" \
+                --label "automation" || echo "  Failed to create PR (may already exist or no diff)"
+            fi
+          done
