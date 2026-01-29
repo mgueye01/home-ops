@@ -11,31 +11,38 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Generate Token
-        uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547 # v1
+        uses: actions/create-github-app-token@v1
         id: app-token
         with:
           app-id: ${{ secrets.BOT_APP_ID }}
           private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
 
       - name: Checkout
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        uses: actions/checkout@v4
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7
-        with:
-          token: ${{ steps.app-token.outputs.token }}
-          branch: ${{ github.ref_name }}
-          base: main
-          delete-branch: true
-          title: "🤖 Flux: Image update"
-          body: |
-            Automated image update by Flux Image Automation.
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          BRANCH_NAME: ${{ github.ref_name }}
+        run: |
+          # Check if PR already exists for this branch
+          existing_pr=$(gh pr list --head "$BRANCH_NAME" --json number --jq '.[0].number')
 
-            This PR was automatically created when Flux detected a new container image.
+          if [ -n "$existing_pr" ]; then
+            echo "PR #$existing_pr already exists for branch $BRANCH_NAME"
+          else
+            echo "Creating PR for branch $BRANCH_NAME"
+            gh pr create \
+              --title "🤖 Flux: Image update" \
+              --body "Automated image update by Flux Image Automation.
 
-            ---
-            _Merge this PR to deploy the new image version._
-          labels: |
-            flux
-            image-update
-            automation
+This PR was automatically created when Flux detected a new container image.
+
+---
+_Merge this PR to deploy the new image version._" \
+              --base main \
+              --head "$BRANCH_NAME" \
+              --label "flux" \
+              --label "image-update" \
+              --label "automation"
+          fi
