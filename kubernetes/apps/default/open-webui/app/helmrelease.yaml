@@ -26,7 +26,7 @@ spec:
           app:
             image:
               repository: ghcr.io/open-webui/open-webui
-              tag: 0.5.20@sha256:fa6aa2070b88832d5e020f8765f87d1c57e5dde30b4e003a9cbb8cc1d75ba689
+              tag: latest
             env:
               WEBUI_NAME: Open WebUI Chat
               WEBUI_URL: https://chatgpt.g-eye.io
