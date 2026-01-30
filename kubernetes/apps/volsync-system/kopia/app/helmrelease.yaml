@@ -29,6 +29,9 @@ spec:
             env:
               KOPIA_WEB_ENABLED: true
               KOPIA_WEB_PORT: &port 80
+              KOPIA_CONFIG_PATH: /config/repository.config
+              KOPIA_CACHE_DIRECTORY: /config/cache
+              KOPIA_LOG_DIR: /config/logs
               TZ: Europe/Paris
             envFrom:
               - secretRef:
