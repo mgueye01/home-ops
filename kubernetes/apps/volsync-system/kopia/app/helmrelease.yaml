@@ -104,6 +104,12 @@ spec:
           - path: /config/repository.config
             subPath: repository.config
             readOnly: true
+      repository:
+        type: nfs
+        server: nas.g-eye.tech
+        path: /volume1/minio/volsynckopia
+        globalMounts:
+          - path: /repository
       tmpfs:
         type: emptyDir
         advancedMounts:
