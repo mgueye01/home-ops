@@ -1,29 +1,22 @@
 ---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: &app open-webui
-  namespace: default
 spec:
-  interval: 30m
-  chart:
-    spec:
-      chart: app-template
-      version: 3.6.0
-      sourceRef:
-        kind: HelmRepository
-        name: bjw-s
-        namespace: flux-system
-  maxHistory: 2
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
   install:
     remediation:
-      retries: 3
+      retries: -1
   upgrade:
     cleanupOnFail: true
     remediation:
+      strategy: rollback
       retries: 3
-  uninstall:
-    keepHistory: false
   values:
     controllers:
       open-webui:
@@ -33,7 +26,7 @@ spec:
           app:
             image:
               repository: ghcr.io/open-webui/open-webui
-              tag: 0.7.2
+              tag: 0.5.20@sha256:fa6aa2070b88832d5e020f8765f87d1c57e5dde30b4e003a9cbb8cc1d75ba689
             env:
               WEBUI_NAME: Open WebUI Chat
               WEBUI_URL: https://chatgpt.g-eye.io
@@ -44,52 +37,71 @@ spec:
               RAG_EMBEDDING_ENGINE: openai
               RAG_EMBEDDING_MODEL: text-embedding-3-small
               ENABLE_RAG_WEB_SEARCH: "true"
+              PORT: &port 8080
             envFrom:
               - secretRef:
                   name: openwebui-secret
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: *port
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities: { drop: ["ALL"] }
             resources:
               requests:
                 cpu: 200m
                 memory: 2Gi
               limits:
-                memory: 2Gi
+                memory: 4Gi
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
     service:
       app:
-        controller: *app
+        controller: open-webui
         ports:
           http:
-            port: &port 8080
-
-    ingress:
+            port: *port
+    route:
       app:
-        enabled: true
-        className: internal
         annotations:
-          gethomepage.dev/enabled: "true"
-          gethomepage.dev/group: Home
-          gethomepage.dev/name: "ChatGPT"
-          gethomepage.dev/icon: sh-open-webui
-          gethomepage.dev/description: "Open WebUI"
-          gethomepage.dev/href: "https://chatgpt.g-eye.io"
-        hosts:
-          - host: &host chatgpt.g-eye.io
-            paths:
-              - path: /
-                service:
-                  identifier: app
-                  port: *port
-        tls:
-          - hosts:
-              - *host
-            secretName: chatgpt-tls-internal
+          gatus.home-operations.com/enabled: "true"
+          gatus.home-operations.com/endpoint: |-
+            conditions: ["len([BODY]) == 0"]
+            dns:
+              query-name: chatgpt.g-eye.io
+              query-type: A
+            url: 1.1.1.1
+        hostnames: ["chatgpt.g-eye.io"]
+        parentRefs:
+          - name: internal
+            namespace: kube-system
+            sectionName: https
+        rules:
+          - backendRefs:
+              - name: *app
+                port: *port
     persistence:
-      config:
-        enabled: true
-        existingClaim: *app
+      data:
+        existingClaim: open-webui
         globalMounts:
           - path: /data
       tmp:
-        enabled: true
         type: emptyDir
         medium: Memory
         globalMounts:

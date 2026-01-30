@@ -4,23 +4,27 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app open-webui
-  namespace: flux-system
+  namespace: &namespace default
 spec:
-  targetNamespace: default
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  interval: 30m
-  retryInterval: 1m
-  timeout: 5m
+  dependsOn:
+    - name: onepassword-connect
+      namespace: external-secrets
+    - name: volsync
+      namespace: volsync-system
+  interval: 1h
   path: ./kubernetes/apps/default/open-webui/app
   prune: true
+  retryInterval: 2m
   sourceRef:
     kind: GitRepository
-    name: home-kubernetes
-  dependsOn:
-    - name: volsync
-    - name: external-secrets
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: *namespace
+  timeout: 5m
+  wait: false
   postBuild:
     substitute:
       APP: *app
