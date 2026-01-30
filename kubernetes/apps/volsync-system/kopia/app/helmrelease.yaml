@@ -97,6 +97,10 @@ spec:
             namespace: kube-system
             sectionName: https
     persistence:
+      config:
+        type: emptyDir
+        globalMounts:
+          - path: /config
       config-file:
         type: configMap
         name: kopia-repository-configmap
@@ -110,12 +114,3 @@ spec:
         path: /volume1/minio/volsynckopia
         globalMounts:
           - path: /repository
-      tmpfs:
-        type: emptyDir
-        advancedMounts:
-          kopia:
-            app:
-              - path: /config/cache
-                subPath: cache
-              - path: /config/logs
-                subPath: logs
