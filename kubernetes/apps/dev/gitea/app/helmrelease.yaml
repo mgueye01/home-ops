@@ -99,10 +99,14 @@ spec:
           STORAGE_TYPE: minio
           MINIO_ENDPOINT: nas.g-eye.tech:3900
           MINIO_BUCKET: gitea
+          MINIO_LOCATION: garage
+          MINIO_USE_SSL: false
         storage:
           STORAGE_TYPE: minio
           MINIO_ENDPOINT: nas.g-eye.tech:3900
           MINIO_BUCKET: gitea
+          MINIO_LOCATION: garage
+          MINIO_USE_SSL: false
         mailer:
           ENABLED: true
           MAILER_TYPE: smtp
