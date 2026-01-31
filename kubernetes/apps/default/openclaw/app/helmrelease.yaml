@@ -27,7 +27,7 @@ spec:
             image:
               repository: ghcr.io/openclaw/openclaw
               tag: latest
-            args: ["node", "dist/index.js", "gateway", "--bind", "0.0.0.0"]
+            args: ["node", "dist/index.js", "gateway", "--bind", "0.0.0.0", "--allow-unconfigured"]
             env:
               TZ: Europe/Paris
             probes:
