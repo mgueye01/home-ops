@@ -16,5 +16,10 @@ data:
         "auth": {
           "mode": "token"
         }
+      },
+      "channels": {
+        "telegram": {
+          "enabled": true
+        }
       }
     }
