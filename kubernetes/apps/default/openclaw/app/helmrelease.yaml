@@ -27,6 +27,10 @@ spec:
             image:
               repository: ghcr.io/openclaw/openclaw
               tag: latest
+            securityContext:
+              runAsUser: 0
+              runAsGroup: 0
+              runAsNonRoot: false
             command:
               - /bin/sh
               - -c
@@ -34,6 +38,7 @@ spec:
                 CONFIG=/home/node/.openclaw/openclaw.json
                 if [ ! -f "$CONFIG" ] || ! node -e "JSON.parse(require('fs').readFileSync('$CONFIG'))" 2>/dev/null; then
                   echo "Config missing or invalid, copying from template..."
+                  rm -f "$CONFIG"
                   cp /tmp/config/openclaw.json "$CONFIG"
                   chown 1000:1000 "$CONFIG"
                   echo "Config copied successfully"
