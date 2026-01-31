@@ -25,18 +25,20 @@ spec:
         initContainers:
           init-config:
             image:
-              repository: busybox
+              repository: ghcr.io/openclaw/openclaw
               tag: latest
             command:
               - /bin/sh
               - -c
               - |
-                if [ ! -f /home/node/.openclaw/openclaw.json ]; then
-                  echo "Copying initial config..."
-                  cp /tmp/config/openclaw.json /home/node/.openclaw/openclaw.json
-                  chown 1000:1000 /home/node/.openclaw/openclaw.json
+                CONFIG=/home/node/.openclaw/openclaw.json
+                if [ ! -f "$CONFIG" ] || ! node -e "JSON.parse(require('fs').readFileSync('$CONFIG'))" 2>/dev/null; then
+                  echo "Config missing or invalid, copying from template..."
+                  cp /tmp/config/openclaw.json "$CONFIG"
+                  chown 1000:1000 "$CONFIG"
+                  echo "Config copied successfully"
                 else
-                  echo "Config already exists, skipping..."
+                  echo "Valid config exists, preserving user changes"
                 fi
         containers:
           app:
