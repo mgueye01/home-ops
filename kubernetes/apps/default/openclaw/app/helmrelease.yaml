@@ -30,7 +30,7 @@ spec:
             args: ["node", "dist/index.js", "gateway", "--bind", "lan", "--allow-unconfigured"]
             env:
               TZ: Europe/Paris
-              OPENCLAW_GATEWAY_AUTH_MODE: none
+              OPENCLAW_GATEWAY_TOKEN: "a6a7d4056070b455b62c403f9e0e1d23471f57b6e711ca706fb17e57925c1a17"
             probes:
               liveness: &probes
                 enabled: true
