@@ -21,7 +21,7 @@ resources:
   - ./mosquitto/ks.yaml
   # - ./nextcloud/ks.yaml
   - ./n8n/ks.yaml
-  - ./openclaw/ks.yaml
+  # - ./openclaw/ks.yaml
   - ./open-webui/ks.yaml
   - ./paperless/ks.yaml
   - ./paperless-ai/ks.yaml
