@@ -22,6 +22,22 @@ spec:
       openclaw:
         annotations:
           reloader.stakater.com/auto: "true"
+        initContainers:
+          init-config:
+            image:
+              repository: busybox
+              tag: latest
+            command:
+              - /bin/sh
+              - -c
+              - |
+                if [ ! -f /home/node/.openclaw/openclaw.json ]; then
+                  echo "Copying initial config..."
+                  cp /tmp/config/openclaw.json /home/node/.openclaw/openclaw.json
+                  chown 1000:1000 /home/node/.openclaw/openclaw.json
+                else
+                  echo "Config already exists, skipping..."
+                fi
         containers:
           app:
             image:
@@ -102,8 +118,7 @@ spec:
         type: configMap
         name: openclaw-config
         globalMounts:
-          - path: /home/node/.openclaw/openclaw.json
-            subPath: openclaw.json
+          - path: /tmp/config
       workspace:
         existingClaim: openclaw-workspace
         globalMounts:
