@@ -27,9 +27,10 @@ spec:
             image:
               repository: ghcr.io/openclaw/openclaw
               tag: latest
-            args: ["node", "dist/index.js", "gateway", "--bind", "lan", "--allow-unconfigured", "--auth", "none"]
+            args: ["node", "dist/index.js", "gateway", "--bind", "lan", "--allow-unconfigured"]
             env:
               TZ: Europe/Paris
+              OPENCLAW_GATEWAY_AUTH_MODE: none
             probes:
               liveness: &probes
                 enabled: true
