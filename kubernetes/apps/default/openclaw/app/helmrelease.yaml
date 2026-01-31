@@ -27,7 +27,7 @@ spec:
             image:
               repository: ghcr.io/openclaw/openclaw
               tag: latest
-            args: ["node", "dist/index.js", "gateway", "--bind", "lan", "--allow-unconfigured"]
+            args: ["node", "dist/index.js", "gateway"]
             env:
               TZ: Europe/Paris
             envFrom:
@@ -98,6 +98,12 @@ spec:
         existingClaim: openclaw
         globalMounts:
           - path: /home/node/.openclaw
+      config-file:
+        type: configMap
+        name: openclaw-config
+        globalMounts:
+          - path: /home/node/.openclaw/openclaw.json
+            subPath: openclaw.json
       workspace:
         existingClaim: openclaw-workspace
         globalMounts:
