@@ -38,7 +38,7 @@ spec:
           app:
             image:
               repository: ghcr.io/actualbudget/actual-server
-              tag: 25.3.1
+              tag: 26.2.0
             env:
               TZ: Europe/Paris
               ACTUAL_PORT: &port 5006
