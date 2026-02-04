@@ -11,6 +11,7 @@ resources:
   - ./changedetection/ks.yaml
   # - ./beets/ks.yaml
   - ./elgato-photo/ks.yaml
+  - ./firefly/ks.yaml
   - ./fusion/ks.yaml
   - ./garage-webui/ks.yaml
   # - ./home-assistant/ks.yaml
