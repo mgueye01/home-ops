@@ -1,0 +1,25 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: openclaw-config
+data:
+  openclaw.json: |
+    {
+      "gateway": {
+        "mode": "local",
+        "bind": "lan",
+        "controlUi": {
+          "enabled": true,
+          "allowInsecureAuth": true
+        },
+        "auth": {
+          "mode": "token"
+        }
+      },
+      "channels": {
+        "telegram": {
+          "enabled": true
+        }
+      }
+    }

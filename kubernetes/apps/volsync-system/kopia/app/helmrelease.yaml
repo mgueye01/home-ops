@@ -29,6 +29,9 @@ spec:
             env:
               KOPIA_WEB_ENABLED: true
               KOPIA_WEB_PORT: &port 80
+              KOPIA_CONFIG_PATH: /config/repository.config
+              KOPIA_CACHE_DIRECTORY: /config/cache
+              KOPIA_LOG_DIR: /config/logs
               TZ: Europe/Paris
             envFrom:
               - secretRef:
@@ -66,8 +69,9 @@ spec:
             resources:
               requests:
                 cpu: 10m
+                memory: 512Mi
               limits:
-                memory: 1Gi
+                memory: 4Gi
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
@@ -97,6 +101,10 @@ spec:
             namespace: kube-system
             sectionName: https
     persistence:
+      config:
+        type: emptyDir
+        globalMounts:
+          - path: /config
       config-file:
         type: configMap
         name: kopia-repository-configmap
@@ -104,18 +112,3 @@ spec:
           - path: /config/repository.config
             subPath: repository.config
             readOnly: true
-      repository:
-        type: nfs
-        server: nas.g-eye.tech
-        path: /volume1/minio/volsynckopia
-        globalMounts:
-          - path: /repository
-      tmpfs:
-        type: emptyDir
-        advancedMounts:
-          kopia:
-            app:
-              - path: /config/cache
-                subPath: cache
-              - path: /config/logs
-                subPath: logs

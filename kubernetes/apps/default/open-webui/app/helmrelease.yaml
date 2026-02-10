@@ -1,9 +1,9 @@
 ---
-# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &app jellyseerr
+  name: &app open-webui
 spec:
   interval: 1h
   chartRef:
@@ -19,43 +19,51 @@ spec:
       retries: 3
   values:
     controllers:
-      jellyseerr:
+      open-webui:
         annotations:
           reloader.stakater.com/auto: "true"
         containers:
           app:
             image:
-              repository: ghcr.io/seerr-team/seerr
-              tag: develop@sha256:5340c91587504b1b806f6a171f123a38a612cb167cb671f0c3a4b81ef19294bb
+              repository: ghcr.io/open-webui/open-webui
+              tag: latest
             env:
-              TZ: Europe/Paris
-              LOG_LEVEL: "info"
-              PORT: &port 80
+              WEBUI_NAME: Open WebUI Chat
+              WEBUI_URL: https://chatgpt.g-eye.io
+              DATA_DIR: /data
+              ENABLE_OLLAMA_API: "false"
+              ENABLE_OPENAI_API: "true"
+              ENABLE_EVALUATION_ARENA_MODELS: "false"
+              RAG_EMBEDDING_ENGINE: openai
+              RAG_EMBEDDING_MODEL: text-embedding-3-small
+              ENABLE_RAG_WEB_SEARCH: "true"
+              PORT: &port 8080
             envFrom:
               - secretRef:
-                  name: jellyseerr-secret
+                  name: openwebui-secret
             probes:
               liveness: &probes
                 enabled: true
                 custom: true
                 spec:
                   httpGet:
-                    path: /api/v1/status
+                    path: /health
                     port: *port
                   initialDelaySeconds: 0
                   periodSeconds: 10
-                  timeoutSeconds: 5
+                  timeoutSeconds: 1
                   failureThreshold: 3
               readiness: *probes
             securityContext:
               allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
+              readOnlyRootFilesystem: false
               capabilities: { drop: ["ALL"] }
             resources:
               requests:
-                cpu: 10m
-              limits:
+                cpu: 200m
                 memory: 2Gi
+              limits:
+                memory: 4Gi
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
@@ -65,7 +73,7 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
     service:
       app:
-        controller: jellyseerr
+        controller: open-webui
         ports:
           http:
             port: *port
@@ -74,39 +82,27 @@ spec:
         annotations:
           gatus.home-operations.com/enabled: "true"
           gatus.home-operations.com/endpoint: |-
-            conditions: ["[STATUS] == 200"]
-        hostnames:
-          - "{{ .Release.Name }}.g-eye.io"
-          - requests.g-eye.io
+            conditions: ["len([BODY]) == 0"]
+            dns:
+              query-name: chatgpt.g-eye.io
+              query-type: A
+            url: 1.1.1.1
+        hostnames: ["chatgpt.g-eye.io"]
         parentRefs:
-          - name: external
+          - name: internal
             namespace: kube-system
             sectionName: https
         rules:
-          - filters:
-              - type: ResponseHeaderModifier
-                responseHeaderModifier:
-                  set:
-                    - name: alt-svc
-                      value: 'clear'
-            backendRefs:
+          - backendRefs:
               - name: *app
                 port: *port
-            timeouts:
-              request: "300s"
-              backendRequest: "60s"
     persistence:
-      config:
-        existingClaim: jellyseerr
+      data:
+        existingClaim: open-webui
         globalMounts:
-          - path: /app/config
-      config-cache:
-        existingClaim: jellyseerr-cache
-        globalMounts:
-          - path: /app/config/cache
-      config-logs:
-        type: emptyDir
-        globalMounts:
-          - path: /app/config/logs
+          - path: /data
       tmp:
         type: emptyDir
+        medium: Memory
+        globalMounts:
+          - path: /tmp
