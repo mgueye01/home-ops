@@ -2,6 +2,25 @@
 machine:
   network:
     hostname: k8s-2
+    interfaces:
+      - deviceSelector:
+          busPath: "1-1.0"  # TB -> k8s-1
+        dhcp: false
+        mtu: 65520
+        addresses:
+          - 10.0.100.2/24
+        routes:
+          - network: 10.0.100.1/32
+          - network: 10.0.100.3/32
+      - deviceSelector:
+          busPath: "0-1.0"  # TB -> k8s-3
+        dhcp: false
+        mtu: 65520
+        addresses:
+          - 10.0.100.5/24
+        routes:
+          - network: 10.0.100.4/32
+          - network: 10.0.100.6/32
   nodeLabels:
     topology.kubernetes.io/zone: m
   type: controlplane

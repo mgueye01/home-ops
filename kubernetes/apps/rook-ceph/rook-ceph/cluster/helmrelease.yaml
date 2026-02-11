@@ -74,6 +74,11 @@ spec:
         provider: host
         connections:
           requireMsgr2: true
+        addressRanges:
+          public:
+            - "192.168.10.0/24"
+          cluster:
+            - "10.0.100.0/24"
       storage:
         useAllNodes: true
         useAllDevices: false
