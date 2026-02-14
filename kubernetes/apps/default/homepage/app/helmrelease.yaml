@@ -1,0 +1,416 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app homepage
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  values:
+    controllers:
+      homepage:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/gethomepage/homepage
+              tag: v1.10.1
+            env:
+              TZ: Europe/Paris
+              HOMEPAGE_ALLOWED_HOSTS: "homepage.g-eye.io"
+            envFrom:
+              - secretRef:
+                  name: homepage-secret
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/healthcheck
+                    port: &port 3000
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 256Mi
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        fsGroup: 65534
+        fsGroupChangePolicy: OnRootMismatch
+    service:
+      app:
+        controller: homepage
+        ports:
+          http:
+            port: *port
+    route:
+      app:
+        annotations:
+          gatus.home-operations.com/enabled: "true"
+          gatus.home-operations.com/endpoint: |-
+            conditions: ["[STATUS] == 200"]
+        hostnames: ["homepage.g-eye.io"]
+        parentRefs:
+          - name: internal
+            namespace: kube-system
+            sectionName: https
+        rules:
+          - backendRefs:
+              - name: *app
+                port: *port
+    serviceAccount:
+      homepage: {}
+    rbac:
+      roles:
+        homepage:
+          type: ClusterRole
+          rules:
+            - apiGroups: [""]
+              resources: ["namespaces", "pods", "nodes"]
+              verbs: ["get", "list"]
+            - apiGroups: ["extensions", "networking.k8s.io"]
+              resources: ["ingresses"]
+              verbs: ["get", "list"]
+            - apiGroups: ["gateway.networking.k8s.io"]
+              resources: ["httproutes"]
+              verbs: ["get", "list"]
+            - apiGroups: ["metrics.k8s.io"]
+              resources: ["pods", "nodes"]
+              verbs: ["get", "list"]
+      bindings:
+        homepage:
+          type: ClusterRoleBinding
+          roleRef:
+            identifier: homepage
+          subjects:
+            - identifier: homepage
+    persistence:
+      config:
+        type: configMap
+        name: homepage-config
+        globalMounts:
+          - path: /app/config
+      tmp:
+        type: emptyDir
+    configMaps:
+      config:
+        data:
+          kubernetes.yaml: |
+            mode: cluster
+          docker.yaml: ""
+          custom.css: ""
+          custom.js: ""
+          settings.yaml: |
+            title: G-Eye Homelab
+            theme: dark
+            color: slate
+            headerStyle: boxedWidgets
+            statusStyle: dot
+            layout:
+              Media:
+                style: row
+                columns: 4
+                icon: mdi-filmstrip
+              Downloads:
+                style: row
+                columns: 2
+                icon: mdi-download
+              Productivity:
+                style: row
+                columns: 4
+                icon: mdi-lightning-bolt
+              Business:
+                style: row
+                columns: 3
+                icon: mdi-briefcase
+              Monitoring:
+                style: row
+                columns: 3
+                icon: mdi-chart-line
+              Infrastructure:
+                style: row
+                columns: 4
+                icon: mdi-server
+              Development:
+                style: row
+                columns: 2
+                icon: mdi-code-braces
+          bookmarks.yaml: |
+            - Resources:
+                - GitHub:
+                    - abbr: GH
+                      href: https://github.com/
+                      icon: si-github
+                - Flux Documentation:
+                    - abbr: FX
+                      href: https://fluxcd.io/docs/
+                      icon: si-flux
+                - Kubernetes Docs:
+                    - abbr: K8
+                      href: https://kubernetes.io/docs/
+                      icon: si-kubernetes
+                - Talos Docs:
+                    - abbr: TL
+                      href: https://www.talos.dev/latest/
+                      icon: si-talos
+          widgets.yaml: |
+            - kubernetes:
+                cluster:
+                  show: true
+                  cpu: true
+                  memory: true
+                  showLabel: true
+                  label: "g-eye-cluster"
+                nodes:
+                  show: true
+                  cpu: true
+                  memory: true
+                  showLabel: true
+            - search:
+                provider: duckduckgo
+                target: _blank
+            - datetime:
+                text_size: xl
+                format:
+                  dateStyle: long
+                  timeStyle: short
+                  hour12: false
+            - openmeteo:
+                label: Paris
+                latitude: 48.8566
+                longitude: 2.3522
+                timezone: Europe/Paris
+                units: metric
+                cache: 5
+          services.yaml: |
+            - Media:
+                - Plex:
+                    icon: plex.png
+                    href: https://plex.g-eye.io
+                    description: Media Server
+                    widget:
+                      type: plex
+                      url: http://plex.default.svc.cluster.local:32400
+                      key: "{{HOMEPAGE_VAR_PLEX_TOKEN}}"
+                      fields: ["streams", "movies", "tv"]
+                - Tautulli:
+                    icon: tautulli.png
+                    href: https://tautulli.g-eye.io
+                    description: Plex Monitoring
+                    widget:
+                      type: tautulli
+                      url: http://tautulli.default.svc.cluster.local:8181
+                      key: "{{HOMEPAGE_VAR_TAUTULLI_API_KEY}}"
+                - Jellyseerr:
+                    icon: jellyseerr.png
+                    href: https://requests.g-eye.io
+                    description: Media Requests
+                    widget:
+                      type: jellyseerr
+                      url: http://jellyseerr.default.svc.cluster.local:80
+                      key: "{{HOMEPAGE_VAR_JELLYSEERR_API_KEY}}"
+                      fields: ["pending", "approved", "available"]
+                - Sonarr:
+                    icon: sonarr.png
+                    href: https://sonarr.g-eye.io
+                    description: TV Series
+                    widget:
+                      type: sonarr
+                      url: http://sonarr.default.svc.cluster.local:80
+                      key: "{{HOMEPAGE_VAR_SONARR_API_KEY}}"
+                      fields: ["wanted", "queued", "series"]
+                      enableQueue: true
+                - Radarr:
+                    icon: radarr.png
+                    href: https://radarr.g-eye.io
+                    description: Movies
+                    widget:
+                      type: radarr
+                      url: http://radarr.default.svc.cluster.local:80
+                      key: "{{HOMEPAGE_VAR_RADARR_API_KEY}}"
+                      fields: ["wanted", "queued", "movies"]
+                      enableQueue: true
+                - Bazarr:
+                    icon: bazarr.png
+                    href: https://bazarr.g-eye.io
+                    description: Subtitles
+                    widget:
+                      type: bazarr
+                      url: http://bazarr.default.svc.cluster.local:6767
+                      key: "{{HOMEPAGE_VAR_BAZARR_API_KEY}}"
+                      fields: ["missingEpisodes", "missingMovies"]
+                - Recommendarr:
+                    icon: mdi-star
+                    href: https://recommendarr.g-eye.io
+                    description: Media Recommendations
+            - Downloads:
+                - SABnzbd:
+                    icon: sabnzbd.png
+                    href: https://sabnzbd.g-eye.io
+                    description: Usenet Downloads
+                    widget:
+                      type: sabnzbd
+                      url: http://sabnzbd.default.svc.cluster.local:80
+                      key: "{{HOMEPAGE_VAR_SABNZBD_API_KEY}}"
+                      fields: ["rate", "queue", "timeleft"]
+                - Prowlarr:
+                    icon: prowlarr.png
+                    href: https://prowlarr.g-eye.io
+                    description: Indexer Manager
+                    widget:
+                      type: prowlarr
+                      url: http://prowlarr.default.svc.cluster.local:80
+                      key: "{{HOMEPAGE_VAR_PROWLARR_API_KEY}}"
+                      fields: ["numberOfGrabs", "numberOfQueries", "numberOfFailGrabs"]
+                      enableQueue: true
+            - Productivity:
+                - Paperless:
+                    icon: paperless-ngx.png
+                    href: https://paperless.g-eye.io
+                    description: Document Management
+                    widget:
+                      type: paperlessngx
+                      url: http://paperless.default.svc.cluster.local:80
+                      key: "{{HOMEPAGE_VAR_PAPERLESS_TOKEN}}"
+                      fields: ["total", "inbox"]
+                - Paperless AI:
+                    icon: mdi-robot
+                    href: https://paperless-ai.g-eye.io
+                    description: AI Document Processing
+                - Paperless GPT:
+                    icon: mdi-file-document-edit
+                    href: https://paperless-gpt.g-eye.io
+                    description: GPT Document Tagging
+                - Changedetection:
+                    icon: changedetection-io.png
+                    href: https://change.g-eye.io
+                    description: Website Change Detection
+                    widget:
+                      type: changedetectionio
+                      url: http://changedetection.default.svc.cluster.local:5000
+                      fields: ["total", "changed"]
+                - N8N:
+                    icon: n8n.png
+                    href: https://n8n.g-eye.io
+                    description: Workflow Automation
+                - Karakeep:
+                    icon: mdi-bookmark
+                    href: https://karakeep.g-eye.io
+                    description: Bookmarks Manager
+                - Open WebUI:
+                    icon: mdi-chat
+                    href: https://chatgpt.g-eye.io
+                    description: AI Chat Interface
+                - Fusion:
+                    icon: mdi-rss
+                    href: https://feeds.g-eye.io
+                    description: RSS Reader
+            - Business:
+                - Twenty CRM:
+                    icon: mdi-account-group
+                    href: https://twenty.g-eye.io
+                    description: CRM Platform
+                - LeLabo CRM:
+                    icon: mdi-store
+                    href: https://lelabo-crm.g-eye.io
+                    description: LeLabo CRM
+                - Rybbit Analytics:
+                    icon: mdi-google-analytics
+                    href: https://analytics.g-eye.io
+                    description: Web Analytics
+                - Shlink:
+                    icon: mdi-link-variant
+                    href: https://ln.g-eye.io
+                    description: URL Shortener
+                - Littlelinks:
+                    icon: mdi-link
+                    href: https://me.g-eye.io
+                    description: Links Page
+            - Monitoring:
+                - Gatus:
+                    icon: gatus.png
+                    href: https://status.g-eye.io
+                    description: Uptime Monitoring
+                    widget:
+                      type: gatus
+                      url: http://gatus.observability.svc.cluster.local:80
+                      fields: ["up", "down", "uptime"]
+                - Prometheus:
+                    icon: prometheus.png
+                    href: https://prometheus.g-eye.io
+                    description: Metrics & Alerting
+                - Alertmanager:
+                    icon: alertmanager.png
+                    href: https://alertmanager.g-eye.io
+                    description: Alert Management
+                - Karma:
+                    icon: mdi-bell-alert
+                    href: https://karma.g-eye.io
+                    description: Alert Dashboard
+                - Teslamate:
+                    icon: mdi-car-electric
+                    href: https://teslamate.g-eye.io
+                    description: Tesla Monitoring
+            - Infrastructure:
+                - PgAdmin:
+                    icon: pgadmin.png
+                    href: https://pgadmin.g-eye.io
+                    description: PostgreSQL Admin
+                - Garage WebUI:
+                    icon: mdi-garage
+                    href: https://garage-webui.g-eye.io
+                    description: S3 Storage
+                - Kopia:
+                    icon: mdi-backup-restore
+                    href: https://kopia.g-eye.io
+                    description: Backup Repository
+                - Victoria Logs:
+                    icon: mdi-text-box-search
+                    href: https://victoria-logs.g-eye.io
+                    description: Log Storage
+                - Authelia:
+                    icon: authelia.png
+                    href: https://auth.g-eye.io
+                    description: Authentication
+                - LLDAP:
+                    icon: mdi-account-key
+                    href: https://lldap.g-eye.io
+                    description: LDAP Server
+                - Atuin:
+                    icon: mdi-console
+                    href: https://sh.g-eye.io
+                    description: Shell History Sync
+            - Development:
+                - Gitea:
+                    icon: gitea.png
+                    href: https://gitea.g-eye.io
+                    description: Git Server
+                - Harbor:
+                    icon: mdi-docker
+                    href: https://harbor.g-eye.io
+                    description: Container Registry

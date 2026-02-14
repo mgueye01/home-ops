@@ -72,6 +72,46 @@ spec:
                 memory: 512Mi
               limits:
                 memory: 4Gi
+      kopia-maintenance:
+        type: cronjob
+        cronjob:
+          schedule: "0 */6 * * *"
+          backoffLimit: 1
+          concurrencyPolicy: Forbid
+          successfulJobsHistory: 3
+          failedJobsHistory: 3
+          ttlSecondsAfterFinished: 86400
+        containers:
+          app:
+            image:
+              repository: ghcr.io/home-operations/kopia
+              tag: 0.22.3@sha256:17ab64542280197a5368247deaefadc3e3bbe15714ab666c2455a06824e86efd
+            env:
+              KOPIA_CONFIG_PATH: /config/repository.config
+              KOPIA_CACHE_DIRECTORY: /config/cache
+              KOPIA_LOG_DIR: /config/logs
+              TZ: Europe/Paris
+            envFrom:
+              - secretRef:
+                  name: kopia-secret
+            command: ["/bin/sh", "-c"]
+            args:
+              - |
+                kopia repository connect from-config --file=/config/repository.config --override-hostname=volsync.volsync-system.svc.cluster.local --override-username=volsync &&
+                kopia maintenance run --full &&
+                kopia maintenance info
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: {drop: ["ALL"]}
+            resources:
+              requests:
+                cpu: 10m
+                memory: 256Mi
+              limits:
+                memory: 2Gi
+        pod:
+          restartPolicy: Never
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
@@ -81,6 +121,7 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
     service:
       app:
+        controller: kopia
         ports:
           http:
             port: *port
