@@ -29,7 +29,7 @@ spec:
               tag: v1.10.1
             env:
               TZ: Europe/Paris
-              HOMEPAGE_ALLOWED_HOSTS: "homepage.g-eye.io,homepage.default.svc.cluster.local,10.0.0.0/8"
+              HOMEPAGE_ALLOWED_HOSTS: "*"
             envFrom:
               - secretRef:
                   name: homepage-secret
