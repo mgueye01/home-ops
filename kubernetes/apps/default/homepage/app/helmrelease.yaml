@@ -115,5 +115,9 @@ spec:
         name: homepage-config
         globalMounts:
           - path: /app/config
+      logs:
+        type: emptyDir
+        globalMounts:
+          - path: /app/config/logs
       tmp:
         type: emptyDir
