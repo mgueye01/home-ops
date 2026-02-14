@@ -22,7 +22,7 @@ data:
         icon: mdi-filmstrip
       Downloads:
         style: row
-        columns: 2
+        columns: 3
         icon: mdi-download
       Productivity:
         style: row
@@ -38,7 +38,7 @@ data:
         icon: mdi-chart-line
       Infrastructure:
         style: row
-        columns: 4
+        columns: 6
         icon: mdi-server
       Development:
         style: row
@@ -163,6 +163,10 @@ data:
               key: "{{HOMEPAGE_VAR_PROWLARR_API_KEY}}"
               fields: ["numberOfGrabs", "numberOfQueries", "numberOfFailGrabs"]
               enableQueue: true
+        - NZBGet:
+            icon: nzbget.png
+            href: http://nas.g-eye.tech:6789/
+            description: Usenet Downloader
     - Productivity:
         - Paperless:
             icon: paperless-ngx.png
@@ -247,6 +251,26 @@ data:
             href: https://teslamate.g-eye.io
             description: Tesla Monitoring
     - Infrastructure:
+        - Synology NAS:
+            icon: synology-dsm.png
+            href: https://nas.g-eye.tech:5377/
+            description: Network Storage
+        - UniFi:
+            icon: unifi.png
+            href: https://unifi.g-eye.tech/
+            description: UDM SE Network Controller
+        - Rook-Ceph:
+            icon: mdi-database
+            href: https://rook.g-eye.io
+            description: Ceph Storage Dashboard
+        - PiKVM:
+            icon: mdi-monitor-dashboard
+            href: https://pikvm.g-eye.tech/
+            description: KVM over IP
+        - JetKVM:
+            icon: mdi-monitor
+            href: http://192.168.0.165/
+            description: KVM over IP
         - PgAdmin:
             icon: pgadmin.png
             href: https://pgadmin.g-eye.io
