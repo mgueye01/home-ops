@@ -106,10 +106,6 @@ data:
             icon: tautulli.png
             href: https://tautulli.g-eye.io
             description: Plex Monitoring
-            widget:
-              type: tautulli
-              url: http://tautulli.default.svc.cluster.local:8181
-              key: "{{HOMEPAGE_VAR_TAUTULLI_API_KEY}}"
         - Jellyseerr:
             icon: jellyseerr.png
             href: https://requests.g-eye.io
@@ -143,11 +139,6 @@ data:
             icon: bazarr.png
             href: https://bazarr.g-eye.io
             description: Subtitles
-            widget:
-              type: bazarr
-              url: http://bazarr.default.svc.cluster.local:6767
-              key: "{{HOMEPAGE_VAR_BAZARR_API_KEY}}"
-              fields: ["missingEpisodes", "missingMovies"]
         - Recommendarr:
             icon: mdi-star
             href: https://recommendarr.g-eye.io
@@ -177,11 +168,6 @@ data:
             icon: paperless-ngx.png
             href: https://paperless.g-eye.io
             description: Document Management
-            widget:
-              type: paperlessngx
-              url: http://paperless.default.svc.cluster.local:80
-              key: "{{HOMEPAGE_VAR_PAPERLESS_TOKEN}}"
-              fields: ["total", "inbox"]
         - Paperless AI:
             icon: mdi-robot
             href: https://paperless-ai.g-eye.io
