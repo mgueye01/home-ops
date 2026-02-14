@@ -31,7 +31,14 @@ spec:
               - sh
               - -c
               - |
+                echo "=== Source files ==="
+                ls -la /tmp/config-source/
+                echo "=== Copying files ==="
                 cp -Lf /tmp/config-source/* /app/config/
+                echo "=== Destination files ==="
+                ls -la /app/config/
+                echo "=== services.yaml content ==="
+                head -5 /app/config/services.yaml
         containers:
           app:
             image:
