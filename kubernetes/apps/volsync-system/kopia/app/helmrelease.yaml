@@ -97,6 +97,7 @@ spec:
             command: ["/bin/sh", "-c"]
             args:
               - |
+                cp /config/config-source/repository.config /config/repository.config &&
                 kopia repository connect from-config --file=/config/repository.config --override-hostname=volsync.volsync-system.svc.cluster.local --override-username=volsync &&
                 kopia maintenance run --full &&
                 kopia maintenance info
@@ -149,7 +150,14 @@ spec:
       config-file:
         type: configMap
         name: kopia-repository-configmap
-        globalMounts:
-          - path: /config/repository.config
-            subPath: repository.config
-            readOnly: true
+        advancedMounts:
+          kopia:
+            app:
+              - path: /config/repository.config
+                subPath: repository.config
+                readOnly: true
+          kopia-maintenance:
+            app:
+              - path: /config/config-source/repository.config
+                subPath: repository.config
+                readOnly: true
