@@ -50,14 +50,14 @@ spec:
             - name: LowNodeUtilization
               args:
                 thresholds:
-                  cpu: 35
-                  memory: 30
-                  pods: 30
-                targetThresholds:
-                  cpu: 50
-                  memory: 50
+                  cpu: 40
+                  memory: 55
                   pods: 50
-                useDeviationThresholds: true
+                targetThresholds:
+                  cpu: 70
+                  memory: 80
+                  pods: 70
+                useDeviationThresholds: false
                 evictableNamespaces:
                   exclude:
                     - kube-system
