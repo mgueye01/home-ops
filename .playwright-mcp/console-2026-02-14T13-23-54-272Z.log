@@ -1,0 +1,3 @@
+[     457ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://homepage.g-eye.io/api/services/proxy?group=Productivity&service=Changedetection&index=0&endpoint=info:0
+[   55558ms] [ERROR] Failed to load resource: the server responded with a status of 503 () @ https://homepage.g-eye.io/api/widgets/kubernetes?lang=en:0
+[   55558ms] [ERROR] Failed to load resource: the server responded with a status of 503 () @ https://homepage.g-eye.io/api/services/proxy?group=Media&service=Plex&index=0&endpoint=unified&query=%7B%22refreshInterval%22%3A5000%7D:0
