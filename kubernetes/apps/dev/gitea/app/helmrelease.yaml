@@ -50,9 +50,9 @@ spec:
       enabled: false
     persistence:
       enabled: true
-      accessModes: ["ReadWriteOnce"]
-      size: 10Gi
-      storageClass: ceph-block
+      create: false
+      mount: true
+      claimName: gitea
     gitea:
       admin:
         email: gitea@g-eye.io

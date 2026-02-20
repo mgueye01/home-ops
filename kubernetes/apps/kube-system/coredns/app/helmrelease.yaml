@@ -60,6 +60,15 @@ spec:
           - name: log
             configBlock: |-
               class error
+    podDisruptionBudget:
+      minAvailable: 1
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            k8s-app: kube-dns
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:

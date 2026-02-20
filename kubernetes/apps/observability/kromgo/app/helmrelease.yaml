@@ -55,6 +55,14 @@ spec:
                 cpu: 10m
               limits:
                 memory: 64Mi
+        pod:
+          topologySpreadConstraints:
+            - maxSkew: 1
+              topologyKey: kubernetes.io/hostname
+              whenUnsatisfiable: DoNotSchedule
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: *app
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true

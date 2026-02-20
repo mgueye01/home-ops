@@ -3,7 +3,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: notifier
+  name: &app notifier
 spec:
   chartRef:
     kind: OCIRepository
@@ -36,6 +36,14 @@ spec:
                 cpu: 100m
               limits:
                 memory: 512Mi
+        pod:
+          topologySpreadConstraints:
+            - maxSkew: 1
+              topologyKey: kubernetes.io/hostname
+              whenUnsatisfiable: DoNotSchedule
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: *app
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true

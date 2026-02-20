@@ -18,6 +18,13 @@ spec:
         app.kubernetes.io/name: *app
         app.kubernetes.io/instance: *app
     spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: *app
       imagePullSecrets:
         - name: regcred
       containers:

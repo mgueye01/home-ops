@@ -72,6 +72,14 @@ spec:
               # GOODREADS: https://www.goodreads.com/
               # SKOOB: https://www.skoob.com.br/
               # FOOTER: Thanks for stopping by!
+        pod:
+          topologySpreadConstraints:
+            - maxSkew: 1
+              topologyKey: kubernetes.io/hostname
+              whenUnsatisfiable: DoNotSchedule
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: *app
     service:
       main:
         controller: main
