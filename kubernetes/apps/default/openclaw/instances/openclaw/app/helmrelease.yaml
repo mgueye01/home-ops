@@ -25,8 +25,8 @@ spec:
         initContainers:
           init-config:
             image:
-              repository: ghcr.io/openclaw/openclaw
-              tag: latest
+              repository: harbor.g-eye.io/openclaw/openclaw # {"$imagepolicy": "default:openclaw:name"}
+              tag: 20260220-000000 # {"$imagepolicy": "default:openclaw:tag"}
             securityContext:
               runAsUser: 0
               runAsGroup: 0
@@ -48,8 +48,8 @@ spec:
         containers:
           app:
             image:
-              repository: ghcr.io/openclaw/openclaw
-              tag: latest
+              repository: harbor.g-eye.io/openclaw/openclaw # {"$imagepolicy": "default:openclaw:name"}
+              tag: 20260220-000000 # {"$imagepolicy": "default:openclaw:tag"}
             args: ["node", "dist/index.js", "gateway"]
             env:
               TZ: Europe/Paris
@@ -91,6 +91,8 @@ spec:
               limits:
                 memory: 2Gi
     defaultPodOptions:
+      imagePullSecrets:
+        - name: openclaw-harbor-registry
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
@@ -126,9 +128,5 @@ spec:
         name: openclaw-config
         globalMounts:
           - path: /tmp/config
-      workspace:
-        existingClaim: openclaw-workspace
-        globalMounts:
-          - path: /home/node/.openclaw/workspace
       tmp:
         type: emptyDir

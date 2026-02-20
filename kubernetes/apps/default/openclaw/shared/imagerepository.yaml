@@ -1,0 +1,10 @@
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: openclaw
+spec:
+  image: harbor.g-eye.io/openclaw/openclaw
+  interval: 5m
+  secretRef:
+    name: openclaw-harbor-registry

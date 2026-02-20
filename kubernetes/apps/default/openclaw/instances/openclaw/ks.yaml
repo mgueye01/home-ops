@@ -10,16 +10,18 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   components:
-    - ../../../../components/volsync
+    - ../../../../../../components/volsync
   dependsOn:
+    - name: openclaw-shared
+      namespace: default
     - name: rook-ceph-cluster
       namespace: rook-ceph
   interval: 1h
-  path: ./kubernetes/apps/default/openclaw/app
+  path: ./kubernetes/apps/default/openclaw/instances/openclaw/app
   postBuild:
     substitute:
       APP: *app
-      VOLSYNC_CAPACITY: 1Gi
+      VOLSYNC_CAPACITY: 15Gi
   prune: true
   retryInterval: 2m
   sourceRef:

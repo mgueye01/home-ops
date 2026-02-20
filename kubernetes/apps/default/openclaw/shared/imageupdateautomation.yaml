@@ -1,0 +1,29 @@
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageUpdateAutomation
+metadata:
+  name: openclaw
+spec:
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: home-ops-write
+    namespace: default
+  git:
+    checkout:
+      ref:
+        branch: main
+    commit:
+      author:
+        email: flux@g-eye.io
+        name: Flux
+      messageTemplate: |
+        chore(openclaw): update image
+        {{range .Changed.Changes}}
+        - {{.OldValue}} -> {{.NewValue}}
+        {{end}}
+    push:
+      branch: flux/openclaw-image-update
+  update:
+    path: ./kubernetes/apps/default/openclaw
+    strategy: Setters
