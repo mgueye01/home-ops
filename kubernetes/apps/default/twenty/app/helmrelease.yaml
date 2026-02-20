@@ -39,7 +39,7 @@ spec:
           app:
             image:
               repository: twentycrm/twenty
-              tag: v1.17.0
+              tag: v1.18.1
             env:
               NODE_PORT: &port 3000
               SERVER_URL: "https://twenty.g-eye.io"
@@ -124,7 +124,7 @@ spec:
           app:
             image:
               repository: twentycrm/twenty
-              tag: v1.17.0
+              tag: v1.18.1
             command: ["yarn", "worker:prod"]
             env:
               SERVER_URL: "https://twenty.g-eye.io"
