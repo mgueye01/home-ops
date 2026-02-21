@@ -44,12 +44,30 @@ spec:
                 else
                   echo "Valid config exists, preserving user changes"
                 fi
+                # Ensure gateway binds to all interfaces for Kubernetes probes/services
+                if command -v node >/dev/null 2>&1; then
+                  node -e "
+                    const fs = require('fs');
+                    const c = JSON.parse(fs.readFileSync('$CONFIG'));
+                    let changed = false;
+                    if (c.gateway && c.gateway.bind !== 'lan') {
+                      c.gateway.bind = 'lan';
+                      changed = true;
+                    }
+                    if (changed) {
+                      fs.writeFileSync('$CONFIG', JSON.stringify(c, null, 2));
+                      console.log('Patched gateway.bind to lan');
+                    } else {
+                      console.log('gateway.bind already set to lan');
+                    }
+                  "
+                fi
         containers:
           app:
             image:
               repository: harbor.g-eye.io/openclaw/openclaw # {"$imagepolicy": "default:openclaw:name"}
               tag: 20260221-021617 # {"$imagepolicy": "default:openclaw:tag"}
-            args: ["node", "dist/index.js", "gateway"]
+            args: ["node", "dist/index.js", "gateway", "--allow-unconfigured"]
             env:
               TZ: Europe/Paris
             envFrom:
@@ -60,8 +78,7 @@ spec:
                 enabled: true
                 custom: true
                 spec:
-                  httpGet:
-                    path: /
+                  tcpSocket:
                     port: &port 18789
                   initialDelaySeconds: 10
                   periodSeconds: 10
@@ -72,10 +89,9 @@ spec:
                 enabled: true
                 custom: true
                 spec:
-                  httpGet:
-                    path: /
+                  tcpSocket:
                     port: *port
-                  initialDelaySeconds: 5
+                  initialDelaySeconds: 10
                   periodSeconds: 5
                   timeoutSeconds: 5
                   failureThreshold: 30

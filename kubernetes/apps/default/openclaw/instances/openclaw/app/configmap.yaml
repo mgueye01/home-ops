@@ -9,6 +9,7 @@ data:
       "gateway": {
         "mode": "local",
         "bind": "lan",
+        "port": 18789,
         "controlUi": {
           "enabled": true,
           "allowInsecureAuth": true
