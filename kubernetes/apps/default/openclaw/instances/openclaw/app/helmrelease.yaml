@@ -44,21 +44,27 @@ spec:
                 else
                   echo "Valid config exists, preserving user changes"
                 fi
-                # Ensure gateway binds to all interfaces for Kubernetes probes/services
+                # Ensure gateway is configured for Kubernetes environment
                 if command -v node >/dev/null 2>&1; then
                   node -e "
                     const fs = require('fs');
                     const c = JSON.parse(fs.readFileSync('$CONFIG'));
                     let changed = false;
-                    if (c.gateway && c.gateway.bind !== 'lan') {
+                    if (!c.gateway) c.gateway = {};
+                    if (c.gateway.bind !== 'lan') {
                       c.gateway.bind = 'lan';
+                      changed = true;
+                    }
+                    const proxies = ['10.42.0.0/16', '192.168.10.0/24'];
+                    if (JSON.stringify(c.gateway.trustedProxies) !== JSON.stringify(proxies)) {
+                      c.gateway.trustedProxies = proxies;
                       changed = true;
                     }
                     if (changed) {
                       fs.writeFileSync('$CONFIG', JSON.stringify(c, null, 2));
-                      console.log('Patched gateway.bind to lan');
+                      console.log('Patched gateway config (bind + trustedProxies)');
                     } else {
-                      console.log('gateway.bind already set to lan');
+                      console.log('Gateway config already correct');
                     }
                   "
                 fi
