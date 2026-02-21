@@ -84,3 +84,5 @@ spec:
         existingClaim: fusion
         globalMounts:
           - path: /data
+      tmp:
+        type: emptyDir
