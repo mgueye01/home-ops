@@ -70,7 +70,7 @@ spec:
                 custom: true
                 spec:
                   httpGet:
-                    path: /ready
+                    path: /health
                     port: 3000
                   initialDelaySeconds: 5
                   periodSeconds: 15
