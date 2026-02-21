@@ -34,7 +34,7 @@ spec:
               - /bin/sh
               - -c
               - |
-                CONFIG=/home/node/.openclaw/openclaw.json
+                CONFIG=/home/tapha/.openclaw/openclaw.json
                 if [ ! -f "$CONFIG" ] || ! node -e "JSON.parse(require('fs').readFileSync('$CONFIG'))" 2>/dev/null; then
                   echo "Config missing or invalid, copying from template..."
                   rm -f "$CONFIG"
@@ -121,7 +121,7 @@ spec:
       config:
         existingClaim: openclaw
         globalMounts:
-          - path: /home/node/.openclaw
+          - path: /home/tapha/.openclaw
       config-file:
         type: configMap
         name: openclaw-config
