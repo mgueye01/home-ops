@@ -34,6 +34,10 @@ spec:
               - /bin/sh
               - -c
               - |
+                # Ensure npm-global dir exists for persisted skill packages
+                mkdir -p /home/tapha/.openclaw/npm-global/bin
+                chown -R 1000:1000 /home/tapha/.openclaw/npm-global
+
                 CONFIG=/home/tapha/.openclaw/openclaw.json
                 if [ ! -f "$CONFIG" ] || ! node -e "JSON.parse(require('fs').readFileSync('$CONFIG'))" 2>/dev/null; then
                   echo "Config missing or invalid, copying from template..."
