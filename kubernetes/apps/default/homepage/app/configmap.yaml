@@ -258,6 +258,7 @@ data:
             widget:
               type: pihole
               url: https://pi-hole.g-eye.tech
+              version: 6
               key: "{{HOMEPAGE_VAR_PIHOLE_API_KEY}}"
               fields: ["queries", "blocked", "blocked_percent", "gravity"]
         - Synology NAS:
