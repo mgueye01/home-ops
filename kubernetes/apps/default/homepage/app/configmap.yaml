@@ -251,6 +251,15 @@ data:
             href: https://teslamate.g-eye.io
             description: Tesla Monitoring
     - Infrastructure:
+        - Pi-hole:
+            icon: pi-hole.png
+            href: https://pi-hole.g-eye.tech/
+            description: DNS Ad Blocker
+            widget:
+              type: pihole
+              url: https://pi-hole.g-eye.tech
+              key: "{{HOMEPAGE_VAR_PIHOLE_API_KEY}}"
+              fields: ["queries", "blocked", "blocked_percent", "gravity"]
         - Synology NAS:
             icon: synology-dsm.png
             href: https://nas.g-eye.tech:5377/
