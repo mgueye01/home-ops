@@ -36,6 +36,10 @@ data:
         style: row
         columns: 3
         icon: mdi-chart-line
+      Network:
+        style: row
+        columns: 2
+        icon: mdi-lan
       Infrastructure:
         style: row
         columns: 6
@@ -250,7 +254,7 @@ data:
             icon: mdi-car-electric
             href: https://teslamate.g-eye.io
             description: Tesla Monitoring
-    - Infrastructure:
+    - Network:
         - Pi-hole:
             icon: pi-hole.png
             href: https://pi-hole.g-eye.tech/
@@ -261,14 +265,15 @@ data:
               version: 6
               key: "{{HOMEPAGE_VAR_PIHOLE_API_KEY}}"
               fields: ["queries", "blocked", "blocked_percent", "gravity"]
-        - Synology NAS:
-            icon: synology-dsm.png
-            href: https://nas.g-eye.tech:5377/
-            description: Network Storage
         - UniFi:
             icon: unifi.png
             href: https://unifi.g-eye.tech/
             description: UDM SE Network Controller
+    - Infrastructure:
+        - Synology NAS:
+            icon: synology-dsm.png
+            href: https://nas.g-eye.tech:5377/
+            description: Network Storage
         - Rook-Ceph:
             icon: mdi-database
             href: https://rook.g-eye.io
