@@ -257,7 +257,7 @@ data:
     - Network:
         - Pi-hole:
             icon: pi-hole.png
-            href: https://pi-hole.g-eye.tech/
+            href: https://pi-hole.g-eye.tech/admin
             description: DNS Ad Blocker
             widget:
               type: pihole
