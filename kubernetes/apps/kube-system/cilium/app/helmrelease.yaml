@@ -70,7 +70,7 @@ spec:
         enabled: true
       podDisruptionBudget:
         enabled: true
-        minAvailable: 1
+        maxUnavailable: 1
       prometheus:
         enabled: true
         serviceMonitor:
