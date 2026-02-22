@@ -38,6 +38,17 @@ spec:
                 mkdir -p /home/tapha/.openclaw/npm-global/bin
                 chown -R 1000:1000 /home/tapha/.openclaw/npm-global
 
+                # Populate linuxbrew on the PVC on first run (or if empty)
+                if [ -z "$(ls -A /mnt/linuxbrew 2>/dev/null)" ]; then
+                  echo "Populating linuxbrew from image..."
+                  cp -a /home/linuxbrew/.linuxbrew/. /mnt/linuxbrew/
+                  chown -R 1000:1001 /mnt/linuxbrew
+                  chmod -R g+rwx /mnt/linuxbrew
+                  echo "Linuxbrew populated"
+                else
+                  echo "Linuxbrew already on PVC, skipping copy"
+                fi
+
                 CONFIG=/home/tapha/.openclaw/openclaw.json
                 if [ ! -f "$CONFIG" ] || ! node -e "JSON.parse(require('fs').readFileSync('$CONFIG'))" 2>/dev/null; then
                   echo "Config missing or invalid, copying from template..."
@@ -148,6 +159,16 @@ spec:
         existingClaim: openclaw
         globalMounts:
           - path: /home/tapha/.openclaw
+      linuxbrew:
+        existingClaim: openclaw
+        advancedMounts:
+          openclaw:
+            init-config:
+              - path: /mnt/linuxbrew
+                subPath: linuxbrew
+            app:
+              - path: /home/linuxbrew/.linuxbrew
+                subPath: linuxbrew
       config-file:
         type: configMap
         name: openclaw-config
