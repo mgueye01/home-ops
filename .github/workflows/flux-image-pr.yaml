@@ -43,13 +43,8 @@ jobs:
           else
             echo "Creating PR for $BRANCH"
             gh pr create \
-              --title "🐱 elgato-photo: new image available" \
-              --body "Automated image update by Flux Image Automation.
-
-This PR updates the elgato-photo container image to the latest version.
-
----
-_Merge this PR to deploy the new image._" \
+              --title "elgato-photo: new image available" \
+              --body "Automated image update by Flux Image Automation. This PR updates the elgato-photo container image to the latest version." \
               --base main \
               --head "$BRANCH" \
               --label "elgato-photo" \
