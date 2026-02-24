@@ -47,3 +47,51 @@ spec:
         - noatime
       reclaimPolicy: Delete
       volumeBindingMode: Immediate
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: csi-nfs-controller
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: csi-nfs-controller
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: csi-provisioner
+                        args:
+                          - "-v=2"
+                          - "--csi-address=$(ADDRESS)"
+                          - "--leader-election"
+                          - "--leader-election-namespace=kube-system"
+                          - "--extra-create-metadata=true"
+                          - "--feature-gates=HonorPVReclaimPolicy=true"
+                          - "--timeout=1200s"
+                          - "--retry-interval-max=30m"
+                          - "--leader-election-lease-duration=60s"
+                          - "--leader-election-renew-deadline=30s"
+                          - "--leader-election-retry-period=15s"
+                      - name: csi-resizer
+                        args:
+                          - "-v=2"
+                          - "--csi-address=$(ADDRESS)"
+                          - "--leader-election"
+                          - "--leader-election-namespace=kube-system"
+                          - "--timeout=1200s"
+                          - "--retry-interval-max=30m"
+                          - "--leader-election-lease-duration=60s"
+                          - "--leader-election-renew-deadline=30s"
+                          - "--leader-election-retry-period=15s"
+                      - name: csi-snapshotter
+                        args:
+                          - "-v=2"
+                          - "--csi-address=$(ADDRESS)"
+                          - "--leader-election"
+                          - "--leader-election-namespace=kube-system"
+                          - "--leader-election-lease-duration=60s"
+                          - "--leader-election-renew-deadline=30s"
+                          - "--leader-election-retry-period=15s"
