@@ -5,9 +5,16 @@
       base_url: http://sonarr.default.svc.cluster.local
       api_key: !env_var SONARR_API_KEY
 
-      include:
-        - template: web-1080p
-        - template: web-2160p
+      quality_definition:
+        type: series
+
+      quality_profiles:
+        - trash_id: 72dae194fc92bf828f32cde7744e51a1 # WEB-1080p
+          reset_unmatched_scores:
+            enabled: true
+        - trash_id: d1498e7d189fbe6c7110ceaabb7473e6 # WEB-2160p
+          reset_unmatched_scores:
+            enabled: true
 
       custom_formats:
         # HDR Formats
@@ -32,8 +39,13 @@
       base_url: http://radarr.default.svc.cluster.local
       api_key: !env_var RADARR_API_KEY
 
-      include:
-        - template: sqp-1-2160p
+      quality_definition:
+        type: sqp-streaming
+
+      quality_profiles:
+        - trash_id: 5128baeb2b081b72126bc8482b2a86a0 # SQP-1 (2160p)
+          reset_unmatched_scores:
+            enabled: true
 
       custom_formats:
         # French Language Priority
