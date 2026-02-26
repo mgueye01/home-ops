@@ -75,6 +75,12 @@ spec:
                       c.gateway.trustedProxies = proxies;
                       changed = true;
                     }
+                    if (!c.gateway.controlUi) c.gateway.controlUi = {};
+                    const origins = ['https://openclaw.g-eye.io'];
+                    if (JSON.stringify(c.gateway.controlUi.allowedOrigins) !== JSON.stringify(origins)) {
+                      c.gateway.controlUi.allowedOrigins = origins;
+                      changed = true;
+                    }
                     if (changed) {
                       fs.writeFileSync('$CONFIG', JSON.stringify(c, null, 2));
                       console.log('Patched gateway config (bind + trustedProxies)');

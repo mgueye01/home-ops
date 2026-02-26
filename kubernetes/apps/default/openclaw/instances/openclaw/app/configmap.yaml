@@ -12,7 +12,8 @@ data:
         "port": 18789,
         "controlUi": {
           "enabled": true,
-          "allowInsecureAuth": true
+          "allowInsecureAuth": true,
+          "allowedOrigins": ["https://openclaw.g-eye.io"]
         },
         "auth": {
           "mode": "token"
