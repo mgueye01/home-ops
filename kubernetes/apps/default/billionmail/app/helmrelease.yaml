@@ -350,7 +350,7 @@ spec:
             sectionName: https
         rules:
           - backendRefs:
-              - name: *app
+              - identifier: app
                 port: 80
 
     # ── Persistence ──────────────────────────────────────────────────
