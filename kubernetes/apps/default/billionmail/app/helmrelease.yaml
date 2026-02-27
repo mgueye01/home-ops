@@ -48,7 +48,7 @@ spec:
           pg-sock-proxy:
             image:
               repository: alpine/socat
-              tag: "1.8.0.1"
+              tag: "1.8.0.3"
             args:
               - "UNIX-LISTEN:/pg-sock/.s.PGSQL.5432,fork,reuseaddr"
               - "TCP:postgres16-rw.databases.svc.cluster.local:5432"
@@ -66,7 +66,7 @@ spec:
           redis-proxy:
             image:
               repository: alpine/socat
-              tag: "1.8.0.1"
+              tag: "1.8.0.3"
             args:
               - "TCP-LISTEN:26379,fork,reuseaddr"
               - "TCP:redis-master.databases.svc.cluster.local:6379"
@@ -182,7 +182,7 @@ spec:
           pg-sock-proxy:
             image:
               repository: alpine/socat
-              tag: "1.8.0.1"
+              tag: "1.8.0.3"
             args:
               - "UNIX-LISTEN:/pg-sock/.s.PGSQL.5432,fork,reuseaddr"
               - "TCP:postgres16-rw.databases.svc.cluster.local:5432"
@@ -232,7 +232,7 @@ spec:
           pg-sock-proxy:
             image:
               repository: alpine/socat
-              tag: "1.8.0.1"
+              tag: "1.8.0.3"
             args:
               - "UNIX-LISTEN:/pg-sock/.s.PGSQL.5432,fork,reuseaddr"
               - "TCP:postgres16-rw.databases.svc.cluster.local:5432"
