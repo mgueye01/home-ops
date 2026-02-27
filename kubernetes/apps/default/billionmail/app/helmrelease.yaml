@@ -31,6 +31,11 @@ spec:
             envFrom: &envFrom
               - secretRef:
                   name: billionmail-secret
+          init-conf:
+            image:
+              repository: busybox
+              tag: latest
+            command: ["sh", "-c", "mkdir -p /conf/askai"]
         containers:
           pg-sock-proxy:
             image:
@@ -481,5 +486,7 @@ spec:
         type: emptyDir
         advancedMounts:
           billionmail:
+            init-conf:
+              - path: /conf
             core:
               - path: /opt/billionmail/conf
