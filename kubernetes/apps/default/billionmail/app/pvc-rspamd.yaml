@@ -1,0 +1,11 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: billionmail-rspamd
+spec:
+  accessModes: ["ReadWriteMany"]
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: ceph-filesystem

@@ -1,0 +1,380 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app billionmail
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  values:
+    controllers:
+      # ── Core + Webmail (share PHP-FPM socket) ──────────────────────
+      billionmail:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        initContainers:
+          init-db:
+            image:
+              repository: ghcr.io/home-operations/postgres-init
+              tag: 18.2@sha256:ae89578925b480f5972f237dda2f7a37efe36aff500d3e7bd1d3a6a3181e4191
+            envFrom: &envFrom
+              - secretRef:
+                  name: billionmail-secret
+        containers:
+          core:
+            image:
+              repository: billionmail/core
+              tag: 4.9.0
+            env:
+              TZ: "Etc/UTC"
+              BILLIONMAIL_HOSTNAME: "mail.g-eye.io"
+              DBHOST: "postgres16-rw.databases.svc.cluster.local"
+              DBPORT: "5432"
+              REDISHOST: "redis-master.databases.svc.cluster.local"
+              REDISPORT: "6379"
+              REDISPASS: ""
+              HTTP_PORT: &httpPort "80"
+              FAIL2BAN_INIT: "n"
+              RETENTION_DAYS: "7"
+              ADMIN_USERNAME: "billion"
+            envFrom: *envFrom
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: *httpPort
+                  initialDelaySeconds: 30
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 5
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: *httpPort
+                  initialDelaySeconds: 15
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: *httpPort
+                  initialDelaySeconds: 10
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 30
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities:
+                drop: ["ALL"]
+                add: ["NET_BIND_SERVICE"]
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                memory: 512Mi
+          webmail:
+            image:
+              repository: roundcube/roundcubemail
+              tag: 1.6.11-fpm-alpine
+            env:
+              TZ: "Etc/UTC"
+              ROUNDCUBEMAIL_DB_TYPE: "pgsql"
+              ROUNDCUBEMAIL_DB_HOST: "postgres16-rw.databases.svc.cluster.local"
+              ROUNDCUBEMAIL_DB_PORT: "5432"
+              ROUNDCUBEMAIL_DB_NAME: "$(DBNAME)"
+              ROUNDCUBEMAIL_DB_USER: "$(DBUSER)"
+              ROUNDCUBEMAIL_DB_PASSWORD: "$(DBPASS)"
+              ROUNDCUBEMAIL_DEFAULT_HOST: "billionmail-dovecot"
+              ROUNDCUBEMAIL_DEFAULT_PORT: "143"
+              ROUNDCUBEMAIL_SMTP_SERVER: "billionmail-postfix"
+              ROUNDCUBEMAIL_SMTP_PORT: "25"
+              ROUNDCUBEMAIL_REQUEST_PATH: "/roundcube"
+            envFrom: *envFrom
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 50m
+                memory: 128Mi
+              limits:
+                memory: 256Mi
+
+      # ── Postfix (SMTP) ────────────────────────────────────────────
+      postfix:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          postfix:
+            image:
+              repository: billionmail/postfix
+              tag: "1.6"
+            env:
+              TZ: "Etc/UTC"
+              BILLIONMAIL_HOSTNAME: "mail.g-eye.io"
+              DBHOST: "postgres16-rw.databases.svc.cluster.local"
+              DBPORT: "5432"
+              REDISHOST: "redis-master.databases.svc.cluster.local"
+              REDISPORT: "6379"
+              REDISPASS: ""
+              RETENTION_DAYS: "7"
+            envFrom: *envFrom
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities:
+                drop: ["ALL"]
+                add: ["NET_BIND_SERVICE"]
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                memory: 512Mi
+
+      # ── Dovecot (IMAP) ────────────────────────────────────────────
+      dovecot:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          dovecot:
+            image:
+              repository: billionmail/dovecot
+              tag: "1.6"
+            env:
+              TZ: "Etc/UTC"
+              BILLIONMAIL_HOSTNAME: "mail.g-eye.io"
+              DBHOST: "postgres16-rw.databases.svc.cluster.local"
+              DBPORT: "5432"
+              REDISHOST: "redis-master.databases.svc.cluster.local"
+              REDISPORT: "6379"
+              REDISPASS: ""
+              RETENTION_DAYS: "7"
+            envFrom: *envFrom
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities:
+                drop: ["ALL"]
+                add: ["NET_BIND_SERVICE"]
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                memory: 512Mi
+
+      # ── Rspamd (spam filter) ──────────────────────────────────────
+      rspamd:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          rspamd:
+            image:
+              repository: billionmail/rspamd
+              tag: "1.2"
+            env:
+              TZ: "Etc/UTC"
+              REDISHOST: "redis-master.databases.svc.cluster.local"
+              REDISPORT: "6379"
+              REDISPASS: ""
+              RETENTION_DAYS: "7"
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                memory: 512Mi
+
+    # ── Services ──────────────────────────────────────────────────────
+    service:
+      app:
+        controller: billionmail
+        ports:
+          http:
+            port: *httpPort
+      postfix:
+        controller: postfix
+        type: LoadBalancer
+        annotations:
+          lbipam.cilium.io/ips: "192.168.10.75"
+          external-dns.alpha.kubernetes.io/hostname: "mail.g-eye.io"
+        ports:
+          smtp:
+            port: 25
+            protocol: TCP
+          smtps:
+            port: 465
+            protocol: TCP
+          submission:
+            port: 587
+            protocol: TCP
+      dovecot:
+        controller: dovecot
+        type: LoadBalancer
+        annotations:
+          lbipam.cilium.io/ips: "192.168.10.75"
+        ports:
+          imap:
+            port: 143
+            protocol: TCP
+          imaps:
+            port: 993
+            protocol: TCP
+      rspamd:
+        controller: rspamd
+        ports:
+          milter:
+            port: 11332
+            protocol: TCP
+          http:
+            port: 11334
+            protocol: TCP
+
+    # ── HTTPRoute (admin UI) ─────────────────────────────────────────
+    route:
+      app:
+        annotations:
+          gatus.home-operations.com/enabled: "true"
+          gatus.home-operations.com/endpoint: |-
+            conditions: ["[STATUS] == 200"]
+        hostnames:
+          - "mail.g-eye.io"
+        parentRefs:
+          - name: external
+            namespace: kube-system
+            sectionName: https
+        rules:
+          - backendRefs:
+              - name: *app
+                port: *httpPort
+
+    # ── Persistence ──────────────────────────────────────────────────
+    persistence:
+      # VolSync-managed app data (ceph-block RWO)
+      data:
+        existingClaim: billionmail
+        advancedMounts:
+          billionmail:
+            core:
+              - path: /opt/billionmail/core/data
+
+      # Mailbox storage (ceph-filesystem RWX)
+      vmail:
+        existingClaim: billionmail-vmail
+        advancedMounts:
+          billionmail:
+            core:
+              - path: /opt/billionmail/vmail-data
+          dovecot:
+            dovecot:
+              - path: /var/vmail
+
+      # Rspamd data / DKIM keys (ceph-filesystem RWX)
+      rspamd-data:
+        existingClaim: billionmail-rspamd
+        advancedMounts:
+          billionmail:
+            core:
+              - path: /opt/billionmail/rspamd-data
+          postfix:
+            postfix:
+              - path: /var/lib/rspamd
+          dovecot:
+            dovecot:
+              - path: /var/lib/rspamd
+          rspamd:
+            rspamd:
+              - path: /var/lib/rspamd
+
+      # TLS certificates (ceph-filesystem RWX)
+      ssl:
+        existingClaim: billionmail-ssl
+        advancedMounts:
+          billionmail:
+            core:
+              - path: /etc/ssl/mail
+          postfix:
+            postfix:
+              - path: /etc/ssl/mail
+          dovecot:
+            dovecot:
+              - path: /etc/ssl/mail
+
+      # PHP-FPM socket (core ↔ webmail)
+      php-sock:
+        type: emptyDir
+        advancedMounts:
+          billionmail:
+            core:
+              - path: /opt/billionmail/php-sock
+            webmail:
+              - path: /var/run
+
+      # Webmail data (core ↔ webmail)
+      webmail-data:
+        type: emptyDir
+        advancedMounts:
+          billionmail:
+            core:
+              - path: /opt/billionmail/webmail-data
+            webmail:
+              - path: /var/www/html
+
+      # Postfix spool
+      postfix-spool:
+        type: emptyDir
+        advancedMounts:
+          postfix:
+            postfix:
+              - path: /var/spool/postfix
+
+      # Tmp dirs
+      core-tmp:
+        type: emptyDir
+        advancedMounts:
+          billionmail:
+            core:
+              - path: /tmp
+      core-logs:
+        type: emptyDir
+        advancedMounts:
+          billionmail:
+            core:
+              - path: /opt/billionmail/logs
+      core-conf:
+        type: emptyDir
+        advancedMounts:
+          billionmail:
+            core:
+              - path: /opt/billionmail/conf
