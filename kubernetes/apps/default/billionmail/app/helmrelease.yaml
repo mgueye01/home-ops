@@ -32,6 +32,24 @@ spec:
               - secretRef:
                   name: billionmail-secret
         containers:
+          pg-sock-proxy:
+            image:
+              repository: alpine/socat
+              tag: "1.8.0.1"
+            args:
+              - "UNIX-LISTEN:/pg-sock/.s.PGSQL.5432,fork,reuseaddr"
+              - "TCP:postgres16-rw.databases.svc.cluster.local:5432"
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 10m
+                memory: 16Mi
+              limits:
+                memory: 32Mi
           core:
             image:
               repository: billionmail/core
@@ -130,6 +148,24 @@ spec:
         annotations:
           reloader.stakater.com/auto: "true"
         containers:
+          pg-sock-proxy:
+            image:
+              repository: alpine/socat
+              tag: "1.8.0.1"
+            args:
+              - "UNIX-LISTEN:/pg-sock/.s.PGSQL.5432,fork,reuseaddr"
+              - "TCP:postgres16-rw.databases.svc.cluster.local:5432"
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 10m
+                memory: 16Mi
+              limits:
+                memory: 32Mi
           postfix:
             image:
               repository: billionmail/postfix
@@ -162,6 +198,24 @@ spec:
         annotations:
           reloader.stakater.com/auto: "true"
         containers:
+          pg-sock-proxy:
+            image:
+              repository: alpine/socat
+              tag: "1.8.0.1"
+            args:
+              - "UNIX-LISTEN:/pg-sock/.s.PGSQL.5432,fork,reuseaddr"
+              - "TCP:postgres16-rw.databases.svc.cluster.local:5432"
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 10m
+                memory: 16Mi
+              limits:
+                memory: 32Mi
           dovecot:
             image:
               repository: billionmail/dovecot
@@ -363,6 +417,26 @@ spec:
               - path: /opt/billionmail/webmail-data
             webmail:
               - path: /var/www/html
+
+      # PostgreSQL Unix socket (socat → TCP proxy)
+      pg-sock:
+        type: emptyDir
+        advancedMounts:
+          billionmail:
+            pg-sock-proxy:
+              - path: /pg-sock
+            core:
+              - path: /opt/billionmail/postgresql-socket
+          postfix:
+            pg-sock-proxy:
+              - path: /pg-sock
+            postfix:
+              - path: /var/run/postgresql
+          dovecot:
+            pg-sock-proxy:
+              - path: /pg-sock
+            dovecot:
+              - path: /var/run/postgresql
 
       # Postfix spool
       postfix-spool:
