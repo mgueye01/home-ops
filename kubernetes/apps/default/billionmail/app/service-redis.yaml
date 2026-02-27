@@ -1,0 +1,10 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  labels:
+    app.kubernetes.io/name: billionmail
+spec:
+  type: ExternalName
+  externalName: redis-master.databases.svc.cluster.local

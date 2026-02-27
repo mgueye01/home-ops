@@ -7,4 +7,5 @@ resources:
   - ./pvc-vmail.yaml
   - ./pvc-rspamd.yaml
   - ./pvc-ssl.yaml
+  - ./service-redis.yaml
   - ./helmrelease.yaml
