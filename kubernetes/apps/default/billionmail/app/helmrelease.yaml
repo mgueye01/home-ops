@@ -35,7 +35,15 @@ spec:
             image:
               repository: busybox
               tag: latest
-            command: ["sh", "-c", "mkdir -p /conf/askai"]
+            command:
+              - sh
+              - -c
+              - |
+                mkdir -p /conf/askai
+                mkdir -p /conf/postfix/conf
+                mkdir -p /conf/postfix/sql
+                mkdir -p /conf/rspamd/local.d
+                mkdir -p /conf/dovecot/conf.d
         containers:
           pg-sock-proxy:
             image:
