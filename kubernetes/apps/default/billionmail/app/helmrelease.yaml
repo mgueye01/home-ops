@@ -283,6 +283,17 @@ spec:
 
     # ── Persistence ──────────────────────────────────────────────────
     persistence:
+      # .env file required by core binary
+      dotenv:
+        type: secret
+        name: billionmail-secret
+        advancedMounts:
+          billionmail:
+            core:
+              - path: /opt/billionmail/.env
+                subPath: dotenv
+                readOnly: true
+
       # VolSync-managed app data (ceph-block RWO)
       data:
         existingClaim: billionmail
