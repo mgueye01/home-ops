@@ -200,29 +200,25 @@ spec:
         initContainers:
           init-postfix-dirs:
             image:
-              repository: busybox
-              tag: latest
+              repository: billionmail/postfix
+              tag: "1.6"
             command:
               - sh
               - -c
               - |
-                mkdir -p /etc/postfix/sql
-                mkdir -p /etc/postfix/conf
-                mkdir -p /var/spool/postfix/public
-                mkdir -p /var/spool/postfix/maildrop
-                mkdir -p /var/spool/postfix/pid
-                mkdir -p /var/spool/postfix/dev
-                mkdir -p /var/spool/postfix/defer
-                mkdir -p /var/spool/postfix/deferred
-                mkdir -p /var/spool/postfix/active
-                mkdir -p /var/spool/postfix/incoming
-                mkdir -p /var/spool/postfix/corrupt
-                mkdir -p /var/spool/postfix/bounce
-                mkdir -p /var/spool/postfix/hold
-                mkdir -p /var/spool/postfix/flush
-                mkdir -p /var/spool/postfix/saved
-                mkdir -p /var/spool/postfix/trace
-                mkdir -p /var/log/mail
+                # Create and fix permissions for postfix spool directories
+                mkdir -p /var/spool/postfix/{public,maildrop,pid,dev,defer,deferred,active,incoming,corrupt,bounce,hold,flush,saved,trace,private}
+                chown -R postfix:root /var/spool/postfix
+                chown postfix:postdrop /var/spool/postfix/public
+                chown postfix:postdrop /var/spool/postfix/maildrop
+                chmod 730 /var/spool/postfix/public /var/spool/postfix/maildrop
+                chmod 700 /var/spool/postfix/private
+                chmod 755 /var/spool/postfix
+                # Create writable dirs for configs and logs
+                mkdir -p /etc/postfix/sql /etc/postfix/conf /var/log/mail
+                chmod 755 /etc/postfix/sql /etc/postfix/conf
+            securityContext:
+              runAsUser: 0
         containers:
           pg-sock-proxy:
             image:
