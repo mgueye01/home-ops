@@ -228,6 +228,7 @@ spec:
         type: LoadBalancer
         annotations:
           lbipam.cilium.io/ips: "192.168.10.75"
+          lbipam.cilium.io/sharing-key: billionmail
           external-dns.alpha.kubernetes.io/hostname: "mail.g-eye.io"
         ports:
           smtp:
@@ -244,6 +245,7 @@ spec:
         type: LoadBalancer
         annotations:
           lbipam.cilium.io/ips: "192.168.10.75"
+          lbipam.cilium.io/sharing-key: billionmail
         ports:
           imap:
             port: 143
