@@ -208,7 +208,8 @@ spec:
               - |
                 # Create and fix permissions for postfix spool directories
                 mkdir -p /var/spool/postfix/{public,maildrop,pid,dev,defer,deferred,active,incoming,corrupt,bounce,hold,flush,saved,trace,private}
-                chown -R postfix:root /var/spool/postfix
+                chown root:root /var/spool/postfix
+                chown -R postfix:root /var/spool/postfix/active /var/spool/postfix/bounce /var/spool/postfix/corrupt /var/spool/postfix/defer /var/spool/postfix/deferred /var/spool/postfix/flush /var/spool/postfix/hold /var/spool/postfix/incoming /var/spool/postfix/pid /var/spool/postfix/saved /var/spool/postfix/trace /var/spool/postfix/private
                 chown postfix:postdrop /var/spool/postfix/public
                 chown postfix:postdrop /var/spool/postfix/maildrop
                 chmod 730 /var/spool/postfix/public /var/spool/postfix/maildrop
@@ -257,7 +258,7 @@ spec:
               readOnlyRootFilesystem: false
               capabilities:
                 drop: ["ALL"]
-                add: ["NET_BIND_SERVICE", "CHOWN", "DAC_OVERRIDE", "FOWNER", "SETGID", "SETUID"]
+                add: ["NET_BIND_SERVICE", "CHOWN", "DAC_OVERRIDE", "FOWNER", "SETGID", "SETUID", "SYS_CHROOT"]
             resources:
               requests:
                 cpu: 100m
