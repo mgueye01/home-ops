@@ -147,7 +147,7 @@ spec:
           webmail:
             image:
               repository: roundcube/roundcubemail
-              tag: 1.6.11-fpm-alpine
+              tag: 1.6.13-fpm-alpine
             env:
               TZ: "Etc/UTC"
               ROUNDCUBEMAIL_DB_TYPE: "pgsql"
