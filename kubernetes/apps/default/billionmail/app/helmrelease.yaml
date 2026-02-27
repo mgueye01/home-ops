@@ -218,6 +218,14 @@ spec:
                 # Create writable dirs for configs and logs
                 mkdir -p /etc/postfix/sql /etc/postfix/conf /var/log/mail
                 chmod 755 /etc/postfix/sql /etc/postfix/conf
+                # Allow pod network to relay without auth (core -> postfix)
+                cat > /etc/postfix/conf/extra.cf <<EXTRA
+                mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128 10.42.0.0/16 10.43.0.0/16
+                smtp_sasl_auth_enable = yes
+                smtp_sasl_security_options = noanonymous
+                smtp_tls_security_level = may
+                EXTRA
+                sed -i 's/^                //' /etc/postfix/conf/extra.cf
             securityContext:
               runAsUser: 0
         containers:
