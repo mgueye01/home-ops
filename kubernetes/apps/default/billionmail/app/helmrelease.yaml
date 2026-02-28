@@ -260,14 +260,6 @@ spec:
                 query = SELECT CONCAT('[', rc.relay_host, ']:', rc.relay_port) FROM bm_relay_config rc JOIN bm_relay_domain_mapping rdm ON rc.id = rdm.relay_id WHERE rdm.sender_domain = REPLACE('%s', '@', '') AND rc.active = 1 LIMIT 1
                 SQLRELAY
                 sed -i 's/^                //' /etc/postfix/sql/pgsql_sender_relay_maps.cf
-                cat > /etc/postfix/sql/pgsql_sender_transport_maps.cf <<SQLTRANS
-                user = $DBUSER
-                password = $DBPASS
-                hosts = $DBHOST
-                dbname = $DBNAME
-                query = SELECT CONCAT(smtp_name, ':') FROM bm_domain_smtp_transport WHERE domain = '%s' LIMIT 1
-                SQLTRANS
-                sed -i 's/^                //' /etc/postfix/sql/pgsql_sender_transport_maps.cf
                 # Extra config: pod network relay + outbound SASL + relay maps
                 cat > /etc/postfix/conf/extra.cf <<'EXTRA'
                 mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128 10.42.0.0/16 10.43.0.0/16
@@ -276,7 +268,6 @@ spec:
                 smtp_tls_security_level = may
                 sender_dependent_relayhost_maps = hash:/etc/postfix/conf/sender_relay_maps_primary, pgsql:/etc/postfix/sql/pgsql_sender_relay_maps.cf
                 smtp_sasl_password_maps = hash:/etc/postfix/conf/sasl_passwd_primary, hash:/etc/postfix/conf/sasl_passwd
-                sender_dependent_default_transport_maps = pgsql:/etc/postfix/sql/pgsql_sender_transport_maps.cf
                 header_checks = pcre:/etc/postfix/conf/header_checks
                 EXTRA
                 sed -i 's/^                //' /etc/postfix/conf/extra.cf
