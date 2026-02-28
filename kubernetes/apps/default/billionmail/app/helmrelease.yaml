@@ -84,7 +84,7 @@ spec:
           smtp-proxy:
             image:
               repository: alpine/socat
-              tag: "1.8.0.1"
+              tag: "1.8.0.3"
             args:
               - "TCP-LISTEN:25,fork,reuseaddr"
               - "TCP:billionmail-postfix.default.svc.cluster.local:25"
