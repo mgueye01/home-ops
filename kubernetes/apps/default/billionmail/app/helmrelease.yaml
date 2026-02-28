@@ -268,6 +268,11 @@ spec:
                 smtp_tls_security_level = may
                 sender_dependent_relayhost_maps = hash:/etc/postfix/conf/sender_relay_maps_primary, pgsql:/etc/postfix/sql/pgsql_sender_relay_maps.cf
                 smtp_sasl_password_maps = hash:/etc/postfix/conf/sasl_passwd_primary, hash:/etc/postfix/conf/sasl_passwd
+                smtpd_sasl_auth_enable = yes
+                smtpd_sasl_type = dovecot
+                smtpd_sasl_path = inet:billionmail-dovecot.default.svc.cluster.local:12345
+                smtpd_sasl_security_options = noanonymous
+                smtpd_sasl_local_domain = $myhostname
                 header_checks = pcre:/etc/postfix/conf/header_checks
                 EXTRA
                 sed -i 's/^                //' /etc/postfix/conf/extra.cf
@@ -365,6 +370,24 @@ spec:
             image:
               repository: billionmail/dovecot
               tag: "1.6"
+            command:
+              - /dovecot.sh
+            args:
+              - /bin/sh
+              - -c
+              - |
+                # Add TCP auth listener for cross-pod Postfix SASL
+                cat > /etc/dovecot/conf.d/99-auth-tcp.conf <<'EOF'
+                service auth {
+                  inet_listener {
+                    port = 12345
+                  }
+                }
+                EOF
+                sed -i 's/^                //' /etc/dovecot/conf.d/99-auth-tcp.conf
+                # Fix SQL host from 'pgsql' to actual PostgreSQL host
+                sed -i 's/host=pgsql/host=postgres16-rw.databases.svc.cluster.local/' /etc/dovecot/conf.d/dovecot-sql.conf.ext
+                exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
             env:
               TZ: "Etc/UTC"
               BILLIONMAIL_HOSTNAME: "mail.g-eye.io"
@@ -451,6 +474,9 @@ spec:
             protocol: TCP
           imaps:
             port: 993
+            protocol: TCP
+          auth:
+            port: 12345
             protocol: TCP
       rspamd:
         controller: rspamd
