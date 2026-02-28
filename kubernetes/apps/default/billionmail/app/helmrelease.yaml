@@ -203,6 +203,8 @@ spec:
               repository: billionmail/postfix
               tag: "1.6"
             envFrom: *envFrom
+            env:
+              DBHOST: "postgres16-rw.databases.svc.cluster.local"
             command:
               - sh
               - -c
