@@ -387,6 +387,9 @@ spec:
                 sed -i 's/^                //' /etc/dovecot/conf.d/99-auth-tcp.conf
                 # Fix SQL host from 'pgsql' to actual PostgreSQL host
                 sed -i 's/host=pgsql/host=postgres16-rw.databases.svc.cluster.local/' /etc/dovecot/conf.d/dovecot-sql.conf.ext
+                # Enable SQL auth instead of system (PAM) auth
+                sed -i 's/!include auth-system.conf.ext/#!include auth-system.conf.ext/' /etc/dovecot/conf.d/10-auth.conf
+                echo '!include auth-sql.conf.ext' >> /etc/dovecot/conf.d/10-auth.conf
                 exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
             env:
               TZ: "Etc/UTC"
