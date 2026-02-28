@@ -221,6 +221,12 @@ spec:
                 # Create writable dirs for configs and logs
                 mkdir -p /etc/postfix/sql /etc/postfix/conf /var/log/mail
                 chmod 755 /etc/postfix/sql /etc/postfix/conf
+                # Copy DNS resolver files into chroot for pgsql lookups
+                mkdir -p /var/spool/postfix/etc
+                cp /etc/resolv.conf /var/spool/postfix/etc/
+                cp /etc/nsswitch.conf /var/spool/postfix/etc/
+                cp /etc/hosts /var/spool/postfix/etc/
+                cp /etc/services /var/spool/postfix/etc/
                 # Create Mailgun SASL credentials and relay maps
                 cat > /etc/postfix/conf/sasl_passwd <<SASL
                 [smtp.eu.mailgun.org]:587 noreply@lelabodamad.fr:$MAILGUN_SMTP_PASSWORD
