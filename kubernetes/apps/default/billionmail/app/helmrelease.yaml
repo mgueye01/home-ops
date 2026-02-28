@@ -403,7 +403,7 @@ spec:
               readOnlyRootFilesystem: false
               capabilities:
                 drop: ["ALL"]
-                add: ["NET_BIND_SERVICE"]
+                add: ["NET_BIND_SERVICE", "CHOWN", "DAC_OVERRIDE", "FOWNER", "SETGID", "SETUID", "SYS_CHROOT"]
             resources:
               requests:
                 cpu: 100m
