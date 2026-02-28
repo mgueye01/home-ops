@@ -247,7 +247,7 @@ spec:
                 cat > /etc/postfix/sql/pgsql_sender_relay_maps.cf <<SQLRELAY
                 user = $DBUSER
                 password = $DBPASS
-                hosts = /var/run/postgresql
+                hosts = $DBHOST
                 dbname = $DBNAME
                 query = SELECT CONCAT('[', rc.relay_host, ']:', rc.relay_port) FROM bm_relay_config rc JOIN bm_relay_domain_mapping rdm ON rc.id = rdm.relay_id WHERE rdm.sender_domain = REPLACE('%s', '@', '') AND rc.active = 1 LIMIT 1
                 SQLRELAY
@@ -255,7 +255,7 @@ spec:
                 cat > /etc/postfix/sql/pgsql_sender_transport_maps.cf <<SQLTRANS
                 user = $DBUSER
                 password = $DBPASS
-                hosts = /var/run/postgresql
+                hosts = $DBHOST
                 dbname = $DBNAME
                 query = SELECT CONCAT(smtp_name, ':') FROM bm_domain_smtp_transport WHERE domain = '%s' LIMIT 1
                 SQLTRANS
@@ -308,7 +308,7 @@ spec:
                 # Wait for postfix.sh to generate SQL files, then fix host references
                 while [ ! -f /etc/postfix/sql/pgsql_virtual_domains_maps.cf ]; do sleep 0.5; done
                 sleep 1
-                sed -i 's/^hosts = pgsql$/hosts = \/var\/run\/postgresql/' /etc/postfix/sql/*.cf
+                sed -i 's/^hosts = pgsql$/hosts = postgres16-rw.databases.svc.cluster.local/' /etc/postfix/sql/*.cf
                 # Reload postfix to pick up fixed SQL configs
                 sleep 2
                 postfix reload 2>/dev/null || true
