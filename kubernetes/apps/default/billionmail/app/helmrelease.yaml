@@ -530,8 +530,13 @@ spec:
         existingClaim: billionmail
         advancedMounts:
           billionmail:
+            init-conf:
+              - path: /conf
+                subPath: conf
             core:
               - path: /opt/billionmail/core/data
+              - path: /opt/billionmail/conf
+                subPath: conf
 
       # Mailbox storage (ceph-filesystem RWX)
       vmail:
@@ -668,11 +673,5 @@ spec:
           billionmail:
             core:
               - path: /opt/billionmail/logs
-      core-conf:
-        type: emptyDir
-        advancedMounts:
-          billionmail:
-            init-conf:
-              - path: /conf
-            core:
-              - path: /opt/billionmail/conf
+      # core-conf: now served by persistent 'data' PVC (subPath: conf)
+      # so AskAI supplier/project configs survive pod restarts
