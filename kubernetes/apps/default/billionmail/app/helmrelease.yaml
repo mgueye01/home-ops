@@ -385,8 +385,11 @@ spec:
                 }
                 EOF
                 sed -i 's/^                //' /etc/dovecot/conf.d/99-auth-tcp.conf
-                # Fix SQL host from 'pgsql' to actual PostgreSQL host
-                sed -i 's/host=pgsql/host=postgres16-rw.databases.svc.cluster.local/' /etc/dovecot/conf.d/dovecot-sql.conf.ext
+                # dovecot.sh writes SQL config to conf.d/ but auth-sql.conf.ext
+                # references /etc/dovecot/dovecot-sql.conf.ext (root level).
+                # Copy the generated config there and fix the Docker hostname.
+                cp /etc/dovecot/conf.d/dovecot-sql.conf.ext /etc/dovecot/dovecot-sql.conf.ext
+                sed -i 's/host=pgsql/host=postgres16-rw.databases.svc.cluster.local/' /etc/dovecot/dovecot-sql.conf.ext
                 # Enable SQL auth instead of system (PAM) auth
                 sed -i 's/!include auth-system.conf.ext/#!include auth-system.conf.ext/' /etc/dovecot/conf.d/10-auth.conf
                 echo '!include auth-sql.conf.ext' >> /etc/dovecot/conf.d/10-auth.conf
