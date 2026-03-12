@@ -11,8 +11,9 @@ spec:
   interval: 1h
   values:
     fullnameOverride: victoria-logs
-    retentionPeriod: 7d
     server:
+      extraArgs:
+        retentionPeriod: 7d
       persistentVolume:
         enabled: true
         storageClassName: ceph-block
