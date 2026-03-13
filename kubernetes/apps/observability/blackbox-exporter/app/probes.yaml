@@ -15,6 +15,10 @@ spec:
         - pikvm.g-eye.tech
         - enviro.g-eye.tech
         - zigbee-controller.g-eye.tech
+        - 192.168.10.2 # haproxy1
+        - 192.168.10.3 # haproxy2
+        - 192.168.0.197 # pi-hole1
+        - 192.168.0.214 # pi-hole2
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/probe_v1.json
 apiVersion: monitoring.coreos.com/v1
@@ -29,3 +33,18 @@ spec:
     staticConfig:
       static:
         - nas.g-eye.tech:2049
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/probe_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: dns
+spec:
+  module: tcp_connect
+  prober:
+    url: blackbox-exporter.observability.svc.cluster.local:9115
+  targets:
+    staticConfig:
+      static:
+        - 192.168.0.197:53 # pi-hole1 dns
+        - 192.168.0.214:53 # pi-hole2 dns
