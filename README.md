@@ -18,7 +18,9 @@ _... managed by Flux, Renovate and GitHub Actions_ :robot:
 
 <div align="center">
 
-[![k8s](https://img.shields.io/badge/v1.34.1+k0s-brightgreen?style=flat-square)](https://k0sproject.io/)
+[![Talos](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.g-eye.io%2Fquery%3Fformat%3Dendpoint%26metric%3Dtalos_version&style=flat-square&label=Talos)](https://github.com/kashalls/kromgo)
+[![Kubernetes](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.g-eye.io%2Fquery%3Fformat%3Dendpoint%26metric%3Dkubernetes_version&style=flat-square&label=Kubernetes)](https://github.com/kashalls/kromgo)
+[![Flux](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.g-eye.io%2Fquery%3Fformat%3Dendpoint%26metric%3Dflux_version&style=flat-square&label=Flux)](https://github.com/kashalls/kromgo)
 [![GitHub last commit](https://img.shields.io/github/last-commit/mgueye01/home-ops?style=flat-square)](https://github.com/mgueye01/home-ops/commits/main)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white&style=for-the-badge?style=flat-square)](https://github.com/pre-commit/pre-commit)
 [![Renovate](https://img.shields.io/github/actions/workflow/status/mgueye01/home-ops/renovate.yaml?branch=main&label=&logo=renovatebot&style=for-the-badge?style=flat-square&color=brightgreen)](https://github.com/mgueye01/home-ops/actions/workflows/renovate.yaml)
@@ -36,7 +38,7 @@ Main k8s cluster stats:
 [![Pod-Count](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.g-eye.io%2Fquery%3Fformat%3Dendpoint%26metric%3Dcluster_pod_count&style=flat-square&label=Pods)](https://github.com/kashalls/kromgo)&nbsp;&nbsp;
 [![CPU-Usage](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.g-eye.io%2Fquery%3Fformat%3Dendpoint%26metric%3Dcluster_cpu_usage&style=flat-square&label=CPU)](https://github.com/kashalls/kromgo)&nbsp;&nbsp;
 [![Memory-Usage](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.g-eye.io%2Fquery%3Fformat%3Dendpoint%26metric%3Dcluster_memory_usage&style=flat-square&label=Memory)](https://github.com/kashalls/kromgo)&nbsp;&nbsp;
-<!-- [![Power-Usage](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.g-eye.io%2Fquery%3Fformat%3Dendpoint%26metric%3Dcluster_power_usage&style=flat-square&label=Power)](https://github.com/kashalls/kromgo) -->
+[![Alerts](https://img.shields.io/endpoint?url=https%3A%2F%2Fkromgo.g-eye.io%2Fquery%3Fformat%3Dendpoint%26metric%3Dcluster_alert_count&style=flat-square&label=Alerts)](https://github.com/kashalls/kromgo)
 
 ---
 
