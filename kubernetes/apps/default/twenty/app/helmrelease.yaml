@@ -113,9 +113,9 @@ spec:
             resources:
               requests:
                 cpu: 250m
-                memory: 256Mi
+                memory: 512Mi
               limits:
-                memory: 1Gi
+                memory: 2Gi
                 cpu: 1000m
       twenty-worker:
         annotations:
