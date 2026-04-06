@@ -19,6 +19,29 @@ spec:
         - 192.168.10.3 # haproxy2
         - 192.168.0.197 # pi-hole1
         - 192.168.0.214 # pi-hole2
+      relabelingConfigs:
+        # Strip *.g-eye.tech suffix so hostnames become friendly names
+        - sourceLabels: [instance]
+          regex: (.+)\.g-eye\.tech
+          targetLabel: name
+          replacement: $1
+        # Map static IPs to friendly names
+        - sourceLabels: [instance]
+          regex: 192\.168\.10\.2
+          targetLabel: name
+          replacement: haproxy1
+        - sourceLabels: [instance]
+          regex: 192\.168\.10\.3
+          targetLabel: name
+          replacement: haproxy2
+        - sourceLabels: [instance]
+          regex: 192\.168\.0\.197
+          targetLabel: name
+          replacement: pi-hole1
+        - sourceLabels: [instance]
+          regex: 192\.168\.0\.214
+          targetLabel: name
+          replacement: pi-hole2
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/probe_v1.json
 apiVersion: monitoring.coreos.com/v1

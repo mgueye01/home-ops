@@ -72,4 +72,4 @@ spec:
             severity: critical
           annotations:
             summary: |-
-              The host {{ $labels.target }} is currently unreachable
+              The host {{ if $labels.name }}{{ $labels.name }}{{ else }}{{ $labels.instance }}{{ end }} is currently unreachable
