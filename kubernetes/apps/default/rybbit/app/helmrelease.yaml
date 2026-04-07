@@ -26,7 +26,7 @@ spec:
           app:
             image:
               repository: clickhouse/clickhouse-server
-              tag: 26.3-alpine@sha256:0b5334420a843292394d51d494c14be462cbba9c5e38f909ddab133b9cffee7b
+              tag: 26.3-alpine@sha256:f6ad48a62601fc94b15ffb48323772c446a35d4fabb0cfeeea30a6a95c6ec830
             env:
               CLICKHOUSE_DB: analytics
               CLICKHOUSE_USER: default
