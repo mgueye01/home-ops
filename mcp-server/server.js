@@ -21,16 +21,6 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Initialize MCP Server
-const mcpServer = new Server({
-  name: 'twenty-crm-server',
-  version: '2.0.0',
-}, {
-  capabilities: {
-    tools: {},
-  },
-});
-
 // Track active SSE connections by sessionId
 const activeTransports = new Map();
 
@@ -63,6 +53,19 @@ async function makeRequest(endpoint, method = 'GET', data = null) {
     throw new Error(`API request failed: ${error.message}`);
   }
 }
+
+// Build a fresh MCP Server per SSE session. The MCP SDK's Protocol binds
+// 1:1 to a transport — a shared instance throws "Already connected to a
+// transport" on the second /sse connection.
+function createMcpServer() {
+  const mcpServer = new Server({
+    name: 'twenty-crm-server',
+    version: '2.0.0',
+  }, {
+    capabilities: {
+      tools: {},
+    },
+  });
 
 // Define all Twenty CRM Tools (23 tools total)
 mcpServer.setRequestHandler(ListToolsRequestSchema, async () => {
@@ -543,6 +546,9 @@ mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
   }
 });
 
+  return mcpServer;
+}
+
 // SSE endpoint for MCP connection
 app.get('/sse', async (req, res) => {
   console.log('[SSE] New connection from:', req.headers['user-agent']);
@@ -557,6 +563,9 @@ app.get('/sse', async (req, res) => {
   const transport = new SSEServerTransport('/messages', res);
 
   console.log(`[SSE] Session ${transport.sessionId} initializing...`);
+
+  // Per-session MCP Server: the SDK's Protocol cannot be reused across transports.
+  const mcpServer = createMcpServer();
 
   // Connect MCP server to transport (this calls transport.start() internally)
   await mcpServer.connect(transport);
