@@ -103,7 +103,7 @@ spec:
           core:
             image:
               repository: billionmail/core
-              tag: 4.9.2
+              tag: 4.9.3
             env:
               TZ: "Etc/UTC"
               BILLIONMAIL_HOSTNAME: "mail.g-eye.io"
