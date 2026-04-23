@@ -6,7 +6,7 @@ metadata:
   name: kubernetes
 spec:
   # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-  version: v1.35.4
+  version: v1.36.0
   jobActiveDeadlineSecs: 1800
   concurrency: 1
   exclusive: true
