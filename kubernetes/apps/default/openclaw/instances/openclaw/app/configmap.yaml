@@ -23,5 +23,8 @@ data:
         "telegram": {
           "enabled": true
         }
+      },
+      "plugins": {
+        "deny": ["bonjour"]
       }
     }
