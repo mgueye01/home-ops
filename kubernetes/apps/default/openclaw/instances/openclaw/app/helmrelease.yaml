@@ -25,7 +25,7 @@ spec:
           init-config:
             image:
               repository: harbor.g-eye.io/openclaw/openclaw # {"$imagepolicy": "default:openclaw:name"}
-              tag: 20260427-103252 # {"$imagepolicy": "default:openclaw:tag"}
+              tag: 20260404-130409 # {"$imagepolicy": "default:openclaw:tag"}
             securityContext:
               runAsUser: 0
               runAsGroup: 0
@@ -81,6 +81,14 @@ spec:
                       c.gateway.controlUi.allowedOrigins = origins;
                       changed = true;
                     }
+                    // Disable bonjour: mDNS multicast not supported on Cilium pod network
+                    // → CIAO PROBING CANCELLED → unhandled rejection → crashloop
+                    if (!c.plugins) c.plugins = {};
+                    if (!Array.isArray(c.plugins.deny)) c.plugins.deny = [];
+                    if (!c.plugins.deny.includes('bonjour')) {
+                      c.plugins.deny.push('bonjour');
+                      changed = true;
+                    }
                     if (changed) {
                       fs.writeFileSync('$CONFIG', JSON.stringify(c, null, 2));
                       console.log('Patched gateway config (bind + trustedProxies)');
@@ -93,7 +101,7 @@ spec:
           app:
             image:
               repository: harbor.g-eye.io/openclaw/openclaw # {"$imagepolicy": "default:openclaw:name"}
-              tag: 20260427-103252 # {"$imagepolicy": "default:openclaw:tag"}
+              tag: 20260404-130409 # {"$imagepolicy": "default:openclaw:tag"}
             args: ["node", "dist/index.js", "gateway", "--allow-unconfigured"]
             env:
               TZ: Europe/Paris
