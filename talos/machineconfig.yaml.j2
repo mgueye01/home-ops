@@ -77,6 +77,14 @@ machine:
           driver: igc
         mtu: 9000
         dhcp: true
+  time:
+    disabled: false
+    servers:
+      - time.cloudflare.com
+      - time.google.com
+      - pool.ntp.org
+      - 0.fr.pool.ntp.org
+    bootTimeout: 2m0s
   nodeLabels:
     intel.feature.node.kubernetes.io/gpu: "true"
     topology.kubernetes.io/region: main
