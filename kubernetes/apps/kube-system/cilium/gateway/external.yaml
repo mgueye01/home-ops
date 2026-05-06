@@ -8,12 +8,10 @@ metadata:
     external-dns.alpha.kubernetes.io/target: &hostname external.g-eye.io
 spec:
   gatewayClassName: cilium
-  addresses:
-    - type: IPAddress
-      value: 192.168.10.60
   infrastructure:
     annotations:
       external-dns.alpha.kubernetes.io/hostname: *hostname
+      lbipam.cilium.io/ips: 192.168.10.60
   listeners:
     - name: http
       protocol: HTTP
