@@ -17,6 +17,7 @@ repos:
       - id: mixed-line-ending
       # - id: check-json
       - id: check-added-large-files
+        exclude: ^kubernetes/apps/network/envoy-gateway/app/crds/.*\.yaml$
       - id: check-merge-conflict
   - repo: https://github.com/Lucas-C/pre-commit-hooks
     rev: v1.5.5

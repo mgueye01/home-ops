@@ -3,6 +3,14 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  # ./envoy.yaml — added in second commit after CRDs are installed by the HelmRelease
+  - ./crds/gateway.envoyproxy.io_backends.yaml
+  - ./crds/gateway.envoyproxy.io_backendtrafficpolicies.yaml
+  - ./crds/gateway.envoyproxy.io_clienttrafficpolicies.yaml
+  - ./crds/gateway.envoyproxy.io_envoyextensionpolicies.yaml
+  - ./crds/gateway.envoyproxy.io_envoypatchpolicies.yaml
+  - ./crds/gateway.envoyproxy.io_envoyproxies.yaml
+  - ./crds/gateway.envoyproxy.io_httproutefilters.yaml
+  - ./crds/gateway.envoyproxy.io_securitypolicies.yaml
+  - ./envoy.yaml
   - ./helmrelease.yaml
   - ./ocirepository.yaml
