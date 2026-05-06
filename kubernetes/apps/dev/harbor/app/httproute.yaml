@@ -8,6 +8,9 @@ spec:
     - name: external
       namespace: kube-system
       sectionName: https
+    - name: envoy-external
+      namespace: network
+      sectionName: https
   hostnames:
     - harbor.g-eye.io
   rules:
