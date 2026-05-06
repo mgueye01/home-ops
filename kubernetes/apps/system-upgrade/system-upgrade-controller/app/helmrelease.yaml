@@ -47,12 +47,14 @@ spec:
         runAsGroup: 1000
     rawResources:
       talosServiceAccount:
-        apiVersion: talos.dev/v1alpha1
-        kind: ServiceAccount
-        spec:
+        enabled: true
+        manifest:
+          apiVersion: talos.dev/v1alpha1
+          kind: ServiceAccount
           spec:
-            roles:
-              - os:admin
+            spec:
+              roles:
+                - os:admin
     rbac:
       bindings:
         system-upgrade-controller:
