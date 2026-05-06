@@ -91,6 +91,10 @@ spec:
         trustCRDsExist: true
     rollOutCiliumPods: true
     routingMode: native
+    pmtuDiscovery:
+      enabled: true
+    socketLB:
+      hostNamespaceOnly: true
     securityContext:
       capabilities:
         ciliumAgent:
