@@ -98,13 +98,13 @@ kind: Gateway
 metadata:
   name: envoy-external
   annotations:
-    external-dns.alpha.kubernetes.io/target: &hostname external-v2.g-eye.io
+    external-dns.alpha.kubernetes.io/target: &hostname external.g-eye.io
 spec:
   gatewayClassName: envoy
   infrastructure:
     annotations:
       external-dns.alpha.kubernetes.io/hostname: *hostname
-      lbipam.cilium.io/ips: 192.168.10.61
+      lbipam.cilium.io/ips: 192.168.10.60
   listeners:
     - name: http
       protocol: HTTP
@@ -129,13 +129,13 @@ kind: Gateway
 metadata:
   name: envoy-internal
   annotations:
-    external-dns.alpha.kubernetes.io/target: &hostname internal-v2.g-eye.io
+    external-dns.alpha.kubernetes.io/target: &hostname internal.g-eye.io
 spec:
   gatewayClassName: envoy
   infrastructure:
     annotations:
       external-dns.alpha.kubernetes.io/hostname: *hostname
-      lbipam.cilium.io/ips: 192.168.10.51
+      lbipam.cilium.io/ips: 192.168.10.50
   listeners:
     - name: http
       protocol: HTTP
