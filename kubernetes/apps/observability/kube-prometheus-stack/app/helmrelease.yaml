@@ -52,6 +52,9 @@ spec:
             - name: internal
               namespace: kube-system
               sectionName: https
+            - name: envoy-internal
+              namespace: network
+              sectionName: https
       alertmanagerSpec:
         alertmanagerConfiguration:
           name: alertmanager
@@ -87,6 +90,9 @@ spec:
           parentRefs:
             - name: internal
               namespace: kube-system
+              sectionName: https
+            - name: envoy-internal
+              namespace: network
               sectionName: https
       prometheusSpec:
         podMonitorSelectorNilUsesHelmValues: false

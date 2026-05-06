@@ -26,6 +26,9 @@ spec:
           - name: internal
             namespace: kube-system
             sectionName: https
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
         extraRules:
           - filters:
               - type: RequestRedirect
