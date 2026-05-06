@@ -1,10 +1,13 @@
 ---
 originRequest:
   originServerName: external.g-eye.io
+  http2Origin: true
+  keepAliveTimeout: 3600s
+  tcpKeepAlive: 7200s
 
 ingress:
   - hostname: g-eye.io
-    service: &svc https://cilium-gateway-external.kube-system.svc.cluster.local
+    service: &svc https://envoy-external.network.svc.cluster.local:443
   - hostname: "*.g-eye.io"
     service: *svc
   - service: http_status:404
