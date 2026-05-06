@@ -38,9 +38,6 @@ spec:
           path: /
           pathType: PathPrefix
         parentRefs:
-          - name: internal
-            namespace: kube-system
-            sectionName: https
           - name: envoy-internal
             namespace: network
             sectionName: https

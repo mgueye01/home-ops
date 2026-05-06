@@ -79,9 +79,6 @@ spec:
           - "{{ .Release.Name }}.g-eye.io"
           - requests.g-eye.io
         parentRefs:
-          - name: external
-            namespace: kube-system
-            sectionName: https
           - name: envoy-external
             namespace: network
             sectionName: https

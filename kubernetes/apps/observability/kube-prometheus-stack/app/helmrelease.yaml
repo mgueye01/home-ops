@@ -49,9 +49,6 @@ spec:
           enabled: true
           hostnames: ["alertmanager.g-eye.io"]
           parentRefs:
-            - name: internal
-              namespace: kube-system
-              sectionName: https
             - name: envoy-internal
               namespace: network
               sectionName: https
@@ -88,9 +85,6 @@ spec:
               url: 1.1.1.1
           hostnames: ["prometheus.g-eye.io"]
           parentRefs:
-            - name: internal
-              namespace: kube-system
-              sectionName: https
             - name: envoy-internal
               namespace: network
               sectionName: https

@@ -16,9 +16,6 @@ spec:
   hostnames:
     - grafana.g-eye.io
   parentRefs:
-    - name: internal
-      namespace: kube-system
-      sectionName: https
     - name: envoy-internal
       namespace: network
       sectionName: https

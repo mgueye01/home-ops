@@ -185,9 +185,6 @@ spec:
         hostnames:
           - "twenty.g-eye.io"
         parentRefs:
-          - name: external
-            namespace: kube-system
-            sectionName: https
           - name: envoy-external
             namespace: network
             sectionName: https
