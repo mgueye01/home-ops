@@ -16,7 +16,7 @@ spec:
         matchers:
           - name: alertname
             value: InfoInhibitor
-            matchType: =
+            matchType: "="
       - receiver: heartbeat
         groupInterval: 5m
         groupWait: 0s
@@ -24,29 +24,40 @@ spec:
         matchers:
           - name: alertname
             value: Watchdog
-            matchType: =
+            matchType: "="
+      - receiver: hermes
+        continue: true
+        groupWait: 10s
+        repeatInterval: 6h
+        matchers:
+          - name: alertname
+            value: Watchdog
+            matchType: "!="
+          - name: severity
+            value: info
+            matchType: "!="
       - receiver: pushover
         groupWait: 10s
         repeatInterval: 6h
         matchers:
           - name: component
             value: storage
-            matchType: =
+            matchType: "="
       - receiver: pushover
         matchers:
           - name: severity
             value: critical
-            matchType: =
+            matchType: "="
   inhibitRules:
     - equal: ["alertname", "namespace"]
       sourceMatch:
         - name: severity
           value: critical
-          matchType: =
+          matchType: "="
       targetMatch:
         - name: severity
           value: warning
-          matchType: =
+          matchType: "="
   receivers:
     - name: "null"
     - name: heartbeat
@@ -54,6 +65,18 @@ spec:
         - urlSecret:
             name: &secret alertmanager-secret
             key: ALERTMANAGER_HEARTBEAT_URL
+    - name: hermes
+      webhookConfigs:
+        - sendResolved: true
+          urlSecret:
+            name: *secret
+            key: HERMES_ALERTMANAGER_WEBHOOK_URL
+          httpConfig:
+            authorization:
+              type: Bearer
+              credentials:
+                name: *secret
+                key: HERMES_ALERTMANAGER_WEBHOOK_SECRET
     - name: pushover
       pushoverConfigs:
         - html: true
