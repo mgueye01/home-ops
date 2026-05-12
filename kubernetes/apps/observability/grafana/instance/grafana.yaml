@@ -81,7 +81,7 @@ spec:
             # of the secret in 1Password would otherwise leave grafana-operator unable
             # to authenticate (403 folders:create -> dashboards stop syncing).
             - name: reset-admin-password
-              image: docker.io/grafana/grafana:12.1.0
+              image: docker.io/grafana/grafana:13.0.1
               imagePullPolicy: IfNotPresent
               command:
                 - /bin/sh
