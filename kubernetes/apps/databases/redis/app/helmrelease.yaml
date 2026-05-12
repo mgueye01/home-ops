@@ -39,13 +39,9 @@ spec:
     commonConfiguration: |-
       maxmemory 384mb
       maxmemory-policy allkeys-lru
-      save 300 100
-      save 60 10000
     master:
       persistence:
-        enabled: true
-        storageClass: ceph-block
-        size: 2Gi
+        enabled: false
       resources:
         requests:
           cpu: 50m
@@ -54,9 +50,7 @@ spec:
           memory: 512Mi
     replica:
       persistence:
-        enabled: true
-        storageClass: ceph-block
-        size: 2Gi
+        enabled: false
       resources:
         requests:
           cpu: 50m
