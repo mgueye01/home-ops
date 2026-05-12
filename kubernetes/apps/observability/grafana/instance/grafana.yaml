@@ -76,6 +76,57 @@ spec:
               envFrom:
                 - secretRef:
                     name: grafana-admin-secret
+            # Resync DB admin password with GF_SECURITY_ADMIN_PASSWORD on every start.
+            # Grafana only applies admin_password at first user creation, so any rotation
+            # of the secret in 1Password would otherwise leave grafana-operator unable
+            # to authenticate (403 folders:create -> dashboards stop syncing).
+            - name: reset-admin-password
+              image: docker.io/grafana/grafana:12.1.0
+              imagePullPolicy: IfNotPresent
+              command:
+                - /bin/sh
+                - -ec
+                - grafana cli --homepath=/usr/share/grafana admin reset-admin-password "${GF_SECURITY_ADMIN_PASSWORD}"
+              env:
+                - name: GF_SECURITY_ADMIN_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-admin-secret
+                      key: admin-password
+                - name: GF_DATABASE_TYPE
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-admin-secret
+                      key: GF_DATABASE_TYPE
+                - name: GF_DATABASE_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-admin-secret
+                      key: GF_DATABASE_HOST
+                - name: GF_DATABASE_NAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-admin-secret
+                      key: GF_DATABASE_NAME
+                - name: GF_DATABASE_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-admin-secret
+                      key: GF_DATABASE_USER
+                - name: GF_DATABASE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-admin-secret
+                      key: GF_DATABASE_PASSWORD
+                - name: GF_DATABASE_SSL_MODE
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-admin-secret
+                      key: GF_DATABASE_SSL_MODE
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ["ALL"]
           containers:
             - name: grafana
               env:
