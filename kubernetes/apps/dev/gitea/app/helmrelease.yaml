@@ -46,6 +46,8 @@ spec:
       enabled: false
     redis:
       enabled: false
+    valkey-cluster:
+      enabled: false
     postgresql-ha:
       enabled: false
     persistence:
@@ -81,10 +83,13 @@ spec:
           ALLOWED_HOST_LIST: "*"
         cache:
           ADAPTER: redis
-          HOST: redis://redis-master.databases.svc.cluster.local:6379
+          HOST: redis://redis-master.databases.svc.cluster.local:6379/5
         session:
           PROVIDER: redis
-          PROVIDER_CONFIG: redis://redis-master.databases.svc.cluster.local:6379
+          PROVIDER_CONFIG: redis://redis-master.databases.svc.cluster.local:6379/5
+        queue:
+          TYPE: redis
+          CONN_STR: redis://redis-master.databases.svc.cluster.local:6379/5
         service:
           DISABLE_REGISTRATION: false
           ALLOW_ONLY_EXTERNAL_REGISTRATION: true
@@ -133,15 +138,6 @@ spec:
         enabled: true
         serviceMonitor:
           enabled: true
-    valkey-cluster:
-      valkey:
-        resources:
-          requests:
-            cpu: 100m
-            memory: 128Mi
-          limits:
-            cpu: 500m
-            memory: 256Mi
   valuesFrom:
     - targetPath: gitea.admin.password
       kind: Secret
