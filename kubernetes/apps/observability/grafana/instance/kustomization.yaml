@@ -5,6 +5,7 @@ kind: Kustomization
 resources:
   - ./grafana.yaml
   - ./grafanadatasource.yaml
+  - ./grafanafolders.yaml
   - ./grafanadashboards.yaml
   - ./httproute.yaml
   - ./servicemonitor.yaml
