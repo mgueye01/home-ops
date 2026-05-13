@@ -13,11 +13,11 @@ spec:
     fullnameOverride: victoria-logs
     server:
       extraArgs:
-        retentionPeriod: 7d
+        retentionPeriod: 30d
       persistentVolume:
         enabled: true
         storageClassName: ceph-block
-        size: 20Gi
+        size: 60Gi
       route:
         enabled: true
         hostnames:
