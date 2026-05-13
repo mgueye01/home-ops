@@ -19,7 +19,7 @@ spec:
       "title": "Cluster Logs",
       "uid": "cluster-logs",
       "schemaVersion": 39,
-      "version": 1,
+      "version": 2,
       "editable": true,
       "tags": ["logs", "victorialogs"],
       "time": { "from": "now-1h", "to": "now" },
@@ -32,9 +32,10 @@ spec:
             "label": "Namespace",
             "type": "query",
             "datasource": { "type": "victoriametrics-logs-datasource", "uid": "victorialogs" },
-            "query": { "expr": "* | stats by (k_namespace_name) count() | keep k_namespace_name", "type": "stats" },
+            "query": { "type": "fieldValue", "field": "k_namespace_name", "limit": 1000 },
             "refresh": 2,
             "includeAll": true,
+            "allValue": ".+",
             "multi": true,
             "current": { "selected": true, "text": "All", "value": "$__all" }
           },
@@ -43,9 +44,10 @@ spec:
             "label": "Container",
             "type": "query",
             "datasource": { "type": "victoriametrics-logs-datasource", "uid": "victorialogs" },
-            "query": { "expr": "_stream:{k_namespace_name=~\"$namespace\"} | stats by (k_container_name) count() | keep k_container_name", "type": "stats" },
+            "query": { "type": "fieldValue", "field": "k_container_name", "query": "{k_namespace_name=~\"$namespace\"}", "limit": 1000 },
             "refresh": 2,
             "includeAll": true,
+            "allValue": ".+",
             "multi": true,
             "current": { "selected": true, "text": "All", "value": "$__all" }
           }
@@ -84,19 +86,19 @@ spec:
         {
           "id": 11, "type": "timeseries", "title": "Error log rate by namespace",
           "datasource": { "type": "victoriametrics-logs-datasource", "uid": "victorialogs" },
-          "targets": [{ "expr": "level:error OR _msg:~\"(?i)\\\\b(error|exception|panic|fatal)\\\\b\" | stats by (k_namespace_name) count()", "refId": "A", "queryType": "stats" }],
+          "targets": [{ "expr": "_msg:~\"(?i)error|exception|panic|fatal\" | stats by (k_namespace_name) count()", "refId": "A", "queryType": "statsRange" }],
           "gridPos": { "h": 9, "w": 16, "x": 0, "y": 10 }
         },
         {
           "id": 12, "type": "table", "title": "Top 10 noisiest error sources (last 1h)",
           "datasource": { "type": "victoriametrics-logs-datasource", "uid": "victorialogs" },
-          "targets": [{ "expr": "_time:1h level:error OR _msg:~\"(?i)\\\\b(error|exception|panic|fatal)\\\\b\" | stats by (k_namespace_name, k_container_name) count() as errors | sort by (errors desc) | limit 10", "refId": "A", "queryType": "stats" }],
+          "targets": [{ "expr": "_time:1h _msg:~\"(?i)error|exception|panic|fatal\" | stats by (k_namespace_name, k_container_name) count() as errors | sort by (errors desc) | limit 10", "refId": "A", "queryType": "stats" }],
           "gridPos": { "h": 9, "w": 8, "x": 16, "y": 10 }
         },
         {
           "id": 13, "type": "logs", "title": "Recent error lines (last 15m)",
           "datasource": { "type": "victoriametrics-logs-datasource", "uid": "victorialogs" },
-          "targets": [{ "expr": "_time:15m level:error OR _msg:~\"(?i)\\\\b(error|exception|panic|fatal)\\\\b\"", "refId": "A", "queryType": "logs", "maxLines": 200 }],
+          "targets": [{ "expr": "_time:15m _msg:~\"(?i)error|exception|panic|fatal\"", "refId": "A", "queryType": "instant", "maxLines": 200 }],
           "gridPos": { "h": 12, "w": 24, "x": 0, "y": 19 },
           "options": { "showTime": true, "wrapLogMessage": true, "dedupStrategy": "none", "sortOrder": "Descending" }
         },
@@ -107,13 +109,13 @@ spec:
         {
           "id": 21, "type": "timeseries", "title": "Log rate for selection",
           "datasource": { "type": "victoriametrics-logs-datasource", "uid": "victorialogs" },
-          "targets": [{ "expr": "_stream:{k_namespace_name=~\"$namespace\", k_container_name=~\"$container\"} | stats by (k_container_name) count()", "refId": "A", "queryType": "stats" }],
+          "targets": [{ "expr": "{k_namespace_name=~\"$namespace\", k_container_name=~\"$container\"} | stats by (k_container_name) count()", "refId": "A", "queryType": "statsRange" }],
           "gridPos": { "h": 8, "w": 24, "x": 0, "y": 32 }
         },
         {
           "id": 22, "type": "logs", "title": "Live logs for selection (last 15m)",
           "datasource": { "type": "victoriametrics-logs-datasource", "uid": "victorialogs" },
-          "targets": [{ "expr": "_time:15m _stream:{k_namespace_name=~\"$namespace\", k_container_name=~\"$container\"}", "refId": "A", "queryType": "logs", "maxLines": 500 }],
+          "targets": [{ "expr": "_time:15m {k_namespace_name=~\"$namespace\", k_container_name=~\"$container\"}", "refId": "A", "queryType": "instant", "maxLines": 500 }],
           "gridPos": { "h": 16, "w": 24, "x": 0, "y": 40 },
           "options": { "showTime": true, "wrapLogMessage": true, "dedupStrategy": "none", "sortOrder": "Descending" }
         }
