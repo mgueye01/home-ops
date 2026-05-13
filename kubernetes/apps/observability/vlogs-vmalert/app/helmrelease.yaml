@@ -1,0 +1,122 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: vlogs-vmalert
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: vlogs-vmalert
+  interval: 1h
+  values:
+    fullnameOverride: vlogs-vmalert
+    # Point the metrics-shaped flags at VictoriaLogs. The chart wires these into
+    # vmalert's -datasource.url / -remoteRead.url flags; with rule type vlogs the
+    # query path resolves to /select/logsql/stats_query{,_range}.
+    datasource:
+      url: http://victoria-logs-server.observability.svc.cluster.local:9428
+    remoteRead:
+      url: http://victoria-logs-server.observability.svc.cluster.local:9428
+    notifier:
+      url: http://alertmanager-operated.observability.svc.cluster.local:9093
+    extraArgs:
+      rule.defaultRuleType: vlogs
+      external.label: cluster=main
+    serviceMonitor:
+      enabled: true
+    config:
+      alerts:
+        groups:
+          - name: flux.logs
+            interval: 5m
+            type: vlogs
+            rules:
+              - alert: FluxControllerErrorSpike
+                expr: |
+                  _stream:{k_namespace_name="flux-system"} level:error
+                  | stats by (k_container_name) count() as errors
+                  | filter errors:>20
+                for: 0m
+                annotations:
+                  summary: >-
+                    Flux controller {{ $labels.k_container_name }} emitting elevated error rate
+                  description: >-
+                    {{ $value }} error log lines from {{ $labels.k_container_name }} in
+                    flux-system over the last 5m. Check reconciliation status.
+                labels:
+                  severity: warning
+
+          - name: cert-manager.logs
+            interval: 5m
+            type: vlogs
+            rules:
+              - alert: CertManagerErrors
+                expr: |
+                  _stream:{k_namespace_name="cert-manager"} level:error
+                  | stats count() as errors
+                  | filter errors:>5
+                for: 10m
+                annotations:
+                  summary: cert-manager logging persistent errors
+                  description: >-
+                    cert-manager has produced {{ $value }} error lines in the last 5m.
+                    Likely a stuck Order/Challenge or DNS-01 issue.
+                labels:
+                  severity: warning
+
+          - name: external-secrets.logs
+            interval: 5m
+            type: vlogs
+            rules:
+              - alert: ExternalSecretsFailures
+                expr: |
+                  _stream:{k_namespace_name="external-secrets"} _msg:~"(?i)failed|error"
+                  | stats count() as failures
+                  | filter failures:>5
+                for: 10m
+                annotations:
+                  summary: external-secrets-operator failures
+                  description: >-
+                    {{ $value }} failure log lines from external-secrets in the last 5m.
+                    1Password Connect or the secret store may be unreachable.
+                labels:
+                  severity: warning
+
+          - name: logging-pipeline.logs
+            interval: 5m
+            type: vlogs
+            rules:
+              - alert: FluentBitOutputErrors
+                expr: |
+                  _stream:{k_namespace_name="observability", k_container_name="fluent-bit"}
+                  _msg:~"(?i)retry_limit_reached|connection refused|cannot connect"
+                  | stats count() as errors
+                  | filter errors:>5
+                for: 10m
+                annotations:
+                  summary: fluent-bit is failing to ship logs to VictoriaLogs
+                  description: >-
+                    {{ $value }} output errors from fluent-bit in 5m. Logs may be dropping;
+                    check VictoriaLogs availability and fluent-bit DaemonSet health.
+                labels:
+                  severity: critical
+
+          - name: cluster.logs
+            interval: 5m
+            type: vlogs
+            rules:
+              - alert: NamespaceErrorLogStorm
+                expr: |
+                  level:error OR _msg:~"(?i)\\b(panic|fatal|exception)\\b"
+                  | stats by (k_namespace_name) count() as errors
+                  | filter errors:>500
+                for: 10m
+                annotations:
+                  summary: >-
+                    Namespace {{ $labels.k_namespace_name }} is producing an error log storm
+                  description: >-
+                    {{ $value }} error/panic/exception lines in the last 5m. Investigate
+                    which workload is spinning.
+                labels:
+                  severity: warning
