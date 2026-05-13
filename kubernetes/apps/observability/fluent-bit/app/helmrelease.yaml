@@ -84,7 +84,7 @@ spec:
           match kubernetes.*
           host victoria-logs-server.observability.svc.cluster.local
           port 9428
-          uri /insert/jsonline?_stream_fields=stream,k_namespace_name,k_pod_name,app,cluster&_msg_field=log&_time_field=date
+          uri /insert/jsonline?_stream_fields=stream,k_namespace_name,k_pod_name,k_container_name,k_host,app,cluster&_msg_field=log&_time_field=date
           format json_lines
           json_date_format iso8601
           compress gzip
