@@ -112,6 +112,15 @@ spec:
               resources:
                 requests:
                   storage: 50Gi
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                podAffinityTerm:
+                  labelSelector:
+                    matchLabels:
+                      app: rook-ceph-mgr
+                  topologyKey: kubernetes.io/hostname
     kubelet:
       enabled: true
       serviceMonitor:
