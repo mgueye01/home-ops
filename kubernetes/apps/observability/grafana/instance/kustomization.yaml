@@ -7,5 +7,6 @@ resources:
   - ./grafanadatasource.yaml
   - ./grafanafolders.yaml
   - ./grafanadashboards.yaml
+  - ./grafanadashboards-victorialogs.yaml
   - ./httproute.yaml
   - ./servicemonitor.yaml
