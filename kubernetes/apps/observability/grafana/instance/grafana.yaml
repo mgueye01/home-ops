@@ -174,7 +174,7 @@ spec:
                       name: grafana-admin-secret
                       key: TESLAMATE_DB_PASSWORD
                 - name: GF_INSTALL_PLUGINS
-                  value: "grafana-clock-panel,grafana-piechart-panel,grafana-worldmap-panel,natel-discrete-panel,pr0ps-trackmap-panel,vonage-status-panel"
+                  value: "grafana-clock-panel,grafana-piechart-panel,grafana-worldmap-panel,natel-discrete-panel,pr0ps-trackmap-panel,vonage-status-panel,victoriametrics-logs-datasource"
                 - name: GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS
                   value: "natel-discrete-panel,pr0ps-trackmap-panel,panodata-map-panel"
               securityContext:
