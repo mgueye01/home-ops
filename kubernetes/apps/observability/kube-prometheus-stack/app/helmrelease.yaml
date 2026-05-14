@@ -112,6 +112,10 @@ spec:
               resources:
                 requests:
                   storage: 50Gi
+        # Disable chart's auto-generated podAntiAffinity (default "soft")
+        # which would render a second podAntiAffinity key alongside ours.
+        # We only have 1 prometheus replica so the self-spread is moot.
+        podAntiAffinity: ""
         affinity:
           podAntiAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:
