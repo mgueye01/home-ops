@@ -30,6 +30,10 @@ spec:
       strategy: rollback
       retries: 3
   values:
+    image:
+      # Pinned to 1.29.0 due to 1.29.1 startup hang in ensurePKI() — see upstream #10679.
+      # Remove this pin once 1.29.2 ships and is verified working.
+      tag: 1.29.0
     crds:
       create: true
     monitoring:
