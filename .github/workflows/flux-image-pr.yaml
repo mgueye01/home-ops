@@ -47,6 +47,5 @@ jobs:
               --body "Automated image update by Flux Image Automation. This PR updates the elgato-photo container image to the latest version." \
               --base main \
               --head "$BRANCH" \
-              --label "elgato-photo" \
-              --label "image-update"
+              --label "area/kubernetes"
           fi
