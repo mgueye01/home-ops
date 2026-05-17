@@ -25,17 +25,17 @@ spec:
           - name: alertname
             value: Watchdog
             matchType: "="
-      - receiver: hermes
-        continue: true
-        groupWait: 10s
-        repeatInterval: 6h
-        matchers:
-          - name: alertname
-            value: Watchdog
-            matchType: "!="
-          - name: severity
-            value: info
-            matchType: "!="
+      # - receiver: hermes
+      #   continue: true
+      #   groupWait: 10s
+      #   repeatInterval: 6h
+      #   matchers:
+      #     - name: alertname
+      #       value: Watchdog
+      #       matchType: "!="
+      #     - name: severity
+      #       value: info
+      #       matchType: "!="
       - receiver: pushover
         groupWait: 10s
         repeatInterval: 6h
@@ -65,18 +65,18 @@ spec:
         - urlSecret:
             name: &secret alertmanager-secret
             key: ALERTMANAGER_HEARTBEAT_URL
-    - name: hermes
-      webhookConfigs:
-        - sendResolved: true
-          urlSecret:
-            name: *secret
-            key: HERMES_ALERTMANAGER_WEBHOOK_URL
-          httpConfig:
-            authorization:
-              type: Bearer
-              credentials:
-                name: *secret
-                key: HERMES_ALERTMANAGER_WEBHOOK_SECRET
+    # - name: hermes
+    #   webhookConfigs:
+    #     - sendResolved: true
+    #       urlSecret:
+    #         name: *secret
+    #         key: HERMES_ALERTMANAGER_WEBHOOK_URL
+    #       httpConfig:
+    #         authorization:
+    #           type: Bearer
+    #           credentials:
+    #             name: *secret
+    #             key: HERMES_ALERTMANAGER_WEBHOOK_SECRET
     - name: pushover
       pushoverConfigs:
         - html: true
