@@ -37,7 +37,7 @@ spec:
       endpointURL: http://nas.g-eye.tech:3900
       # Note: serverName version needs to be incremented
       # when recovering from an existing cnpg cluster
-      serverName: &currentCluster postgres16-v10
+      serverName: &currentCluster postgres16-v11
       s3Credentials:
         accessKeyId:
           name: cloudnative-pg-secret
