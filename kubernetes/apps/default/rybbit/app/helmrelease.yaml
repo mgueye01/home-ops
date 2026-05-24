@@ -264,6 +264,7 @@ spec:
         annotations:
           gatus.home-operations.com/enabled: "true"
           gatus.home-operations.com/endpoint: |-
+            url: https://analytics.g-eye.io/
             conditions: ["[STATUS] == 200"]
         hostnames:
           - "analytics.g-eye.io"
