@@ -1,15 +1,22 @@
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/notification.toolkit.fluxcd.io/receiver_v1.json
+# NEW: Harbor webhook → trigger ImageRepository + ImageUpdateAutomation reconcile
+# instantly on every image push (saves up to 5 min vs scan interval).
 apiVersion: notification.toolkit.fluxcd.io/v1
 kind: Receiver
 metadata:
-  name: harbor-webhook-elgato
+  name: harbor-elgato-photo
+  namespace: default
 spec:
   type: harbor
+  events:
+    - push
   secretRef:
     name: harbor-webhook-token-secret
   resources:
     - apiVersion: image.toolkit.fluxcd.io/v1
       kind: ImageRepository
       name: elgato-photo
-      namespace: default
+    - apiVersion: image.toolkit.fluxcd.io/v1
+      kind: ImageUpdateAutomation
+      name: elgato-photo

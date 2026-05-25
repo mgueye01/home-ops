@@ -1,5 +1,6 @@
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/image.toolkit.fluxcd.io/imageupdateautomation_v1beta2.json
+# CHANGE: push branch was `flux/elgato-photo-image-update` → now `main` (direct commit, skip PR)
 apiVersion: image.toolkit.fluxcd.io/v1
 kind: ImageUpdateAutomation
 metadata:
@@ -26,7 +27,7 @@ spec:
         - {{.OldValue}} -> {{.NewValue}}
         {{end}}
     push:
-      branch: flux/elgato-photo-image-update
+      branch: main
   update:
     path: ./kubernetes/apps/default/elgato-photo
     strategy: Setters

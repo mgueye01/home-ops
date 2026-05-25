@@ -1,13 +1,16 @@
 ---
+# CHANGE: add receiver.yaml + externalsecret-webhook.yaml to resources list
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - ./helmrelease.yaml
   - ./externalsecret.yaml
+  - ./externalsecret-webhook.yaml
   - ./httproute.yaml
   - ./imagerepository.yaml
   - ./imagepolicy.yaml
   - ./imageupdateautomation.yaml
+  - ./receiver.yaml
   - ./harbor-registry-secret.yaml
   - ./github-auth-secret.yaml
   - ./gitrepository-write.yaml
