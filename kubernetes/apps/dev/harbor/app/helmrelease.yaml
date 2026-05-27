@@ -27,13 +27,10 @@ spec:
   uninstall:
     keepHistory: false
   values:
-    # Use Recreate strategy to prevent Multi-Attach errors on RWO PVCs
-    core:
-      updateStrategy:
-        type: Recreate
-    jobservice:
-      updateStrategy:
-        type: Recreate
+    # Chart-global update strategy for PVC-backed deployments (jobservice, registry).
+    # Recreate avoids Multi-Attach errors on the RWO ceph-block PVCs on rollout.
+    updateStrategy:
+      type: Recreate
     logLevel: debug
     externalURL: "https://harbor.g-eye.io"
     existingSecretAdminPassword: &secret harbor-secret
