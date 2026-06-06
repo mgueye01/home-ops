@@ -41,6 +41,9 @@ spec:
               # RESEND_API_KEY stays in the ExternalSecret; these two are not secret.
               RESEND_FROM: onboarding@resend.dev
               ADMIN_EMAIL: mgueye01@gmail.com
+              # Cluster DNS can't resolve nas.g-eye.tech (home-only domain); use the
+              # NAS LAN IP so the pod reaches Garage S3. Overrides the ExternalSecret value.
+              S3_ENDPOINT: "http://192.168.0.18:3900"
             envFrom:
               - secretRef:
                   name: elgato-photo-secret
