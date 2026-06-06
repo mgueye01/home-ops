@@ -44,6 +44,9 @@ spec:
               # Cluster DNS can't resolve nas.g-eye.tech (home-only domain); use the
               # NAS LAN IP so the pod reaches Garage S3. Overrides the ExternalSecret value.
               S3_ENDPOINT: "http://192.168.0.18:3900"
+              # 1Password BUCKET_NAME is mis-spelled "elgato-photo" (extra hyphen);
+              # the real Garage bucket is "elgatophoto". Overrides the ExternalSecret value.
+              BUCKET_NAME: elgatophoto
             envFrom:
               - secretRef:
                   name: elgato-photo-secret
