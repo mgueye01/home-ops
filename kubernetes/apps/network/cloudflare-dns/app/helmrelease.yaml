@@ -50,6 +50,11 @@ spec:
           secretKeyRef:
             name: *secret
             key: *name
+      - name: &name CF_ZONE_ID_ELGATO_FR
+        valueFrom:
+          secretKeyRef:
+            name: *secret
+            key: *name
     extraArgs:
       - --cloudflare-dns-records-per-page=1000
       - --cloudflare-proxied
@@ -57,12 +62,13 @@ spec:
       - --crd-source-kind=DNSEndpoint
       - --gateway-name=envoy-external
       - --zone-id-filter=$(CF_ZONE_ID)
+      - --zone-id-filter=$(CF_ZONE_ID_ELGATO_FR)
     triggerLoopOnEvent: true
     policy: sync
     sources: ["crd", "gateway-httproute"]
     txtOwnerId: default
     txtPrefix: k8s.
-    domainFilters: ["g-eye.io"]
+    domainFilters: ["g-eye.io", "elgato-photo.fr"]
     serviceMonitor:
       enabled: true
     podAnnotations:

@@ -10,4 +10,6 @@ ingress:
     service: &svc https://envoy-external.network.svc.cluster.local:443
   - hostname: "*.g-eye.io"
     service: *svc
+  - hostname: elgato-photo.fr
+    service: *svc
   - service: http_status:404
