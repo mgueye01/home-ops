@@ -9,3 +9,8 @@ spec:
     - dnsName: external.g-eye.io
       recordType: CNAME
       targets: ["${CLOUDFLARE_TUNNEL_ID}.cfargotunnel.com"]
+    # Apex domain: external-dns can't CNAME a zone apex via the gateway target
+    # (it flattens to a wrong A record), so point it straight at the tunnel here.
+    - dnsName: elgato-photo.fr
+      recordType: CNAME
+      targets: ["${CLOUDFLARE_TUNNEL_ID}.cfargotunnel.com"]
