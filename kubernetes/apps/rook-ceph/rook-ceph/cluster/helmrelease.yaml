@@ -53,6 +53,10 @@ spec:
       crashCollector:
         disable: false
       csi:
+        cephfs:
+          # rook v1.20 chart dropped csi.cephFSKernelMountOptions; without ms_mode
+          # the kernel client speaks msgr1 on the msgr2 port (3300) and mounts fail
+          kernelMountOptions: ms_mode=prefer-crc
         readAffinity:
           enabled: true
       dashboard:
