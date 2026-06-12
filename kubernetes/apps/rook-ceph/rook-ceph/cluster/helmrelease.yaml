@@ -30,7 +30,7 @@ spec:
           gatus.home-operations.com/endpoint: |-
             conditions: ["len([BODY]) == 0"]
             dns:
-              query-name: {{ .Release.Name }}.g-eye.io
+              query-name: "{{ .Release.Name }}.g-eye.io"
               query-type: A
             url: 1.1.1.1
         host:
