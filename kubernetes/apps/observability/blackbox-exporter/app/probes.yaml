@@ -17,8 +17,8 @@ spec:
         - zigbee-controller.g-eye.tech
         - 192.168.10.2 # haproxy1
         - 192.168.10.3 # haproxy2
-        - 192.168.0.197 # pi-hole1
-        - 192.168.0.214 # pi-hole2
+        - 192.168.0.196 # pi-hole1
+        - 192.168.0.212 # pi-hole2
       relabelingConfigs:
         # Strip *.g-eye.tech suffix so hostnames become friendly names
         - sourceLabels: [instance]
@@ -35,11 +35,11 @@ spec:
           targetLabel: name
           replacement: haproxy2
         - sourceLabels: [instance]
-          regex: 192\.168\.0\.197
+          regex: 192\.168\.0\.196
           targetLabel: name
           replacement: pi-hole1
         - sourceLabels: [instance]
-          regex: 192\.168\.0\.214
+          regex: 192\.168\.0\.212
           targetLabel: name
           replacement: pi-hole2
 ---
@@ -69,5 +69,5 @@ spec:
   targets:
     staticConfig:
       static:
-        - 192.168.0.197:53 # pi-hole1 dns
-        - 192.168.0.214:53 # pi-hole2 dns
+        - 192.168.0.196:53 # pi-hole1 dns
+        - 192.168.0.212:53 # pi-hole2 dns
