@@ -25,6 +25,7 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      VOLSYNC_SCHEDULE_MINUTE: "55"
       VOLSYNC_CAPACITY: 5Gi
   prune: true
   retryInterval: 2m
