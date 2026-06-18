@@ -19,6 +19,7 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      VOLSYNC_SCHEDULE_MINUTE: "14"
       GATUS_PATH: /api/v1/status
       GATUS_SUBDOMAIN: requests
       VOLSYNC_CAPACITY: 5Gi
