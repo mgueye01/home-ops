@@ -12,4 +12,3 @@ resources:
   - ./imageupdateautomation.yaml
   - ./receiver.yaml
   - ./harbor-registry-secret.yaml
-  - ./github-auth-secret.yaml
