@@ -13,4 +13,3 @@ resources:
   - ./receiver.yaml
   - ./harbor-registry-secret.yaml
   - ./github-auth-secret.yaml
-  - ./gitrepository-write.yaml

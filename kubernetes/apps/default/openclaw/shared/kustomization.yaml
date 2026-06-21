@@ -7,3 +7,4 @@ resources:
   - imagerepository.yaml
   - imagepolicy.yaml
   - imageupdateautomation.yaml
+  - gitrepository-write.yaml
