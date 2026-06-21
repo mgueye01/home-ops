@@ -8,3 +8,4 @@ resources:
   - imagepolicy.yaml
   - imageupdateautomation.yaml
   - gitrepository-write.yaml
+  - github-auth-secret.yaml
