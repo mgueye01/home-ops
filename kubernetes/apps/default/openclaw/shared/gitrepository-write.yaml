@@ -1,0 +1,14 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/source.toolkit.fluxcd.io/gitrepository_v1.json
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: home-ops-write
+  namespace: default
+spec:
+  interval: 5m
+  url: https://github.com/mgueye01/home-ops
+  ref:
+    branch: main
+  secretRef:
+    name: github-auth
