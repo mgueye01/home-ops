@@ -28,7 +28,7 @@ spec:
             image:
               repository: ghcr.io/mgueye01/twenty-crm-mcp-server
               # renovate: datasource=docker depName=ghcr.io/mgueye01/twenty-crm-mcp-server
-              tag: latest@sha256:9c1d11332325baa749d2b98c794ff252230eecfae5a7c5db04fece2418fa5d0f
+              tag: latest@sha256:62cc78fddae1a6d62b31da7018b579536df9001e6071624afeb3ee13ee0f0989
               pullPolicy: IfNotPresent
 
             env:
