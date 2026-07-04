@@ -69,7 +69,6 @@ spec:
                           - "--leader-election"
                           - "--leader-election-namespace=kube-system"
                           - "--extra-create-metadata=true"
-                          - "--feature-gates=HonorPVReclaimPolicy=true"
                           - "--timeout=1200s"
                           - "--retry-interval-max=30m"
                           - "--leader-election-lease-duration=60s"
