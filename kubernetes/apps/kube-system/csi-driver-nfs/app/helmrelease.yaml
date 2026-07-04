@@ -94,3 +94,18 @@ spec:
                           - "--leader-election-lease-duration=60s"
                           - "--leader-election-renew-deadline=30s"
                           - "--leader-election-retry-period=15s"
+          - target:
+              kind: ClusterRole
+              name: nfs-external-resizer-role
+            patch: |
+              - op: add
+                path: /rules/-
+                value:
+                  apiGroups:
+                    - ""
+                  resources:
+                    - pods
+                  verbs:
+                    - get
+                    - list
+                    - watch
