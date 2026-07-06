@@ -23,6 +23,10 @@ spec:
       namespace: external-secrets
     - name: volsync
       namespace: volsync-system
+    - name: cloudnative-pg-cluster
+      namespace: databases
+    - name: redis
+      namespace: databases
   components:
     - ../../../../components/volsync
   postBuild:

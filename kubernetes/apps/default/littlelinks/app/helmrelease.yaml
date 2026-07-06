@@ -24,7 +24,7 @@ spec:
           main:
             image:
               repository: ghcr.io/techno-tim/littlelink-server
-              tag: latest
+              tag: latest@sha256:e84ea9d93b60362cf9e292dba43adb604e375d9206d5fcf1de6bb766a20aabd1
             env:
               TZ: Europe/Paris
               META_TITLE: Moustapha Gueye
