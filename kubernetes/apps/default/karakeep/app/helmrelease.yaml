@@ -20,6 +20,7 @@ spec:
   values:
     controllers:
       karakeep:
+        strategy: Recreate
         annotations:
           reloader.stakater.com/auto: "true"
         containers:
@@ -85,6 +86,7 @@ spec:
                 memory: 2Gi
 
       meilisearch:
+        strategy: Recreate
         annotations:
           reloader.stakater.com/auto: "true"
         pod:

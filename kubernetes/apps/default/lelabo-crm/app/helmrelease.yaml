@@ -20,6 +20,7 @@ spec:
   values:
     controllers:
       lelabo-crm:
+        strategy: Recreate
         annotations:
           reloader.stakater.com/auto: "true"
         pod:

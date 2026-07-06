@@ -19,6 +19,7 @@ spec:
   values:
     controllers:
       openclaw:
+        strategy: Recreate
         annotations:
           reloader.stakater.com/auto: "true"
         initContainers:

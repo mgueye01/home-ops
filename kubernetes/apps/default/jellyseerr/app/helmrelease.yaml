@@ -20,6 +20,7 @@ spec:
   values:
     controllers:
       jellyseerr:
+        strategy: Recreate
         annotations:
           reloader.stakater.com/auto: "true"
         containers:

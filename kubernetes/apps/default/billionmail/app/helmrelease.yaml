@@ -21,6 +21,7 @@ spec:
     controllers:
       # ── Core + Webmail (share PHP-FPM socket) ──────────────────────
       billionmail:
+        strategy: Recreate
         annotations:
           reloader.stakater.com/auto: "true"
         initContainers:

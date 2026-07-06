@@ -20,6 +20,7 @@ spec:
   values:
     controllers:
       tautulli:
+        strategy: Recreate
         annotations:
           reloader.stakater.com/auto: "true"
         containers:

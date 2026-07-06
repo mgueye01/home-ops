@@ -26,6 +26,7 @@ spec:
 
     controllers:
       n8n:
+        strategy: Recreate
         annotations:
           reloader.stakater.com/auto: "true"
         initContainers:

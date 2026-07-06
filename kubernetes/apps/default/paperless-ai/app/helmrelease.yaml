@@ -11,6 +11,7 @@ spec:
   values:
     controllers:
       paperless-ai:
+        strategy: Recreate
         annotations:
           reloader.stakater.com/auto: "true"
         containers:

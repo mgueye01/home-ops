@@ -20,6 +20,7 @@ spec:
   values:
     controllers:
       rybbit-clickhouse:
+        strategy: Recreate
         annotations:
           reloader.stakater.com/auto: "true"
         containers:

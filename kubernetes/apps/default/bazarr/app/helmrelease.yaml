@@ -20,6 +20,7 @@ spec:
   values:
     controllers:
       bazarr:
+        strategy: Recreate
         annotations:
           reloader.stakater.com/auto: "true"
         containers:

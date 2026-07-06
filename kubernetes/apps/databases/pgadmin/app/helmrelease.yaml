@@ -21,6 +21,7 @@ spec:
   values:
     controllers:
       pgadmin:
+        strategy: Recreate
         annotations:
           reloader.stakater.com/auto: "true"
         initContainers:

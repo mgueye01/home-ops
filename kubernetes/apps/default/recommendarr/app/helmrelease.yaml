@@ -21,6 +21,7 @@ spec:
   values:
     controllers:
       recommendarr:
+        strategy: Recreate
         containers:
           app:
             image:
