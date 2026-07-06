@@ -15,3 +15,5 @@ talosconfig
 .hive-mind/
 CLAUDE.md
 openclaw-custom/
+graphify-out/
+.playwright-mcp/
