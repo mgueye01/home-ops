@@ -99,14 +99,30 @@ spec:
               cpu: "4"
               memory: 8Gi
 
+      # Per-pod ephemeral PVCs on ceph-block: keeps CI write bursts off the
+      # Talos system disk (shared with etcd) — see etcd fsync incident 2026-07-06
       volumes:
         - name: runner-data
-          emptyDir: {}
+          ephemeral:
+            volumeClaimTemplate:
+              spec:
+                accessModes: ["ReadWriteOnce"]
+                storageClassName: ceph-block
+                resources:
+                  requests:
+                    storage: 20Gi
         - name: config
           configMap:
             name: gitea-runner-config
         - name: dind-storage
-          emptyDir: {}
+          ephemeral:
+            volumeClaimTemplate:
+              spec:
+                accessModes: ["ReadWriteOnce"]
+                storageClassName: ceph-block
+                resources:
+                  requests:
+                    storage: 50Gi
 
       # Spread pods across nodes
       topologySpreadConstraints:
