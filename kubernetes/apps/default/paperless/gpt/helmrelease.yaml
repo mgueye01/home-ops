@@ -27,8 +27,12 @@ spec:
             image:
               repository: ghcr.io/icereed/paperless-gpt
               tag: v0.26.0@sha256:1210dcf072d9b3de0eb8aff3d7716c28c5d658f2c5b04f0461f16fd6d9551069
+            # v0.26.0's entrypoint must start as root (addgroup/chown, then
+            # su-exec) which runAsNonRoot forbids — exec the binary directly
+            command: ["/app/paperless-gpt"]
             env:
               TZ: Europe/Paris
+              HOME: /tmp
               PAPERLESS_BASE_URL: http://paperless.default.svc.cluster.local:80
               PAPERLESS_PUBLIC_URL: https://paperless.g-eye.io
               LLM_PROVIDER: openai
