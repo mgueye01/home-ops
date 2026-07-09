@@ -10,7 +10,7 @@ resources:
   - ./bazarr/ks.yaml
   - ./billionmail/ks.yaml
   - ./changedetection/ks.yaml
-  # - ./elgato-photo/ks.yaml
+  - ./elgato-photo/ks.yaml
   - ./fusion/ks.yaml
   - ./garage-webui/ks.yaml
   - ./homepage/ks.yaml

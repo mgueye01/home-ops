@@ -39,7 +39,7 @@ spec:
               PORT: "3000"
               # Non-secret app config (validated by src/lib/env.ts at startup).
               # RESEND_API_KEY stays in the ExternalSecret; these two are not secret.
-              RESEND_FROM: onboarding@resend.dev
+              RESEND_FROM: "elGato Photo <contact@elgato-photo.fr>"
               ADMIN_EMAIL: mgueye01@gmail.com
               # Cluster DNS can't resolve nas.g-eye.tech (home-only domain); use the
               # NAS LAN IP so the pod reaches Garage S3. Overrides the ExternalSecret value.
