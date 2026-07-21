@@ -35,6 +35,15 @@ spec:
               - secretRef:
                   name: unpoller-secret
             probes:
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: 80
+                  periodSeconds: 5
+                  timeoutSeconds: 1
+                  failureThreshold: 24
               liveness:
                 enabled: true
               readiness:
