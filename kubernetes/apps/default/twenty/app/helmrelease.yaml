@@ -129,6 +129,9 @@ spec:
             command: ["yarn", "worker:prod"]
             env:
               SERVER_URL: "https://twenty.g-eye.io"
+              # V8 defaults to ~1Gi old-space regardless of the container limit,
+              # which OOMs the heap during large mailbox full syncs
+              NODE_OPTIONS: "--max-old-space-size=3072"
               # Google OAuth Authentication
               AUTH_GOOGLE_ENABLED: "true"
               MESSAGING_PROVIDER_GMAIL_ENABLED: "true"
@@ -164,7 +167,7 @@ spec:
                 cpu: 250m
                 memory: 2Gi
               limits:
-                memory: 2Gi
+                memory: 4Gi
                 cpu: 1000m
         pod:
           securityContext:

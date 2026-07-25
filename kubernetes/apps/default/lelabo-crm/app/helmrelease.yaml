@@ -139,6 +139,9 @@ spec:
             command: ["yarn", "worker:prod"]
             env:
               SERVER_URL: "https://lelabo-crm.g-eye.io"
+              # V8 defaults to ~1Gi old-space regardless of the container limit,
+              # which OOMs the heap during large mailbox full syncs
+              NODE_OPTIONS: "--max-old-space-size=3072"
               REDIS_PASSWORD:
                 valueFrom:
                   secretKeyRef:
@@ -177,9 +180,9 @@ spec:
             resources:
               requests:
                 cpu: 250m
-                memory: 1Gi
-              limits:
                 memory: 2Gi
+              limits:
+                memory: 4Gi
                 cpu: 1000m
     service:
       app:
