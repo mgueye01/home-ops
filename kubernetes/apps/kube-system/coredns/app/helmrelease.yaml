@@ -46,6 +46,15 @@ spec:
               fallthrough in-addr.arpa ip6.arpa
           - name: autopath
             parameters: "@kubernetes"
+          # g-eye.tech is home-only: the LAN resolver holds A records, but AAAA
+          # is forwarded to the parked public zone and SERVFAILs. Node resolves
+          # AF_UNSPEC (A + AAAA), so the SERVFAIL surfaces as getaddrinfo
+          # EAI_AGAIN and breaks S3 calls to nas.g-eye.tech. Answer AAAA with
+          # NOERROR/NODATA here instead of forwarding.
+          - name: template
+            parameters: IN AAAA g-eye.tech
+            configBlock: |-
+              rcode NOERROR
           - name: forward
             parameters: . 192.168.0.1
           - name: cache
