@@ -183,7 +183,9 @@ spec:
                 memory: 2Gi
               limits:
                 memory: 4Gi
-                cpu: 1000m
+                # a 1 CPU cap throttled 60% of periods during full sync,
+                # starving the event loop until BullMQ locks expired
+                cpu: 2000m
     service:
       app:
         controller: lelabo-crm
