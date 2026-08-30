@@ -103,7 +103,11 @@ spec:
             image:
               repository: harbor.g-eye.io/openclaw/openclaw # {"$imagepolicy": "default:openclaw:name"}
               tag: 20260830-123728 # {"$imagepolicy": "default:openclaw:tag"}
-            args: ["node", "dist/index.js", "gateway", "--allow-unconfigured"]
+            # Absolute path on purpose: /home/linuxbrew/.linuxbrew is a PVC mount and
+            # sits ahead of /usr/local/bin in PATH, so any brew formula pulling node
+            # (gemini-cli does) silently becomes openclaw's runtime. Pin the image's
+            # own node, which is the version openclaw is built and tested against.
+            args: ["/usr/local/bin/node", "dist/index.js", "gateway", "--allow-unconfigured"]
             env:
               TZ: Europe/Paris
               NODE_OPTIONS: "--max-old-space-size=3072"
