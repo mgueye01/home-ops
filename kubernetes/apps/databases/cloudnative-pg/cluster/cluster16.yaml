@@ -49,10 +49,16 @@ spec:
           name: cloudnative-pg-secret
           key: aws-region
   # Note: previousCluster needs to be set to the name of the previous
-  # cluster when recovering from an existing cnpg cluster
+  # cluster when recovering from an existing cnpg cluster.
+  # Kept equal to *currentCluster outside of a restore: bootstrap is only ever
+  # read when the Cluster is created with no PVC, so a stale value here silently
+  # restores a months-old backup. Pointing both at the same prefix makes
+  # barman-cloud-check-wal-archive refuse ("Expected empty archive"), so an
+  # unattended restore fails loudly instead of succeeding with the wrong data.
+  # To restore: bump *currentCluster and leave this on the archive to recover from.
   bootstrap:
     recovery:
-      source: &previousCluster postgres16-v9
+      source: &previousCluster postgres16-v11
   # Note: externalClusters is needed when recovering from an existing cnpg cluster
   externalClusters:
     - name: *previousCluster
