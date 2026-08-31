@@ -6,6 +6,23 @@
       "matchDatasources": ["docker"],
       "matchPackageNames": ["/plex/"],
       "versioning": "loose"
+    },
+    {
+      // Talos drives the Kubernetes upgrade via `talosctl upgrade-k8s`, and it
+      // refuses any path it does not know: "unsupported upgrade path 1.36->1.37".
+      // Talos v1.13.x (latest as of 2026-08-31) ships Kubernetes 1.36, so a 1.37
+      // bump produces a plan the cluster can never apply -- the SUC job fails in
+      // seconds and retries until it hits jobActiveDeadlineSecs.
+      // Raise this ceiling only once a Talos release supporting 1.37 is out.
+      "description": ["Cap Kubernetes images at what the running Talos release supports"],
+      "matchDatasources": ["docker"],
+      "matchPackageNames": [
+        "ghcr.io/siderolabs/kubelet",
+        "registry.k8s.io/kube-apiserver",
+        "registry.k8s.io/kube-controller-manager",
+        "registry.k8s.io/kube-scheduler"
+      ],
+      "allowedVersions": "<1.37"
     }
   ]
 }
