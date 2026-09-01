@@ -1,0 +1,46 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: external-dns-alerts
+  namespace: observability
+  labels:
+    app.kubernetes.io/part-of: kube-prometheus-stack
+spec:
+  groups:
+    # Covers every external-dns instance (cloudflare-dns, unifi-dns); the job label
+    # identifies which one. These metrics were already scraped when the v0.22.0
+    # annotation-prefix regression left all 19 public hostnames without a DNS record
+    # for 45h -- consecutive_soft_errors sat at 2704 with nothing watching it.
+    - name: external-dns.rules
+      rules:
+        - alert: ExternalDNSNotReconciling
+          expr: |
+            external_dns_controller_consecutive_soft_errors > 0
+          for: 15m
+          annotations:
+            summary: >-
+              external-dns ({{ $labels.job }}) has failed {{ $value }} consecutive
+              reconciliations - DNS records are no longer being applied
+          labels:
+            severity: critical
+
+        - alert: ExternalDNSRegistryErrors
+          expr: |
+            increase(external_dns_registry_errors_total[15m]) > 0
+          for: 15m
+          annotations:
+            summary: >-
+              external-dns ({{ $labels.job }}) is failing to write to its registry
+          labels:
+            severity: warning
+
+        - alert: ExternalDNSAbsent
+          expr: |
+            absent(up{job="cloudflare-dns"}) or absent(up{job="unifi-dns"})
+          for: 15m
+          annotations:
+            summary: >-
+              An external-dns instance has disappeared from Prometheus service discovery
+          labels:
+            severity: critical
