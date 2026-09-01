@@ -6,6 +6,41 @@ connectivity:
 
 metrics: true
 
+# Public-path canaries. Every other check runs inside the cluster with
+# dnsPolicy ClusterFirst, so it resolves through CoreDNS, reaches Envoy over the
+# LAN, and never touches public DNS, Cloudflare or the tunnel. That is why the
+# 45h outage in #3257 showed 2853 green checks and zero failures.
+#
+# These two are declared here rather than via a Gateway annotation: gatus-sidecar
+# 0.5.2 does not actually inherit the endpoint annotation from the parent Gateway
+# down to its HTTPRoutes (verified against the generated config -- the key never
+# appears), so that approach was inert.
+#
+# echo is the target: no auth, no state, already public on envoy-external.
+endpoints:
+  # Would have caught #3257 directly: external-dns had deleted the record and
+  # could not recreate it. Mirrors the len([BODY]) == 0 idiom used on internal
+  # hostnames to assert they do NOT leak publicly -- inverted.
+  - name: public-dns
+    group: public-path
+    url: 1.1.1.1
+    interval: 1m
+    dns:
+      query-name: echo.g-eye.io
+      query-type: A
+    conditions:
+      - len([BODY]) > 0
+
+  # Full public chain: public DNS -> Cloudflare -> tunnel -> Envoy.
+  - name: public-ingress
+    group: public-path
+    url: https://echo.g-eye.io
+    interval: 1m
+    client:
+      dns-resolver: tcp://1.1.1.1:53
+    conditions:
+      - "[STATUS] == 200"
+
 ui:
   title: Status | Gatus
   header: Status
