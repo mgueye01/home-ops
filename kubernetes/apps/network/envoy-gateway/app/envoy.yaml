@@ -99,6 +99,15 @@ metadata:
   name: envoy-external
   annotations:
     external-dns.alpha.kubernetes.io/target: &hostname external.g-eye.io
+    # Inherited by every HTTPRoute on this Gateway (merged per-key, so a route's own
+    # interval/conditions still win). Forces Gatus to resolve via public DNS instead of
+    # CoreDNS, so these checks actually traverse Cloudflare and the tunnel. Without it
+    # Gatus resolves internally, hits Envoy over the LAN, and reports green through a
+    # total public outage -- it did exactly that for 45h, 2853 checks, zero failures.
+    # Deliberately NOT set on envoy-internal: those hostnames have no public record.
+    gatus.home-operations.com/endpoint: |
+      client:
+        dns-resolver: tcp://1.1.1.1:53
 spec:
   gatewayClassName: envoy
   infrastructure:
