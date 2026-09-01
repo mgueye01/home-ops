@@ -67,6 +67,14 @@ spec:
             port: http-webhook
           initialDelaySeconds: 10
           timeoutSeconds: 5
+    extraArgs:
+      # Pre-emptive: external-dns v0.22.0 makes external-dns.kubernetes.io/ the default
+      # annotation prefix with no fallback, which silently breaks the alpha annotations
+      # this instance relies on (target on both gateways, hostname on the CNPG and
+      # billionmail services, controller=none exclusions). cloudflare-dns hit this in
+      # #3257. Keep until every external-dns instance is on v0.22 and the annotations
+      # are migrated together.
+      - --annotation-prefix=external-dns.alpha.kubernetes.io/
     triggerLoopOnEvent: true
     policy: sync
     sources: ["gateway-httproute", "service"]
