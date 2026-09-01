@@ -59,6 +59,12 @@ spec:
             name: *secret
             key: *name
     extraArgs:
+      # v0.22.0 dropped the fallback to the alpha annotation prefix; without this the
+      # `external-dns.alpha.kubernetes.io/target` annotation on the envoy-external Gateway
+      # is ignored and records are created as A records to the LB IP instead of CNAMEs to
+      # the tunnel. Do NOT migrate the annotations instead: unifi-dns is still on v0.21.0
+      # and reads the alpha prefix.
+      - --annotation-prefix=external-dns.alpha.kubernetes.io/
       - --cloudflare-dns-records-per-page=1000
       - --cloudflare-proxied
       - --crd-source-apiversion=externaldns.k8s.io/v1alpha1
