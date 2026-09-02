@@ -109,7 +109,7 @@ spec:
           init-clickhouse:
             image:
               repository: curlimages/curl
-              tag: 8.21.0
+              tag: 8.22.0
             command:
               - sh
               - -c
