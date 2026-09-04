@@ -23,6 +23,19 @@
         "registry.k8s.io/kube-scheduler"
       ],
       "allowedVersions": "<1.37"
+    },
+    {
+      // Talos v1.13.10 (kernel 6.18.48) corrupts thunderbolt-net frames on the
+      // transmit side: every peer of a node running it sees ~0.2 % rx CRC
+      // errors on the TB4 Ceph mesh, and CephNodeNetworkPacketErrors flaps.
+      // Bisected on 2026-09-04 by downgrading a single node to v1.13.9 (kernel
+      // 6.18.44): its peers dropped to 0 errors in 550k frames while the links
+      // between the two v1.13.10 nodes kept failing. Let Renovate offer the
+      // next patch release, and verify it on one node before dropping this.
+      "description": ["Skip Talos v1.13.10, which corrupts thunderbolt-net on transmit"],
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["ghcr.io/siderolabs/installer"],
+      "allowedVersions": "!/^v?1\\.13\\.10$/"
     }
   ]
 }
