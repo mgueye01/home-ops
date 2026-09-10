@@ -33,7 +33,7 @@ spec:
           app:
             image:
               repository: harbor.g-eye.io/elgato/elgato-photo # {"$imagepolicy": "default:elgato-photo:name"}
-              tag: "20260910-091830" # {"$imagepolicy": "default:elgato-photo:tag"}
+              tag: "20260910-111048" # {"$imagepolicy": "default:elgato-photo:tag"}
             env:
               NODE_ENV: production
               PORT: "3000"
