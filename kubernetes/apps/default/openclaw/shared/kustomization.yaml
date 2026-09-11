@@ -7,5 +7,7 @@ resources:
   - imagerepository.yaml
   - imagepolicy.yaml
   - imageupdateautomation.yaml
+  - receiver.yaml
+  - externalsecret-webhook.yaml
   - gitrepository-write.yaml
   - github-auth-secret.yaml

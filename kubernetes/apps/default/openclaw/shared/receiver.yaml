@@ -1,0 +1,21 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/notification.toolkit.fluxcd.io/receiver_v1.json
+# Harbor webhook → trigger ImageRepository + ImageUpdateAutomation reconcile
+# instantly on every image push (saves up to 5 min vs scan interval).
+apiVersion: notification.toolkit.fluxcd.io/v1
+kind: Receiver
+metadata:
+  name: harbor-openclaw
+spec:
+  type: harbor
+  events:
+    - push
+  secretRef:
+    name: harbor-webhook-token-openclaw
+  resources:
+    - apiVersion: image.toolkit.fluxcd.io/v1
+      kind: ImageRepository
+      name: openclaw
+    - apiVersion: image.toolkit.fluxcd.io/v1
+      kind: ImageUpdateAutomation
+      name: openclaw
