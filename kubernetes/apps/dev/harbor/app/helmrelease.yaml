@@ -31,7 +31,7 @@ spec:
     # Recreate avoids Multi-Attach errors on the RWO ceph-block PVCs on rollout.
     updateStrategy:
       type: Recreate
-    logLevel: debug
+    logLevel: info
     externalURL: "https://harbor.g-eye.io"
     existingSecretAdminPassword: &secret harbor-secret
     expose:
@@ -46,8 +46,6 @@ spec:
       persistentVolumeClaim:
         registry:
           existingClaim: "harbor-registry"
-        chartmuseum:
-          existingClaim: "harbor-chartmuseum"
         jobservice:
           jobLog:
             existingClaim: "harbor-jobservice"
@@ -74,9 +72,30 @@ spec:
         cacheLayerDatabaseIndex: "7"
         username: ""
         password: ""
+    core:
+      resources:
+        requests: {cpu: 10m, memory: 128Mi}
+    registry:
+      registry:
+        resources:
+          requests: {cpu: 10m, memory: 128Mi}
+      controller:
+        resources:
+          requests: {cpu: 5m, memory: 32Mi}
+    jobservice:
+      resources:
+        requests: {cpu: 10m, memory: 64Mi}
+    portal:
+      resources:
+        requests: {cpu: 5m, memory: 32Mi}
+    nginx:
+      resources:
+        requests: {cpu: 5m, memory: 32Mi}
     exporter:
       replicas: 1
       revisionHistoryLimit: 10
+      resources:
+        requests: {cpu: 5m, memory: 32Mi}
     metrics:
       enabled: true
       core:

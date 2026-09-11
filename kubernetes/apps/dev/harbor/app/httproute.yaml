@@ -28,9 +28,6 @@ spec:
             value: /v2/
         - path:
             type: PathPrefix
-            value: /chartrepo/
-        - path:
-            type: PathPrefix
             value: /c/
       backendRefs:
         - name: harbor-core

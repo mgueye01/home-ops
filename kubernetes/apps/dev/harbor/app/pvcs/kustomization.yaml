@@ -7,4 +7,3 @@ resources:
   - ./trivy.yaml
   - ./jobservice.yaml
   - ./jobservice-scandata.yaml
-  - ./chartmuseum.yaml

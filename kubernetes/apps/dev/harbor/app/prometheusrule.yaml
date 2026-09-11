@@ -1,0 +1,49 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: harbor-rules
+spec:
+  groups:
+    - name: harbor.rules
+      rules:
+        - alert: HarborExporterAbsent
+          expr: |
+            absent(harbor_health)
+          for: 10m
+          annotations:
+            summary: >-
+              Harbor exporter metrics have disappeared from Prometheus
+          labels:
+            severity: warning
+
+        - alert: HarborComponentDown
+          expr: |
+            harbor_up == 0
+          for: 5m
+          annotations:
+            summary: >-
+              Harbor component {{ $labels.component }} is reported unhealthy
+          labels:
+            severity: critical
+
+        - alert: HarborProjectQuotaAlmostFull
+          expr: |
+            harbor_project_quota_usage_byte / (harbor_project_quota_byte > 0) > 0.85
+          for: 30m
+          annotations:
+            summary: >-
+              Harbor project {{ $labels.project_name }} uses {{ $value | humanizePercentage }} of its storage quota
+          labels:
+            severity: warning
+
+        - alert: HarborJobServiceTaskErrors
+          expr: |
+            sum by (type) (increase(harbor_jobservice_task_total{status="error"}[6h])) > 3
+          for: 10m
+          annotations:
+            summary: >-
+              Harbor jobservice: more than 3 {{ $labels.type }} tasks failed in the last 6h
+          labels:
+            severity: warning

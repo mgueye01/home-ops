@@ -9,3 +9,4 @@ resources:
   - ./harbor-charts.yaml
   - ./httproute.yaml
   - ./grafanadashboard.yaml
+  - ./prometheusrule.yaml
