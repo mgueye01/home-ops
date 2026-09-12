@@ -1,0 +1,43 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kyverno.io/clusterpolicy_v1.json
+# Audit mode: every Pod using an image from the openclaw or elgato Harbor projects is checked
+# for a cosign signature made with OUR key (Harbor's content trust only checks that *a*
+# signature exists). Results land in PolicyReports; nothing is blocked until failureAction
+# is switched to Enforce.
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: verify-harbor-image-signatures
+  annotations:
+    policies.kyverno.io/title: Verify Harbor image signatures (cosign key)
+    policies.kyverno.io/description: >-
+      Images from harbor.g-eye.io/openclaw and harbor.g-eye.io/elgato must carry a cosign
+      signature verifiable with the CI signing key stored in 1Password (item harbor, COSIGN_PUBLIC_KEY).
+spec:
+  background: true
+  webhookTimeoutSeconds: 30
+  failurePolicy: Ignore
+  rules:
+    - name: cosign-ci-key
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      verifyImages:
+        - imageReferences:
+            - "harbor.g-eye.io/openclaw/*"
+            - "harbor.g-eye.io/elgato/*"
+          failureAction: Audit
+          required: true
+          mutateDigest: false
+          verifyDigest: false
+          attestors:
+            - entries:
+                - keys:
+                    publicKeys: |-
+                      -----BEGIN PUBLIC KEY-----
+                      MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEaaqxNszln6QqvUNpOJQx3U0bbNtd
+                      VrWILujngi+SpYJTVNvakEYAZLaDfiNhd13FZTl11xcyWwh/SebDeQYPbg==
+                      -----END PUBLIC KEY-----
+                    signatureAlgorithm: sha256
