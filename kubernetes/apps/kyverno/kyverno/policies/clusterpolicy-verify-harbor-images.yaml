@@ -1,9 +1,9 @@
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kyverno.io/clusterpolicy_v1.json
-# Audit mode: every Pod using an image from the openclaw or elgato Harbor projects is checked
-# for a cosign signature made with OUR key (Harbor's content trust only checks that *a*
-# signature exists). Results land in PolicyReports; nothing is blocked until failureAction
-# is switched to Enforce.
+# Enforce mode (since 2026-09-12): every Pod using an image from the openclaw or elgato Harbor
+# projects must carry a cosign signature made with OUR key (Harbor's content trust only checks
+# that *a* signature exists). Unsigned or foreign-key images are rejected at admission.
+# failurePolicy stays Ignore so a Kyverno outage fails open instead of blocking all rollouts.
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
@@ -34,7 +34,7 @@ spec:
           imageRegistryCredentials:
             secrets:
               - harbor-kyverno
-          failureAction: Audit
+          failureAction: Enforce
           required: true
           mutateDigest: false
           verifyDigest: false
