@@ -28,6 +28,12 @@ spec:
         - imageReferences:
             - "harbor.g-eye.io/openclaw/*"
             - "harbor.g-eye.io/elgato/*"
+          # cosign v3 pushes signatures as Sigstore bundles (OCI referrers), not .sig tags
+          type: SigstoreBundle
+          # pull-only robot$kyverno (secret in the kyverno namespace) to read the private openclaw project
+          imageRegistryCredentials:
+            secrets:
+              - harbor-kyverno
           failureAction: Audit
           required: true
           mutateDigest: false
