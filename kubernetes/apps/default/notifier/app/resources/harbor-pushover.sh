@@ -57,8 +57,9 @@ function notify() {
             report=$(curl -sf -u "${HARBOR_API_USER}:${HARBOR_API_PASS}" \
                 "${HARBOR_API}/projects/${project}/repositories/$(_jq '.event_data.repository.name')/artifacts/${digest}/additions/vulnerabilities" || true)
             if [[ -n "${report}" ]]; then
-                critical=$(jq -r --argjson allow "${allowlist}" \
-                    '[.[] .vulnerabilities[] | select(.severity=="Critical") | .id] | unique | map(select(. as $c | $allow | index($c) | not)) | length' <<<"${report}")
+                # pipe, not a here-string: bash spools large here-strings to a temp file and / is read-only
+                critical=$(printf '%s' "${report}" | jq -r --argjson allow "${allowlist}" \
+                    '[.[] .vulnerabilities[] | select(.severity=="Critical") | .id] | unique | map(select(. as $c | $allow | index($c) | not)) | length')
             else
                 echo "[WARN] ${image}: could not read the scan report from Harbor, using the raw critical count" >&2
             fi
