@@ -82,7 +82,9 @@ spec:
           public:
             - "192.168.10.0/24"
           cluster:
-            - "10.0.100.0/24"
+            # dummy0 /32 per node (10.0.101.N), routed over the TB4 mesh — an OSD bound to a
+            # TB4 link IP loses it when the neighbour goes down and stalls all writes
+            - "10.0.101.0/24"
       storage:
         useAllNodes: true
         useAllDevices: false

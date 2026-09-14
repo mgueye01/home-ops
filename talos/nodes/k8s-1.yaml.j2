@@ -12,6 +12,8 @@ machine:
         routes:
           - network: 10.0.100.2/32
           - network: 10.0.100.5/32
+          - network: 10.0.101.2/32  # k8s-2 OSD cluster addr (dummy0)
+            gateway: 10.0.100.2
       - deviceSelector:
           busPath: "0-1.0"  # TB -> k8s-3
         dhcp: false
@@ -21,6 +23,12 @@ machine:
         routes:
           - network: 10.0.100.4/32
           - network: 10.0.100.6/32
+          - network: 10.0.101.3/32  # k8s-3 OSD cluster addr (dummy0)
+            gateway: 10.0.100.4
+      - interface: dummy0  # stable Ceph cluster_network address, survives TB4 link loss
+        dummy: true
+        addresses:
+          - 10.0.101.1/32
   nodeLabels:
     topology.kubernetes.io/zone: m
   type: controlplane
