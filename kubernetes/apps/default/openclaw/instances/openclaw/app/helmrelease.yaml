@@ -165,6 +165,13 @@ spec:
             port: 18790
     route:
       app:
+        annotations:
+          # openclaw 403s any client whose IP falls inside gateway.trustedProxies
+          # (proxy_attribution_required); the gatus pod does. /health is exempt.
+          gatus.home-operations.com/enabled: "true"
+          gatus.home-operations.com/endpoint: |-
+            url: https://openclaw.g-eye.io/health
+            conditions: ["[STATUS] == 200", "[BODY].ok == true"]
         hostnames: ["{{ .Release.Name }}.g-eye.io"]
         parentRefs:
           - name: envoy-internal
