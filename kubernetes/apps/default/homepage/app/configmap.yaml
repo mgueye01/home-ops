@@ -191,6 +191,7 @@ data:
             widget:
               type: changedetectionio
               url: http://changedetection.default.svc.cluster.local:5000
+              key: "{{HOMEPAGE_VAR_CHANGEDETECTION_API_KEY}}"
               fields: ["total", "changed"]
         - N8N:
             icon: n8n.png
