@@ -42,7 +42,20 @@
    kubectl -n <namespace> get secret <app>-volsync-secret
    ```
 
-A completed mover Job and a current synchronization timestamp confirm a backup run; a running application alone does not.
+5. Treat controller status as a claim, not proof. Compare `.status.latestMoverStatus.result` with the latest mover logs:
+
+   ```bash
+   kubectl -n <namespace> get replicationsource <app> \
+     -o jsonpath='{.status.lastSyncTime}{"|"}{.status.latestMoverStatus.result}{"\n"}'
+   kubectl -n <namespace> logs job/<latest-mover-job> --all-containers \
+     | grep -E 'OPERATION_RESULT|snapshot|empty|failure|error'
+   ```
+
+   `latestMoverStatus.result=Successful` is falsely green when logs report `OPERATION_RESULT: FAILURE`, an empty source, or no snapshot. This pattern was observed on `default/atuin`, `default/lelabo-crm`, `default/twenty`, and `observability/teslamate`.
+
+6. Prove a current Kopia snapshot exists for the source and inspect repository maintenance/index health without printing credentials. Confirm where the application's real data lives: the mounted PVC, PostgreSQL, or external S3. An empty PVC may be intentional, or it may prove that the wrong path is protected.
+
+A current synchronization timestamp and completed mover Job are insufficient by themselves. Success requires consistent CR status and logs, a real snapshot for non-empty protected data, and periodic restore validation.
 
 ### Safe Fix
 

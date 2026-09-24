@@ -1,114 +1,64 @@
 # Storage Full Runbook
 
-## Alert: PersistentVolumeCriticallyFull / KubePersistentVolumeFillingUp
+## Alerts: PersistentVolumeCriticallyFull / KubePersistentVolumeFillingUp
 
 ### Symptoms
-- PersistentVolume usage above threshold (80%, 95%, or predicted to fill within 4 days)
-- Applications may fail to write data
-- Pods may enter CrashLoopBackOff
 
-### Investigation
+- A PVC is above its byte or inode threshold, or is predicted to fill within four days.
+- Applications fail writes, become read-only, or enter `CrashLoopBackOff`.
+- Shared NFS can expose the same underlying capacity through multiple PVC metrics, including `default/paperless-nfs` and `dev/harbor-registry`.
+- Runner PVCs may be intentionally short lived; Harbor project quota is a logical limit distinct from registry filesystem capacity.
 
-1. **Identify the volume:**
+### Confirm the Cause
+
+1. Identify the alert namespace/PVC, storage class, mounted workload, backing volume, and whether the series is bytes, inodes, or predicted growth:
+
    ```bash
-   kubectl get pvc -A | grep <pvc-name>
+   kubectl get pvc -A
+   kubectl -n <namespace> describe pvc <pvc-name>
+   kubectl -n <namespace> get pods -o wide
    ```
 
-2. **Check current usage:**
+2. Check current filesystem usage from the owning pod when the image supports it:
+
    ```bash
-   kubectl exec -n <namespace> <pod-name> -- df -h /path/to/mount
+   kubectl -n <namespace> exec <pod-name> -- df -h /path/to/mount
+   kubectl -n <namespace> exec <pod-name> -- df -i /path/to/mount
    ```
 
-3. **Check Grafana for trends:**
-   - Dashboard: https://grafana.g-eye.io/d/kubernetes-volumes
-   - Look for usage patterns (sudden spike vs gradual growth)
+3. Use the Kubernetes volumes dashboard and Prometheus history to distinguish a sudden spike, stable high-water mark, and sustained growth. Confirm the metric still exists and is not stale.
+4. Map duplicate shared-NFS series to their backing export before adding percentages. `default/paperless-nfs` and `dev/harbor-registry` may describe the same physical headroom.
+5. For Harbor, separately inspect project quota and `dev/harbor-registry` filesystem usage; follow `harbor-quota-registry-capacity.md`.
+6. For actions-runner claims, verify owner references and runner/job lifecycle. Do not assume an old-looking claim is orphaned.
+7. Identify large directories read-only and capture application logs/events. Do not run recursive deletion, truncate, database maintenance, or cleanup commands during diagnosis.
 
-4. **Check application logs:**
-   ```bash
-   kubectl logs -n <namespace> <pod-name> | grep -i "space\|full\|error"
-   ```
+### Safe Fix
 
-### Resolution Options
+- Stop or defer an optional writer only when its ownership and recovery behavior are known.
+- Let an expected short-lived runner/job complete and its controller perform normal cleanup; verify ownership before touching anything.
+- Prepare a focused GitOps PVC expansion when the storage class supports expansion and sustained growth justifies it. VolSync-managed volumes use the application's `VOLSYNC_CAPACITY`; direct PVCs use `spec.resources.requests.storage`.
+- Prepare application-native retention, archival, or cache-cleanup changes only after inventorying exactly what they remove. Database vacuuming, artifact deletion, and log truncation are not generic routine fixes.
+- For shared NFS, fix the underlying capacity/retention cause once rather than changing each duplicate PVC metric.
 
-#### Option 1: Expand PVC (Recommended for permanent fix)
+### Verify Afterwards
 
-1. Find the PVC configuration:
-   ```bash
-   find kubernetes/apps -name "*.yaml" -exec grep -l "VOLSYNC_CAPACITY\|storage:" {} \;
-   ```
+- PVC/filesystem byte and inode usage return to safe headroom and the predicted-fill alert clears.
+- The application can perform a representative write/read and its pods are Ready.
+- Any approved expansion is reflected in the PVC capacity and inside the filesystem.
+- VolSync creates a newer successful recovery point for protected data after the change.
+- Shared-NFS duplicate metrics agree and Harbor logical quota remains distinct from physical capacity.
 
-2. Increase size (VolSync-managed volumes):
-   ```yaml
-   # In the app's ks.yaml:
-   postBuild:
-     substitute:
-       VOLSYNC_CAPACITY: 200Gi  # Increase from current value
-   ```
+### Escalate Instead
 
-   Or direct PVC:
-   ```yaml
-   spec:
-     resources:
-       requests:
-         storage: 200Gi  # Increase from current value
-   ```
-
-3. Commit and push:
-   ```bash
-   git add <file>
-   git commit -m "fix: expand <app> volume to <size>"
-   git push
-   ```
-
-4. Wait for Flux reconciliation (1-5 minutes)
-
-5. Verify expansion:
-   ```bash
-   kubectl get pvc -n <namespace> <pvc-name> -w
-   kubectl exec -n <namespace> <pod-name> -- df -h /path/to/mount
-   ```
-
-#### Option 2: Clean Up Data (Temporary relief)
-
-1. Identify what's using space:
-   ```bash
-   kubectl exec -n <namespace> <pod-name> -- du -sh /* | sort -h
-   ```
-
-2. Clean up based on application type:
-   - **Databases**: Delete old backups, run VACUUM, archive old data
-   - **Logs**: Truncate or rotate logs
-   - **Media**: Remove unused files
-   - **Caches**: Clear application caches
-
-3. Example cleanup commands:
-   ```bash
-   # ClickHouse (like rybbit)
-   kubectl exec -n default rybbit-clickhouse-xyz -- clickhouse-client --query "OPTIMIZE TABLE tablename FINAL"
-
-   # PostgreSQL
-   kubectl exec -n <ns> postgres-xyz -- psql -U user -d db -c "VACUUM FULL"
-   ```
-
-#### Option 3: Enable Compression (Application-specific)
-
-Check if application supports compression:
-- ClickHouse: Enable codec in table definitions
-- PostgreSQL: Enable `pg_compression`
-- File storage: Enable filesystem-level compression
+Ask Mehdi before deleting application data, images/artifacts, snapshots, runner claims, or scratch restore claims; changing retention; resizing/migrating storage; or running database maintenance with downtime/space amplification risk. Never delete a PVC, PV, VolumeSnapshot, or Ceph pool. Escalate immediately for a read-only/corrupt filesystem, failed restore/integrity check, exhausted storage blocking writes, or Ceph degradation.
 
 ### Prevention
 
-1. **Monitor trends in Grafana**
-2. **Set appropriate initial sizes** (overestimate growth)
-3. **Implement data retention policies**
-4. **Enable compression where possible**
-5. **Test alerts** after any volume changes
+- Monitor byte, inode, and predicted growth rather than a single percentage.
+- Set application-native retention and conservative initial capacities.
+- Keep `docs/monitoring.md` and VolSync coverage current when storage is added or removed.
+- Test alerts after storage changes and perform regular scratch-PVC restore drills.
 
 ### Related Incidents
 
-- 2025-11-11: Rybbit ClickHouse filled 20GB, expanded to 200GB
-  - Commit: `0af1d334` (volume expansion)
-  - Duration of impact: 10 days (2025-11-01 to 2025-11-11)
-  - Root cause: No alerting, metrics not collected
-  - Resolution: Volume expanded from 20Gi to 200Gi, monitoring added via PrometheusRule and ServiceMonitor
+- 2025-11-11: Rybbit ClickHouse filled 20 GiB and was expanded to 200 GiB (`0af1d334`). The gap was missing metrics/alerting; the volume remained impacted for ten days.

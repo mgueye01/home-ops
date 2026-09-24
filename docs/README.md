@@ -46,6 +46,23 @@ This guide provides detailed instructions for using Volsync and Kopia to migrate
 - [Volsync Migration Guide](./volsync-migration-guide.md) - Complete cluster migration procedures
 - [VolSync/Kopia Restore Drill](./runbooks/volsync-kopia-restore-drill.md) - Monthly restore and data-integrity validation
 
+### Operational Runbooks
+
+- [Storage Full](./runbooks/storage-full.md)
+- [VolSync Backup Failure](./runbooks/volsync-backup-failure.md)
+- [VolSync/Kopia Restore Drill](./runbooks/volsync-kopia-restore-drill.md)
+- [Rook-Ceph Health Degraded](./runbooks/rook-ceph-health-degraded.md)
+- [SMART/NVMe High Temperature](./runbooks/smart-device-high-temperature.md)
+- [Prometheus TSDB Compaction/WAL Failure](./runbooks/prometheus-tsdb-compaction-failure.md)
+- [External Secrets / 1Password Provider Outage](./runbooks/external-secrets-provider-outage.md)
+- [Gateway, DNS, and Cilium Outage](./runbooks/gateway-dns-cilium-outage.md)
+- [Talos Root Filesystem Pressure](./runbooks/talos-root-filesystem-pressure.md)
+- [Harbor Quota and Registry Capacity](./runbooks/harbor-quota-registry-capacity.md)
+- [Talos and Kubernetes Minor Upgrade](./runbooks/talos-kubernetes-upgrade.md)
+- [Certificate Renewal Failure](./runbooks/certificate-renewal-failure.md)
+- [Flux Reconciliation Failure](./runbooks/flux-reconciliation-failure.md)
+- [Monitoring Coverage Loss](./runbooks/monitoring-coverage-loss.md)
+
 ### Coming Soon
 - Storage Configuration Guide
 - Network and Ingress Configuration
