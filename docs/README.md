@@ -44,6 +44,7 @@ This guide provides detailed instructions for using Volsync and Kopia to migrate
 
 ### Backup and Disaster Recovery
 - [Volsync Migration Guide](./volsync-migration-guide.md) - Complete cluster migration procedures
+- [VolSync/Kopia Restore Drill](./runbooks/volsync-kopia-restore-drill.md) - Monthly restore and data-integrity validation
 
 ### Coming Soon
 - Storage Configuration Guide
