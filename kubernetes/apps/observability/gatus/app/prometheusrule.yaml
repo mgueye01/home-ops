@@ -6,11 +6,28 @@ metadata:
   name: gatus-rules
 spec:
   groups:
+    # Selectors are on `type`, not on `group`, and they are written so that every
+    # series gatus exports falls into exactly one rule below.
+    #
+    # The previous selectors were group="external" and group="guarded". Nothing
+    # ever sets those: gatus-sidecar only learns a group from the per-resource
+    # gatus.home-operations.com/endpoint annotation, no app sets one, and the
+    # sidecar has no --default-group flag. Both rules matched zero series, so all
+    # 48 endpoints were dashboard-only and paged on nothing.
+    #
+    # Matching on type keeps the two checks distinguishable without having to
+    # touch 25 app annotations, and it is default-on: a new endpoint is covered
+    # the moment the sidecar discovers it, whatever group it ends up in.
+    #   - DNS  = the "len([BODY]) == 0" checks that assert an internal hostname
+    #            does NOT resolve on 1.1.1.1. Failure means exposure, not downtime.
+    #   - !DNS = HTTP/TCP availability checks. Failure means down.
+    # public-path is carved out of the DNS rule because its canary is inverted --
+    # it asserts the echo.g-eye.io record DOES exist (see resources/config.yaml).
     - name: gatus.rules
       rules:
         - alert: GatusEndpointDown
           expr: |-
-            gatus_results_endpoint_success{group="external"} == 0
+            gatus_results_endpoint_success{type!="DNS"} == 0
           for: 5m
           annotations:
             summary: >-
@@ -20,10 +37,24 @@ spec:
 
         - alert: GatusEndpointExposed
           expr: |-
-            gatus_results_endpoint_success{group="guarded"} == 0
+            gatus_results_endpoint_success{type="DNS", group!="public-path"} == 0
           for: 5m
           annotations:
             summary: >-
               The {{ $labels.name }} endpoint has a public DNS record and is exposed
+          labels:
+            severity: critical
+
+        # The other half of #3257: external-dns had deleted the public record and
+        # could not recreate it. The canary that would have caught it has been
+        # running since, with no rule reading it.
+        - alert: GatusPublicPathDown
+          expr: |-
+            gatus_results_endpoint_success{type="DNS", group="public-path"} == 0
+          for: 5m
+          annotations:
+            summary: >-
+              The public DNS record for echo.g-eye.io no longer resolves on 1.1.1.1 -
+              external-dns is not applying records
           labels:
             severity: critical
