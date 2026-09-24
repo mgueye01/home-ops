@@ -6,6 +6,20 @@ metadata:
   annotations:
     external-dns.alpha.kubernetes.io/hostname: postgres.g-eye.io
     lbipam.cilium.io/ips: 192.168.10.76
+    # Replaces the postgres-gatus-ep ConfigMap, which never produced a check:
+    # gatus-sidecar does not watch ConfigMaps, and the label it carried
+    # (gatus.io/enabled) is not the gate this repo uses. The sidecar already
+    # runs with --enable-service, so annotating the Service is the live path.
+    # Selector is cnpg.io/instanceRole=primary, so a successful connect proves
+    # the primary is serving -- same assertion the ConfigMap intended.
+    gatus.home-operations.com/enabled: "true"
+    gatus.home-operations.com/endpoint: |-
+      url: tcp://postgres-lb.databases.svc.cluster.local:5432
+      interval: 1m
+      conditions: ["[CONNECTED] == true"]
+      ui:
+        hide-url: true
+        hide-hostname: true
 spec:
   type: LoadBalancer
   ports:
