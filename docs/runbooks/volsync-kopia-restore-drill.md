@@ -4,6 +4,29 @@
 
 Prove that a real Kopia snapshot can be restored and read without touching the live application PVC. Run monthly and rotate applications, prioritising data that cannot be regenerated.
 
+## Failed or False-Green Restore Incident
+
+### Symptoms
+
+- A mover reports `Successful` while logs report `OPERATION_RESULT: FAILURE`, an empty source, or no snapshot.
+- A ReplicationDestination fails, the scratch PVC cannot be read, or an integrity check fails.
+
+### Confirm the Cause
+
+Compare source/destination CR status with mover logs, prove the expected snapshot exists, and identify whether application data lives on the protected PVC, PostgreSQL, or external S3. Preserve scratch resources and evidence after any failed restore.
+
+### Safe Fix
+
+Retry only after a proven transient mover/controller failure, using a new manual token and the existing scratch destination. Never restore over the live PVC and never rewrite status to appear successful.
+
+### Verify Afterwards
+
+Require non-zero expected content plus application-specific integrity checks. Record snapshot age, restore duration, file/byte counts, and every integrity result; pod exit status alone is insufficient.
+
+### Escalate Instead
+
+A failed restore, missing snapshot, incomplete data, repository/index error, or failed integrity check is immediate data-loss risk: notify over Telegram, preserve evidence, and ask before credentials, repository, storage, or cleanup changes.
+
 ## Safety rules
 
 - Never restore over the live PVC.
@@ -27,12 +50,17 @@ Choose one application that has not been tested recently. Prefer source data suc
 
 The examples below use `dev/gitea`. Replace all names for the selected application.
 
-1. Confirm the latest source backup is successful:
+1. Confirm the latest source backup is successful in both CR status and mover logs:
 
    ```bash
    kubectl -n dev get replicationsource gitea \
      -o jsonpath='{.status.lastSyncTime}{"|"}{.status.latestMoverStatus.result}{"\n"}'
+   kubectl -n dev get jobs --sort-by=.metadata.creationTimestamp
+   kubectl -n dev logs job/<latest-mover-job> --all-containers \
+     | grep -E 'OPERATION_RESULT|snapshot|empty|failure|error'
    ```
+
+   Do not continue when status says `Successful` but logs report `OPERATION_RESULT: FAILURE`, an empty source, or no snapshot. Confirm the application really stores recoverable data on this PVC rather than PostgreSQL or external S3, and prove the expected Kopia snapshot exists. This false-green pattern was observed on `default/atuin`, `default/lelabo-crm`, `default/twenty`, and `observability/teslamate` in the 2026-09-25 baseline.
 
 2. Trigger the existing scratch ReplicationDestination with a new token:
 
