@@ -6,3 +6,4 @@ resources:
   - ./clustersecretstore.yaml
   - ./helmrelease.yaml
   - ./ocirepository.yaml
+  - ./prometheusrule.yaml
