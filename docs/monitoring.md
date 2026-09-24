@@ -54,7 +54,21 @@ not degraded-but-running, and both of these take a lot down with them:
 | App | Why it matters |
 |---|---|
 | `external-secrets/onepassword-connect` | Every ExternalSecret in the cluster refreshes through it |
-| `kyverno/kyverno` | Admission webhook — a wedged failure policy blocks deploys cluster-wide |
+| `kyverno/kyverno` | Admission webhook — its resource webhooks are `failurePolicy: Ignore`, so a wedge does not block deploys, it silently stops enforcing policy |
+
+Neither wants a Gatus check. Both are covered by a metric already scraped, on
+the consumer side rather than on the app:
+
+- `onepassword-connect` — the `Ready` condition on the `onepassword`
+  ClusterSecretStore. ESO sets it by calling Connect, so it catches the case the
+  pod probes miss: `api` and `sync` stay Ready on `/health` while the path to the
+  1Password API is broken. Note `externalsecret_status_condition` carries the
+  ExternalSecret's own namespace as `exported_namespace` — `namespace` is
+  `external-secrets`, where the controller runs.
+- `kyverno` — `apiserver_admission_webhook_fail_open_count`, from the apiserver's
+  ServiceMonitor. Kyverno's own metrics have no failure dimension:
+  `request_allowed="false"` means a policy correctly denied a request, not that
+  the webhook broke.
 
 **Data with no VolSync ReplicationSource.** These have a hand-written PVC and no
 `components/volsync`:
