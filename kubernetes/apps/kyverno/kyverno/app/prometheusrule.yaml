@@ -1,0 +1,29 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: kyverno-rules
+spec:
+  groups:
+    # Kyverno's own metrics carry no failure dimension — request_allowed="false"
+    # on kyverno_admission_requests_total means a policy correctly denied, not
+    # that the webhook broke. The apiserver measures the webhook from the caller
+    # side instead, and it is already scraped by the apiserver ServiceMonitor.
+    #
+    # The resource webhooks are failurePolicy: Ignore, so a wedged Kyverno does
+    # not block admission — the apiserver fails open and the request is admitted
+    # with no policy applied. That is the degraded-but-running mode:
+    # verify-harbor-image-signatures silently stops verifying and nothing
+    # surfaces it.
+    - name: kyverno.rules
+      rules:
+        - alert: KyvernoWebhookFailingOpen
+          expr: |-
+            sum by (name) (rate(apiserver_admission_webhook_fail_open_count{name=~".+\\.kyverno\\.svc.*"}[10m])) > 0
+          for: 15m
+          annotations:
+            summary: >-
+              The {{ $labels.name }} webhook is failing open, admission requests are being admitted with Kyverno policy unenforced
+          labels:
+            severity: critical
