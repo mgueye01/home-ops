@@ -1,5 +1,7 @@
 # VolSync Backup Failure Runbook
 
+## Alerts: VolSyncVolumeOutOfSync / VolSyncComponentAbsent
+
 ### Symptoms
 
 - A `ReplicationSource` has no recent successful synchronization or its latest mover Job failed.

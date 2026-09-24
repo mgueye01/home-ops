@@ -1,6 +1,6 @@
 # Flux Reconciliation Failure Runbook
 
-## Alerts: FluxKustomizationReconciliationFailed / FluxHelmReleaseUpgradeFailed
+## Alerts: FluxControllerErrorSpike / FluxInstanceNotReady / FluxInstanceAbsent
 
 ### Symptoms
 
