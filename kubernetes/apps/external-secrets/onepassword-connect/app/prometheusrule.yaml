@@ -1,0 +1,34 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: onepassword-connect-rules
+spec:
+  groups:
+    # onepassword-connect has no HTTPRoute and should not get one, so it has no
+    # Gatus check. The signal used here is ESO's own verdict on the store: the
+    # Ready condition on the `onepassword` ClusterSecretStore is set by ESO
+    # calling Connect, so it covers the case the pod probes miss — api and sync
+    # both Ready on /health while the path to the 1Password API is broken.
+    - name: onepassword-connect.rules
+      rules:
+        - alert: OnePasswordConnectStoreAbsent
+          expr: |-
+            absent(clustersecretstore_status_condition{name="onepassword", condition="Ready"})
+          for: 15m
+          annotations:
+            summary: >-
+              The onepassword ClusterSecretStore is not reporting readiness, no ExternalSecret can be confirmed to be refreshing
+          labels:
+            severity: critical
+
+        - alert: OnePasswordConnectStoreNotReady
+          expr: |-
+            clustersecretstore_status_condition{name="onepassword", condition="Ready", status="False"} == 1
+          for: 15m
+          annotations:
+            summary: >-
+              The onepassword ClusterSecretStore is not ready, every ExternalSecret in the cluster has stopped refreshing
+          labels:
+            severity: critical

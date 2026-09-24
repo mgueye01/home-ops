@@ -1,0 +1,31 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: external-secrets-rules
+spec:
+  groups:
+    - name: external-secrets.rules
+      rules:
+        - alert: ExternalSecretsAbsent
+          expr: |-
+            absent(up{job="external-secrets-metrics"})
+          for: 5m
+          annotations:
+            summary: >-
+              External Secrets has disappeared from Prometheus target discovery
+          labels:
+            severity: critical
+
+        # `namespace` on this metric is external-secrets, where the controller
+        # runs. The namespace of the ExternalSecret itself is exported_namespace.
+        - alert: ExternalSecretNotReady
+          expr: |-
+            externalsecret_status_condition{condition="Ready", status="False"} == 1
+          for: 15m
+          annotations:
+            summary: >-
+              The {{ $labels.exported_namespace }}/{{ $labels.name }} ExternalSecret is not ready and has stopped refreshing
+          labels:
+            severity: warning
