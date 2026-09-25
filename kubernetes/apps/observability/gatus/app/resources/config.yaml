@@ -41,6 +41,43 @@ endpoints:
     conditions:
       - "[STATUS] == 200"
 
+  # garage on the NAS is the single S3 backend behind every durable store in the
+  # cluster -- the CNPG barman archive (s3://postgresql/), the Kopia repository
+  # all 25 ReplicationSources write to (volsynckopia), and the live attachment
+  # buckets for twenty, lelabo-crm, gitea and elgato-photo. Until now nothing
+  # watched it: garage runs outside the cluster so it has no HTTPRoute and the
+  # sidecar never discovers it, and garage-webui's own annotation is the internal
+  # -hostname DNS assertion, which stays green while garage is unreachable.
+  #
+  # Declared here for the same reason as the canaries above -- no HTTPRoute to
+  # hang an annotation off. Both are plain HTTP checks, so type!="DNS" and
+  # GatusEndpointDown already covers them; no new rule is needed.
+  #
+  # Two checks because the two listeners fail independently: the admin API can
+  # answer while the S3 listener is wedged, and a partial-quorum garage answers
+  # S3 while /health reports degraded.
+  - name: garage-s3
+    group: storage
+    url: http://nas.g-eye.tech:3900
+    interval: 1m
+    conditions:
+      # Anonymous GET / returns 403 AccessDenied ("Garage does not support
+      # anonymous access yet") -- an S3-shaped error is proof the listener is
+      # serving. 200 is accepted too so enabling anonymous access later does not
+      # turn this into a false page.
+      - "[STATUS] == any(200, 403)"
+
+  # /health on the admin port is unauthenticated (verified: 200, "Garage is fully
+  # operational") and reports quorum rather than mere liveness -- it returns 503
+  # when storage nodes are missing. The detailed /v2/GetClusterHealth does need
+  # the admin token, so it is deliberately not used here.
+  - name: garage-health
+    group: storage
+    url: http://nas.g-eye.tech:3903/health
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+
 ui:
   title: Status | Gatus
   header: Status
