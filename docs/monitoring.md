@@ -123,7 +123,7 @@ The Kubernetes Volumes dashboard provides visibility into persistent volume (PVC
 ## Backup Restore Validation
 
 VolSync/Kopia backup jobs are supplemented by a monthly restore drill. Each drill rotates through protected applications,
-restores a real snapshot to a separate scratch PVC, and verifies the restored content read-only with format-specific
+restores a real snapshot to a Pod-owned generic ephemeral volume, and verifies the restored content read-only with format-specific
 checks. Results are recorded on Paperclip issue `ELG-6`; restore or integrity failures are escalated immediately over
 Telegram as data-loss-risk findings.
 

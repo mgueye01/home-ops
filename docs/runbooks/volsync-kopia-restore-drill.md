@@ -9,7 +9,7 @@ Prove that a real Kopia snapshot can be restored and read without touching the l
 ### Symptoms
 
 - A mover reports `Successful` while logs report `OPERATION_RESULT: FAILURE`, an empty source, or no snapshot.
-- A ReplicationDestination fails, the scratch PVC cannot be read, or an integrity check fails.
+- A ReplicationDestination fails, the restored ephemeral volume cannot be read, or an integrity check fails.
 
 ### Confirm the Cause
 
@@ -30,11 +30,11 @@ A failed restore, missing snapshot, incomplete data, repository/index error, or 
 ## Safety rules
 
 - Never restore over the live PVC.
-- Use a uniquely named scratch PVC created from the ReplicationDestination's output VolumeSnapshot.
-- Mount the scratch PVC read-only for verification.
+- Use a uniquely named verification Pod with a generic ephemeral volume created from the ReplicationDestination's output VolumeSnapshot.
+- Mount the ephemeral claim read-only for verification. Its ownerReference must point to the verification Pod so deleting the Pod garbage-collects the claim without a direct PVC delete.
 - Never expose repository credentials or secret contents in logs.
 - Treat a failed restore, unreadable file, failed database integrity check, or failed Git object check as an immediate data-loss-risk incident. Notify over Telegram immediately and preserve the scratch resources for investigation.
-- Never delete a live PVC, PV, VolumeSnapshot, or Ceph pool. Before scratch cleanup, verify the resource name and `restore-drill` label. Hermes must leave PVC deletion to an authorised human under the homelab safety policy.
+- Never delete a live PVC, PV, VolumeSnapshot, or Ceph pool. Cleanup deletes only the verification Pod; Kubernetes garbage-collects its owned ephemeral claim. If the claim remains after Pod deletion, stop and ask Mehdi rather than deleting it directly.
 
 ## Select the monthly target
 
@@ -72,11 +72,11 @@ The examples below use `dev/gitea`. Replace all names for the selected applicati
 
 3. Wait until `.status.lastManualSync` matches the token and `.status.latestMoverStatus.result` is `Successful`. Record `.status.lastSyncDuration`, `.status.lastSyncTime`, and `.status.latestImage.name`.
 
-4. Create a uniquely named scratch PVC from that output VolumeSnapshot. Use the destination capacity and storage class. Label it so it cannot be confused with a live claim:
+4. Create a uniquely named verification Pod whose generic ephemeral volume is populated from that output VolumeSnapshot. Use the destination capacity and storage class, label both the Pod and claim template, and mount the volume read-only:
 
    ```yaml
    apiVersion: v1
-   kind: PersistentVolumeClaim
+   kind: Pod
    metadata:
      name: restore-drill-gitea-YYYYMMDD
      namespace: dev
@@ -84,22 +84,42 @@ The examples below use `dev/gitea`. Replace all names for the selected applicati
        app.kubernetes.io/name: restore-drill
        restore-drill/app: gitea
    spec:
-     accessModes: [ReadWriteOnce]
-     storageClassName: ceph-block
-     resources:
-       requests:
-         storage: 10Gi
-     dataSource:
-       name: <latest-image-volume-snapshot>
-       kind: VolumeSnapshot
-       apiGroup: snapshot.storage.k8s.io
+     restartPolicy: Never
+     containers:
+       - name: verify
+         image: <verification-image>
+         command: ["sh", "-c", "<full-file-read-and-integrity-checks>"]
+         volumeMounts:
+           - name: restored-data
+             mountPath: /restore
+             readOnly: true
+     volumes:
+       - name: restored-data
+         ephemeral:
+           volumeClaimTemplate:
+             metadata:
+               labels:
+                 app.kubernetes.io/name: restore-drill
+                 restore-drill/app: gitea
+             spec:
+               accessModes: [ReadWriteOnce]
+               storageClassName: ceph-block
+               resources:
+                 requests:
+                   storage: 10Gi
+               dataSource:
+                 name: <latest-image-volume-snapshot>
+                 kind: VolumeSnapshot
+                 apiGroup: snapshot.storage.k8s.io
    ```
 
-5. Wait for the scratch claim to become `Bound`. Do not modify the live workload or live PVC.
+5. Derive the generated claim name as `<pod-name>-<volume-name>` (for example, `restore-drill-gitea-YYYYMMDD-restored-data`). Wait for it to become `Bound`, then confirm its `spec.dataSource` names the selected VolumeSnapshot and its ownerReference names the verification Pod. Do not modify the live workload or live PVC.
+
+   Generic ephemeral snapshot restore was exercised on the live Kubernetes v1.36.5 cluster on 2026-09-25: the generated claim became `Bound`, retained the `VolumeSnapshot` data source, carried a Pod ownerReference, and was garbage-collected after Pod deletion.
 
 ## Verify the restored data
 
-Create a short-lived verification pod that mounts only the scratch PVC with `readOnly: true`. Verification must test content, not only pod exit status:
+Use the short-lived verification Pod created above. It mounts only the ephemeral restored volume with `readOnly: true`. Verification must test content, not only pod exit status:
 
 1. Count files and bytes and require at least one file.
 2. Read every regular file completely (for example, `dd if=<file> of=/dev/null`).
@@ -118,20 +138,27 @@ Comment on Paperclip issue `ELG-6` with:
 - Kopia restore duration and verification duration;
 - file/byte counts and application-specific integrity results;
 - anything surprising;
-- resources already cleaned up and any cleanup requiring Mehdi.
+- confirmation that both the verification Pod and generated ephemeral PVC are absent after cleanup, or the exact residual resource that needs Mehdi.
 
 ## Cleanup
 
-1. Delete the verification Pod after logs and timestamps are recorded.
-2. Confirm the scratch PVC name and labels twice:
+1. After successful verification and after logs and timestamps are recorded, confirm the generated claim's identity, label, data source, and Pod ownerReference:
 
    ```bash
-   kubectl -n <namespace> get pvc <scratch-pvc> \
-     -o jsonpath='{.metadata.name}{"|"}{.metadata.labels.app\.kubernetes\.io/name}{"|"}{.spec.dataSource.name}{"\n"}'
+   kubectl -n <namespace> get pvc <pod-name>-restored-data \
+     -o jsonpath='{.metadata.name}{"|"}{.metadata.labels.app\.kubernetes\.io/name}{"|"}{.spec.dataSource.name}{"|"}{.metadata.ownerReferences[0].kind}/{.metadata.ownerReferences[0].name}{"\n"}'
    ```
 
-3. Hermes does not delete PVCs under the homelab safety policy. Ask Mehdi to delete only the named, labelled scratch PVC after a successful drill. Never delete the live claim, a PV, an output VolumeSnapshot, or a Ceph pool.
-4. Once authorised cleanup is complete, verify the scratch Pod and PVC are absent. Keep the ReplicationDestination and its latest output VolumeSnapshot available for recovery.
+2. Delete only the verification Pod. Never issue a PVC delete, and never delete the live claim, a PV, an output VolumeSnapshot, or a Ceph pool.
+3. Wait for Kubernetes garbage collection, then verify both the Pod and generated ephemeral PVC are absent:
+
+   ```bash
+   kubectl -n <namespace> get pod <pod-name>
+   kubectl -n <namespace> get pvc <pod-name>-restored-data
+   kubectl -n <namespace> get pvc -l app.kubernetes.io/name=restore-drill
+   ```
+
+4. If the generated claim remains, do not delete it directly. Record its exact name, labels, data source, and ownerReference under `Needs Mehdi`. Keep the ReplicationDestination and its latest output VolumeSnapshot available for recovery.
 
 ## First recorded drill
 
