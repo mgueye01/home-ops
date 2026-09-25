@@ -51,11 +51,43 @@
      | grep -E 'OPERATION_RESULT|snapshot|empty|failure|error'
    ```
 
-   `latestMoverStatus.result=Successful` is falsely green when logs report `OPERATION_RESULT: FAILURE`, an empty source, or no snapshot. This pattern was observed on `default/atuin`, `default/lelabo-crm`, `default/twenty`, and `observability/teslamate`.
+   `latestMoverStatus.result=Successful` is falsely green when logs report `OPERATION_RESULT: FAILURE`, an empty source, or no snapshot.
+
+   The mechanism: on an empty source directory the Kopia mover logs
+
+   ```text
+   == Directory is empty skipping backup ===
+   INFO: OPERATION_RESULT: FAILURE
+   INFO: EXIT_CODE: 0
+   ```
+
+   It skips the backup, records `FAILURE` in its own summary, and still exits `0`. The controller only reads the exit code, so it reports `Successful`. Any empty source therefore reports green forever and produces no snapshot.
+
+   This was observed on `default/atuin`, `default/lelabo-crm`, `default/twenty`, and `observability/teslamate`. All four turned out to have genuinely empty sources — their state lives in PostgreSQL, not on a PVC — so they no longer use `components/volsync`. See "Apps intentionally without a ReplicationSource" below. A recurrence on any other source is a real mount-path bug, not this case.
 
 6. Prove a current Kopia snapshot exists for the source and inspect repository maintenance/index health without printing credentials. Confirm where the application's real data lives: the mounted PVC, PostgreSQL, or external S3. An empty PVC may be intentional, or it may prove that the wrong path is protected.
 
 A current synchronization timestamp and completed mover Job are insufficient by themselves. Success requires consistent CR status and logs, a real snapshot for non-empty protected data, and periodic restore validation.
+
+### Apps Intentionally Without a ReplicationSource
+
+Some applications keep no state on a PVC, so they deliberately omit `components/volsync`. Their absence from `kubectl get replicationsources -A` is correct and must not be "fixed" by adding the component back. Where their data actually lives:
+
+| App | Real data | Protected by |
+|---|---|---|
+| `default/atuin` | PostgreSQL `atuin` | `postgres16` scheduled backup |
+| `default/twenty` | PostgreSQL `default` + garage bucket `twenty` | `postgres16` scheduled backup; bucket unverified |
+| `default/lelabo-crm` | PostgreSQL `lelabo-crm` + garage bucket `lelabo-crm` | `postgres16` scheduled backup; bucket unverified |
+| `observability/teslamate` | PostgreSQL `teslamate` | `postgres16` scheduled backup |
+
+`default/authelia`-style apps (`authelia`, `lldap`, `shlink`, `grafana`, `elgato-photo`) follow the same convention.
+
+Verify the PostgreSQL side instead:
+
+```bash
+kubectl -n databases get scheduledbackups.postgresql.cnpg.io
+kubectl get backups.postgresql.cnpg.io -A --sort-by=.metadata.creationTimestamp | tail
+```
 
 ### Safe Fix
 

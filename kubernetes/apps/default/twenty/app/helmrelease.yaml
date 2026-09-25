@@ -199,8 +199,10 @@ spec:
               - name: *app
                 port: *port
     persistence:
+      # STORAGE_TYPE=s3 keeps attachments in the garage "twenty" bucket, so
+      # /app/data never receives a write; emptyDir keeps the path present
       data:
-        existingClaim: twenty
+        type: emptyDir
         advancedMounts:
           twenty:
             app:
