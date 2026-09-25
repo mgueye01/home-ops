@@ -9,8 +9,6 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  components:
-    - ../../../../components/volsync
   dependsOn:
     - name: rook-ceph-cluster
       namespace: rook-ceph
@@ -19,9 +17,7 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      VOLSYNC_SCHEDULE_MINUTE: "0"
       GATUS_SUBDOMAIN: sh
-      VOLSYNC_CAPACITY: 5Gi
   prune: true
   retryInterval: 2m
   sourceRef:
