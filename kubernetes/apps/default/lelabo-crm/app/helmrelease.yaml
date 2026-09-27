@@ -42,7 +42,6 @@ spec:
               repository: twentycrm/twenty
               tag: v2.43.0
             env:
-              NODE_OPTIONS: "--require=/app/patch/frontend-bootstrap.js"
               NODE_PORT: &port 3000
               SERVER_URL: "https://lelabo-crm.g-eye.io"
               REDIS_PASSWORD:
@@ -212,15 +211,6 @@ spec:
               - name: *app
                 port: *port
     persistence:
-      frontend-patch:
-        type: configMap
-        name: lelabo-crm-v243-frontend-patch
-        advancedMounts:
-          lelabo-crm:
-            app:
-              - path: /app/patch/frontend-bootstrap.js
-                subPath: frontend-bootstrap.js
-                readOnly: true
       # STORAGE_TYPE=s3 keeps attachments in the garage "lelabo-crm" bucket, so
       # /app/data never receives a write; emptyDir keeps the path present
       data:
