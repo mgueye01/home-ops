@@ -78,6 +78,72 @@ endpoints:
     conditions:
       - "[STATUS] == 200"
 
+  # rybbit's only health signal was `https://analytics.g-eye.io/` -> 200 on its
+  # HTTPRoute, which proves the Next.js dashboard renders and nothing more.
+  # Between 2026-08-13 09:54 and 2026-09-01 13:51 rybbit stored zero events for
+  # lelabodamad.fr -- a 460h blackout on a live customer-facing site -- and that
+  # check was green for every minute of it. Replayed against the stored rows, the
+  # 48h assertion below flips RED on 2026-08-15 and stays RED for 17 days.
+  #
+  # Declared here rather than as a route annotation for the same reason as the
+  # garage checks: the thing worth watching is the ClickHouse store, which has no
+  # HTTPRoute for the sidecar to discover. The dashboard annotation stays where it
+  # is -- a 502 on the UI is still worth knowing, it is just not this signal.
+  #
+  # Why ClickHouse and not rybbit's own API: the API wants a key minted by hand in
+  # the UI, i.e. state that exists nowhere in git, whereas the ClickHouse password
+  # is already in 1Password and arrives here via External Secrets. Why not a
+  # Prometheus exporter: rybbit exports no metrics, and gatus already owns the
+  # alerting -- GatusEndpointDown selects type!="DNS", so both endpoints below are
+  # paged on from the moment they exist and prometheusrule.yaml needs no edit.
+  - name: rybbit-ingest
+    group: analytics
+    url: http://rybbit-clickhouse.default.svc.cluster.local:8123/
+    method: POST
+    interval: 5m
+    headers:
+      Authorization: Basic ${RYBBIT_CLICKHOUSE_BASIC_AUTH}
+      Content-Type: text/plain
+    # site_id is ClickHouse's own UInt16 -- 1 = lelabodamad.fr, 2 = inside-data.fr
+    # -- and NOT the UUID in the postgres `sites` table. Querying by UUID matches
+    # no rows and reads as total data loss; that mistake is what made ELG-40
+    # report "0 events" for a site holding 22k of them.
+    #
+    # Only site 1 is asserted. site 2 (inside-data.fr) took 3 events in the last
+    # 30 days, so a freshness window there would sit permanently red and teach
+    # everyone to ignore this group. Its near-zero volume is a marketing question,
+    # not an ingest fault, and is tracked separately.
+    #
+    # localhost/127.0.0.1 are excluded deliberately: local dev against this
+    # instance would otherwise hold the check green while real visitor traffic is
+    # dead, which is precisely the failure being fixed here.
+    #
+    # 48h and not 24h: across the 27 healthy days after recovery the worst gap
+    # between two consecutive real events was 17h (p99 9h, p95 4h, n=987). 24h
+    # leaves 7h of headroom and would page on a quiet winter weekend on a small
+    # artisan site; 48h keeps ~2.8x margin and still catches a multi-day stall.
+    # Change the INTERVAL literal below to retune.
+    body: |-
+      SELECT if(max(timestamp) > now() - INTERVAL 48 HOUR, 1, 0) AS fresh
+      FROM analytics.events
+      WHERE site_id = 1 AND hostname NOT IN ('localhost', '127.0.0.1')
+      FORMAT JSONEachRow
+    conditions:
+      - "[STATUS] == 200"
+      - "[BODY].fresh == 1"
+
+  # Splits "the store is unreachable" from "events stopped arriving", the same way
+  # garage-s3 and garage-health split listener from quorum: both red means
+  # ClickHouse is down, rybbit-ingest alone means the collection path broke (DNS,
+  # CORS, or the script missing from the site). /ping is unauthenticated -- it
+  # returns "Ok." with no credential -- so this one carries no secret.
+  - name: rybbit-clickhouse
+    group: analytics
+    url: http://rybbit-clickhouse.default.svc.cluster.local:8123/ping
+    interval: 1m
+    conditions:
+      - "[STATUS] == 200"
+
 ui:
   title: Status | Gatus
   header: Status
