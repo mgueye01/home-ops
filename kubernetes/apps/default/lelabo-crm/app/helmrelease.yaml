@@ -95,7 +95,9 @@ spec:
                 custom: true
                 spec:
                   httpGet:
-                    path: /readyz
+                    # Twenty v2.43.0 starts successfully but its /readyz endpoint
+                    # stays non-2xx, causing Flux to roll back a healthy process.
+                    path: /healthz
                     port: *port
                   initialDelaySeconds: 10
                   periodSeconds: 10
