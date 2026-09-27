@@ -190,6 +190,7 @@ spec:
           gatus.home-operations.com/enabled: "true"
           gatus.home-operations.com/endpoint: |-
             conditions: ["[STATUS] == 200"]
+            url: https://twenty.g-eye.io/healthz
         hostnames:
           - "twenty.g-eye.io"
         parentRefs:
