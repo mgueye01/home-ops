@@ -40,6 +40,13 @@ spec:
               GATUS_DELAY_START_SECONDS: 5
               GATUS_WEB_PORT: &port 80
               TZ: Europe/Paris
+            # Supplies RYBBIT_CLICKHOUSE_BASIC_AUTH, consumed by the
+            # rybbit-ingest endpoint in resources/config.yaml. gatus expands
+            # ${VAR} across the whole config file at load, which is the same
+            # mechanism GATUS_WEB_PORT above already relies on.
+            envFrom:
+              - secretRef:
+                  name: gatus-secret
             probes:
               liveness: &probes
                 enabled: true

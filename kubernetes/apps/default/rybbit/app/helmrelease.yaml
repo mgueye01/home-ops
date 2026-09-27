@@ -264,6 +264,12 @@ spec:
       app:
         annotations:
           gatus.home-operations.com/enabled: "true"
+          # Dashboard liveness ONLY. This proves the Next.js client renders; it
+          # says nothing about whether events are being stored, and it stayed
+          # green through the 460h ingest blackout of Aug 2026. The check that
+          # actually watches ingestion is `rybbit-ingest` in
+          # apps/observability/gatus/app/resources/config.yaml -- it queries
+          # ClickHouse, so it cannot live on this route annotation.
           gatus.home-operations.com/endpoint: |-
             url: https://analytics.g-eye.io/
             conditions: ["[STATUS] == 200"]
