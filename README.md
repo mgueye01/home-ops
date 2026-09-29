@@ -486,7 +486,6 @@ just kubernetes node-shell        # Open shell on a node
 ### Git
 - **Branch**: `main` is production; all changes go directly to main
 - **Commit style**: Conventional commits - `feat(scope)`, `fix(scope)`, `chore(scope)`
-- **No co-authoring** on commits
 
 ### Kubernetes Manifests
 - Applications are organized by namespace under `kubernetes/apps/`
