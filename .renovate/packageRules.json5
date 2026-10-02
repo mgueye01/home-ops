@@ -30,12 +30,14 @@
       // errors on the TB4 Ceph mesh, and CephNodeNetworkPacketErrors flaps.
       // Bisected on 2026-09-04 by downgrading a single node to v1.13.9 (kernel
       // 6.18.44): its peers dropped to 0 errors in 550k frames while the links
-      // between the two v1.13.10 nodes kept failing. Let Renovate offer the
-      // next patch release, and verify it on one node before dropping this.
-      "description": ["Skip Talos v1.13.10, which corrupts thunderbolt-net on transmit"],
+      // between the two v1.13.10 nodes kept failing. v1.13.11 (kernel 6.18.54)
+      // has the same bug: errors went from 0 to ~16k/h on all six links at the
+      // 2026-10-01 rollout. Verify any new release on one node before
+      // widening this.
+      "description": ["Skip Talos v1.13.10 and v1.13.11, which corrupt thunderbolt-net on transmit"],
       "matchDatasources": ["docker"],
       "matchPackageNames": ["ghcr.io/siderolabs/installer"],
-      "allowedVersions": "!/^v?1\\.13\\.10$/"
+      "allowedVersions": "!/^v?1\\.13\\.1[01]$/"
     }
   ]
 }
