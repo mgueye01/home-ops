@@ -61,7 +61,7 @@ spec:
                 memory: 8Gi
               limits:
                 gpu.intel.com/i915: 1
-                memory: 16Gi
+                memory: 24Gi # includes up to 12Gi of RAM-backed transcode tmpfs
     defaultPodOptions:
       securityContext:
         runAsNonRoot: false
@@ -126,7 +126,10 @@ spec:
           - path: /media
             readOnly: true
       tmpfs:
+        # RAM-backed: a disk emptyDir lands on the system disk and transcodes starve etcd fsync
         type: emptyDir
+        medium: Memory
+        sizeLimit: 12Gi
         advancedMounts:
           plex:
             app:
