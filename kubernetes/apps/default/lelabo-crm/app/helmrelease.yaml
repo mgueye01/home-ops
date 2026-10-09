@@ -40,7 +40,7 @@ spec:
           app:
             image:
               repository: twentycrm/twenty
-              tag: v2.45.8
+              tag: v2.46.0
             env:
               NODE_PORT: &port 3000
               SERVER_URL: "https://lelabo-crm.g-eye.io"
@@ -137,7 +137,7 @@ spec:
           app:
             image:
               repository: twentycrm/twenty
-              tag: v2.45.8
+              tag: v2.46.0
             command: ["yarn", "worker:prod"]
             env:
               SERVER_URL: "https://lelabo-crm.g-eye.io"
