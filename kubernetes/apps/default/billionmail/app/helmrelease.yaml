@@ -45,6 +45,20 @@ spec:
                 mkdir -p /conf/postfix/sql
                 mkdir -p /conf/rspamd/local.d
                 mkdir -p /conf/dovecot/conf.d
+          # Core proxies /rspamd/* with this plaintext password (normally set via docker exec)
+          init-rspamd-password:
+            image:
+              repository: ghcr.io/home-operations/postgres-init
+              tag: 18.6@sha256:b6d3af974df781c673d37e49bdddfa14a6f5be28b18d2cb7713f0449bea4057b
+            envFrom: *envFrom
+            command:
+              - sh
+              - -c
+              - |
+                echo "INSERT INTO bm_options (name, value) VALUES ('rspamd_worker_controller_password', :'pw')
+                      ON CONFLICT (name) DO UPDATE SET value = EXCLUDED.value;" |
+                PGPASSWORD="$DBPASS" psql -h "$INIT_POSTGRES_HOST" -U "$DBUSER" -d "$DBNAME" \
+                  -v ON_ERROR_STOP=1 -v pw="$RSPAMD_CONTROLLER_PASSWORD"
         containers:
           pg-sock-proxy:
             image:
@@ -428,17 +442,38 @@ spec:
             image:
               repository: billionmail/rspamd
               tag: "1.2"
+            command:
+              - /bin/bash
+              - -c
+              - |
+                # Controller must listen beyond localhost for the core's /rspamd proxy
+                cat > /etc/rspamd/override.d/worker-controller.inc <<EOF
+                bind_socket = "*:11334";
+                count = 1;
+                password = "$(rspamadm pw -p "$RSPAMD_CONTROLLER_PASSWORD")";
+                secure_ip = "127.0.0.1";
+                secure_ip = "::1";
+                static_dir = "\${WWWDIR}";
+                EOF
+                exec /rspamd.sh /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
             env:
               TZ: "Etc/UTC"
               REDISHOST: "redis-master.databases.svc.cluster.local"
               REDISPORT: "6379"
               REDISPASS: ""
               RETENTION_DAYS: "7"
+              RSPAMD_CONTROLLER_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: billionmail-secret
+                    key: RSPAMD_CONTROLLER_PASSWORD
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: false
               capabilities:
                 drop: ["ALL"]
+                # rspamd -u _rspamd and /rspamd.sh chown need these
+                add: ["CHOWN", "DAC_OVERRIDE", "FOWNER", "SETGID", "SETUID"]
             resources:
               requests:
                 cpu: 100m
@@ -492,6 +527,14 @@ spec:
           milter:
             port: 11332
             protocol: TCP
+          http:
+            port: 11334
+            protocol: TCP
+      # Core proxies /rspamd/* to the hardcoded host "rspamd:11334"
+      rspamd-controller:
+        controller: rspamd
+        forceRename: rspamd
+        ports:
           http:
             port: 11334
             protocol: TCP
