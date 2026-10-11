@@ -23,6 +23,7 @@ resources:
   - ./openclaw/shared/ks.yaml
   - ./openclaw/instances/openclaw/ks.yaml
   - ./open-webui/ks.yaml
+  - ./open-seo/ks.yaml
   - ./paperless/ks.yaml
   - ./paperless-ai/ks.yaml
   - ./plex/ks.yaml
