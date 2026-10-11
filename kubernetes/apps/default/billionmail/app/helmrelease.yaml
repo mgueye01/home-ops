@@ -115,6 +115,25 @@ spec:
                 memory: 16Mi
               limits:
                 memory: 32Mi
+          # Core proxies /rspamd/* to 127.0.0.1:21334 (it does not detect k8s as a container)
+          rspamd-proxy:
+            image:
+              repository: alpine/socat
+              tag: "1.8.1.3"
+            args:
+              - "TCP-LISTEN:21334,fork,reuseaddr"
+              - "TCP:billionmail-rspamd.default.svc.cluster.local:11334"
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 10m
+                memory: 16Mi
+              limits:
+                memory: 32Mi
           core:
             image:
               repository: billionmail/core
@@ -523,14 +542,6 @@ spec:
           milter:
             port: 11332
             protocol: TCP
-          http:
-            port: 11334
-            protocol: TCP
-      # Core proxies /rspamd/* to the hardcoded host "rspamd:11334"
-      rspamd-controller:
-        controller: rspamd
-        forceRename: rspamd
-        ports:
           http:
             port: 11334
             protocol: TCP
