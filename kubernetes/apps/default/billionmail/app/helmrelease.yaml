@@ -449,11 +449,7 @@ spec:
                 # Controller must listen beyond localhost for the core's /rspamd proxy
                 cat > /etc/rspamd/override.d/worker-controller.inc <<EOF
                 bind_socket = "*:11334";
-                count = 1;
                 password = "$(rspamadm pw -p "$RSPAMD_CONTROLLER_PASSWORD")";
-                secure_ip = "127.0.0.1";
-                secure_ip = "::1";
-                static_dir = "\${WWWDIR}";
                 EOF
                 exec /rspamd.sh /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
             env:
