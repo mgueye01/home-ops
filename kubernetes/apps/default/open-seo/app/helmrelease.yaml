@@ -102,6 +102,17 @@ spec:
           - backendRefs:
               - name: *app
                 port: *port
+            # OpenSEO builds the Google OAuth redirect_uri from X-Forwarded-Proto
+            # + X-Forwarded-Host; Envoy doesn't send the host by default, which
+            # yields http://… and a redirect_uri_mismatch from Google.
+            filters:
+              - type: RequestHeaderModifier
+                requestHeaderModifier:
+                  set:
+                    - name: X-Forwarded-Host
+                      value: seo.g-eye.io
+                    - name: X-Forwarded-Proto
+                      value: https
     persistence:
       # Local D1 (SQLite) state lives under .wrangler
       data:
