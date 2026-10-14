@@ -27,7 +27,7 @@ spec:
           app:
             image:
               repository: ghcr.io/every-app/open-seo
-              tag: v0.1.12
+              tag: v0.1.13
             env:
               PORT: &port 3001
               ALLOWED_HOST: seo.g-eye.io
