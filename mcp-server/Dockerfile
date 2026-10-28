@@ -1,5 +1,5 @@
 # Standalone Twenty CRM MCP Server with SSE support
-FROM node:24-alpine
+FROM node:26-alpine
 
 WORKDIR /app
 
