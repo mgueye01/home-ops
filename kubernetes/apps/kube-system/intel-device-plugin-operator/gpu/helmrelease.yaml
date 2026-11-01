@@ -11,12 +11,8 @@ spec:
     operation: copy
   ref:
     tag: 0.34.1
-  url: oci://ghcr.io/home-operations/charts-mirror/intel-device-plugins-gpu
-  verify:
-    provider: cosign
-    matchOIDCIdentity:
-      - issuer: ^https://token\.actions\.githubusercontent\.com$
-        subject: ^https://github\.com/home-operations/charts-mirror/.*$
+  # Official upstream does not publish the mirror's Cosign signatures.
+  url: oci://ghcr.io/intel/helm-charts/intel-device-plugins-gpu
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
 apiVersion: helm.toolkit.fluxcd.io/v2
