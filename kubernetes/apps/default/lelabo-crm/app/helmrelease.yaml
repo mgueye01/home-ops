@@ -138,7 +138,16 @@ spec:
             image:
               repository: twentycrm/twenty
               tag: v2.54.0
-            command: ["yarn", "worker:prod"]
+            # Capture upgrade-aware ORM metadata only after server migrations finish.
+            command: ["/bin/sh", "-ec"]
+            args:
+              - |
+                until yarn command:prod upgrade:status > /tmp/upgrade-status.log 2>&1 &&
+                  node -e 'const s=require("fs").readFileSync("/tmp/upgrade-status.log","utf8"); process.exit(s.includes("Instance: Up to date") && /Workspaces: \d+ up to date, 0 behind, 0 failed/.test(s) ? 0 : 1)'; do
+                  echo "Waiting for instance and workspace migrations"
+                  sleep 10
+                done
+                exec yarn worker:prod
             env:
               SERVER_URL: "https://lelabo-crm.g-eye.io"
               # V8 defaults to ~1Gi old-space regardless of the container limit,
