@@ -111,6 +111,13 @@ machine:
     sunrpc.tcp_slot_table_entries: "128"
     user.max_user_namespaces: "11255"
     vm.nr_hugepages: "1024"
+  sysfs:
+    # PCIe ASPM L1 exit latency overflows the I225-V rx FIFO under bursts (rx_missed_errors)
+    {% if ENV.NODE_NAME == "k8s-2" %}
+    class.net.enp86s0.device.link.l1_aspm: "0"
+    {% else %}
+    class.net.enp100s0.device.link.l1_aspm: "0"
+    {% endif %}
   token: op://kubernetes/talos/MACHINE_TOKEN
 cluster:
   ca:
