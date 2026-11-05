@@ -40,7 +40,7 @@ spec:
           app:
             image:
               repository: twentycrm/twenty
-              tag: v2.55.0
+              tag: v2.56.1
             env:
               NODE_PORT: &port 3000
               SERVER_URL: "https://twenty.g-eye.io"
@@ -127,7 +127,7 @@ spec:
           app:
             image:
               repository: twentycrm/twenty
-              tag: v2.55.0
+              tag: v2.56.1
             # Capture upgrade-aware ORM metadata only after server migrations finish.
             command: ["/bin/sh", "-ec"]
             args:
