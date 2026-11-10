@@ -21,7 +21,9 @@ spec:
               tag: 4.0.0@sha256:bea1e218755ba7940da9748ce64e3d7020f15059eab8eb5c6e5470d3d60436a6
             env:
               TZ: Europe/Paris
-              PROCESS_PREDEFINED_DOCUMENTS: true
+              # v3 recognized only "yes"; its previous "true" processed all documents.
+              # Keep that effective behavior with v4's boolean-aware parser.
+              PROCESS_PREDEFINED_DOCUMENTS: false
               AI_PROVIDER: openai
               OLLAMA_MODEL: gpt-4o-mini
               PAPERLESS_API_URL: https://paperless.g-eye.io/api
