@@ -18,10 +18,12 @@ spec:
           app:
             image:
               repository: docker.io/clusterzx/paperless-ai
-              tag: 3.0.9@sha256:2b65888163fd59716f1c8285b31c5bd0b30c9c3c192c42b516688e3887d4ba60
+              tag: 4.0.0@sha256:bea1e218755ba7940da9748ce64e3d7020f15059eab8eb5c6e5470d3d60436a6
             env:
               TZ: Europe/Paris
-              PROCESS_PREDEFINED_DOCUMENTS: true
+              # v3 recognized only "yes"; its previous "true" processed all documents.
+              # Keep that effective behavior with v4's boolean-aware parser.
+              PROCESS_PREDEFINED_DOCUMENTS: false
               AI_PROVIDER: openai
               OLLAMA_MODEL: gpt-4o-mini
               PAPERLESS_API_URL: https://paperless.g-eye.io/api
