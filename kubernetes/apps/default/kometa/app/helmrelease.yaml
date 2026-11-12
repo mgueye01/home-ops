@@ -25,10 +25,12 @@ spec:
           app:
             image:
               repository: docker.io/kometateam/kometa
-              tag: v2.5.4@sha256:e3f509c3044ac011e1938dae2f7e80ea3cfe9663720a9f98683d1ea28c127e64
+              tag: v2.5.5@sha256:864cec57d099c71a26a5a5ce2784d34d9b53874c91269c3a12df3949eab96562
             env:
               TZ: Europe/Paris
               PMM_READ_ONLY_CONFIG: true
+              SQLITE_TMPDIR: /tmp
+              TMPDIR: /tmp
               PMM_TIME: "00:00,01:00,02:00,03:00,04:00,05:00,06:00,07:00,08:00,09:00,10:00,11:00,12:00,13:00,14:00,15:00,16:00,17:00,18:00,19:00,20:00,21:00,22:00,23:00"
             resources:
               requests:
@@ -41,6 +43,11 @@ spec:
               readOnlyRootFilesystem: true
               capabilities: { drop: ["ALL"] }
     persistence:
+      tmp:
+        type: emptyDir
+        sizeLimit: 1Gi
+        globalMounts:
+          - path: /tmp
       config:
         existingClaim: kometa
         globalMounts:
