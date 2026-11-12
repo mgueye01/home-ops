@@ -1,0 +1,64 @@
+apiVersion: policies.kyverno.io/v1
+kind: ImageValidatingPolicy
+metadata:
+  name: verify-harbor-image-signatures-cel
+  annotations:
+    policies.kyverno.io/description: Images from harbor.g-eye.io/openclaw and harbor.g-eye.io/elgato
+      must carry a cosign signature verifiable with the CI signing key stored in 1Password
+      (item harbor, COSIGN_PUBLIC_KEY).
+    policies.kyverno.io/title: Verify Harbor image signatures (cosign key)
+spec:
+  evaluation:
+    admission:
+      enabled: true
+    background:
+      enabled: true
+  failurePolicy: Ignore
+  webhookConfiguration:
+    timeoutSeconds: 30
+  validationActions:
+  - Deny
+  matchConstraints:
+    resourceRules:
+    - apiGroups:
+      - ''
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - pods
+  matchImageReferences:
+  - glob: harbor.g-eye.io/openclaw/*
+  - glob: harbor.g-eye.io/elgato/*
+  credentials:
+    secrets:
+    - harbor-kyverno
+    allowInsecureRegistry: false
+  validationConfigurations:
+    required: true
+    mutateDigest: false
+    verifyDigest: false
+  attestors:
+  - name: ciKey
+    cosign:
+      key:
+        data: '-----BEGIN PUBLIC KEY-----
+
+          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEaaqxNszln6QqvUNpOJQx3U0bbNtd
+
+          VrWILujngi+SpYJTVNvakEYAZLaDfiNhd13FZTl11xcyWwh/SebDeQYPbg==
+
+          -----END PUBLIC KEY-----'
+        hashAlgorithm: sha256
+  validations:
+  - expression: '!has(images.containers) || images.containers.map(image, verifyImageSignatures(image,
+      [attestors.ciKey])).all(n, n > 0)'
+    message: Harbor openclaw/elgato images must be signed by the CI cosign key
+  - expression: '!has(images.initContainers) || images.initContainers.map(image, verifyImageSignatures(image,
+      [attestors.ciKey])).all(n, n > 0)'
+    message: Harbor openclaw/elgato images must be signed by the CI cosign key
+  - expression: '!has(images.ephemeralContainers) || images.ephemeralContainers.map(image,
+      verifyImageSignatures(image, [attestors.ciKey])).all(n, n > 0)'
+    message: Harbor openclaw/elgato images must be signed by the CI cosign key
