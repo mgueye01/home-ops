@@ -124,6 +124,7 @@ Use the short-lived verification Pod created above. It mounts only the ephemeral
 1. Count files and bytes and require at least one file.
 2. Read every regular file completely (for example, `dd if=<file> of=/dev/null`).
 3. For SQLite files, run `PRAGMA quick_check;` in immutable/read-only mode and require `ok`.
+   For a WAL-aware check on a copy, do not copy into `/dev/shm`: it is capped at 64 MB in a container, so any larger database fails with `ENOSPC` (seen on `default/fusion`, 2026-11-01). Mount a memory-backed `emptyDir` (`medium: Memory`, `sizeLimit` above the largest database plus its WAL) as the scratch directory, and set the container memory limit above that `sizeLimit`, since tmpfs usage counts against it.
 4. For Git repositories, run `git fsck --full --no-progress` and require success.
 5. Add an application-specific check when the data format supports one.
 
