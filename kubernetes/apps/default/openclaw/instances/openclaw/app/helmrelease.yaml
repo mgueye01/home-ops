@@ -35,9 +35,12 @@ spec:
               - /bin/sh
               - -c
               - |
-                # openclaw >= 2026.11.5 refuses a temp root that is group/world
-                # writable without the sticky bit; the fsGroup emptyDir is 2777.
+                # openclaw >= 2026.11.5 refuses a temp root (or ancestor) that is
+                # group/world writable without the sticky bit. fsGroup makes the
+                # /tmp emptyDir 2777 and the PVC dirs g+w, so add sticky to each.
                 chmod 1777 /tmp
+                mkdir -p /home/tapha/.openclaw/tmp
+                chmod +t /home/tapha/.openclaw /home/tapha/.openclaw/tmp
 
                 # Ensure npm-global dir exists for persisted skill packages
                 mkdir -p /home/tapha/.openclaw/npm-global/bin
