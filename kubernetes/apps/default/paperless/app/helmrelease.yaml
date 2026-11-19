@@ -62,6 +62,7 @@ spec:
               PAPERLESS_TIKA_ENDPOINT: http://localhost:9998
               PAPERLESS_TIME_ZONE: Europe/Paris
               PAPERLESS_URL: https://paperless.g-eye.io
+              PAPERLESS_ALLOWED_HOSTS: paperless.default.svc.cluster.local
               USERMAP_UID: 568
               USERMAP_GID: 568
             envFrom:
