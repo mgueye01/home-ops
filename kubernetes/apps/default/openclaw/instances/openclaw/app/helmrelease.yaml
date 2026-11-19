@@ -26,7 +26,7 @@ spec:
           init-config:
             image:
               repository: harbor.g-eye.io/openclaw/openclaw # {"$imagepolicy": "default:openclaw:name"}
-              tag: 20261119-141602 # {"$imagepolicy": "default:openclaw:tag"}
+              tag: 20261119-230925 # {"$imagepolicy": "default:openclaw:tag"}
             securityContext:
               runAsUser: 0
               runAsGroup: 0
@@ -106,7 +106,7 @@ spec:
           app:
             image:
               repository: harbor.g-eye.io/openclaw/openclaw # {"$imagepolicy": "default:openclaw:name"}
-              tag: 20261119-141602 # {"$imagepolicy": "default:openclaw:tag"}
+              tag: 20261119-230925 # {"$imagepolicy": "default:openclaw:tag"}
             # Absolute path on purpose: /home/linuxbrew/.linuxbrew is a PVC mount and
             # sits ahead of /usr/local/bin in PATH, so any brew formula pulling node
             # (gemini-cli does) silently becomes openclaw's runtime. Pin the image's
