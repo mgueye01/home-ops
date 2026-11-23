@@ -65,7 +65,7 @@ spec:
               repository: alpine/socat
               tag: "1.8.1.3"
             args:
-              - "UNIX-LISTEN:/pg-sock/.s.PGSQL.5432,fork,reuseaddr"
+              - "UNIX-LISTEN:/pg-sock/.s.PGSQL.5432,fork,reuseaddr,unlink-early"
               - "TCP:postgres16-rw.databases.svc.cluster.local:5432"
             securityContext:
               allowPrivilegeEscalation: false
@@ -319,7 +319,7 @@ spec:
               repository: alpine/socat
               tag: "1.8.1.3"
             args:
-              - "UNIX-LISTEN:/pg-sock/.s.PGSQL.5432,fork,reuseaddr"
+              - "UNIX-LISTEN:/pg-sock/.s.PGSQL.5432,fork,reuseaddr,unlink-early"
               - "TCP:postgres16-rw.databases.svc.cluster.local:5432"
             securityContext:
               allowPrivilegeEscalation: false
@@ -388,7 +388,7 @@ spec:
               repository: alpine/socat
               tag: "1.8.1.3"
             args:
-              - "UNIX-LISTEN:/pg-sock/.s.PGSQL.5432,fork,reuseaddr"
+              - "UNIX-LISTEN:/pg-sock/.s.PGSQL.5432,fork,reuseaddr,unlink-early"
               - "TCP:postgres16-rw.databases.svc.cluster.local:5432"
             securityContext:
               allowPrivilegeEscalation: false
