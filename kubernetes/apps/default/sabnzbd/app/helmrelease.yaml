@@ -133,7 +133,7 @@ spec:
                 storageClassName: ceph-block
                 resources:
                   requests:
-                    storage: 100Gi
+                    storage: 200Gi
         advancedMounts:
           sabnzbd:
             app:
