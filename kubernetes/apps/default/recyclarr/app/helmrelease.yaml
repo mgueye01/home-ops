@@ -36,7 +36,10 @@ spec:
             envFrom:
               - secretRef:
                   name: recyclarr-secret
-            args: ["sync"]
+            # v9's Docker entrypoint starts a persistent server, not a one-shot sync.
+            # Keep the Kubernetes schedule and use the CLI's private temporary server.
+            command: ["/bin/sh", "-ec"]
+            args: ["unset RECYCLARR_SERVER_URL; exec recyclarr sync"]
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
